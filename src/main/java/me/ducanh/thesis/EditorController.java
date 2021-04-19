@@ -6,7 +6,7 @@ import me.ducanh.thesis.model.*;
 import java.util.ArrayList;
 
 
-public class Editor {
+public class EditorController {
 //    public ObservableList<Graph> getCurrentGraph() {
 //        return currentGraph ;
 //    }
