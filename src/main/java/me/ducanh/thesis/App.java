@@ -4,15 +4,17 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import me.ducanh.thesis.model.DataModel;
 import me.ducanh.thesis.model.Edge;
-import me.ducanh.thesis.model.Graph;
 import me.ducanh.thesis.model.Node;
+import mvp.editor.EditorController;
+import mvp.list.ListController;
+import mvp.menu.MenuController;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * JavaFX App
@@ -24,10 +26,29 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-        scene = new Scene(loadFXML("Skeletton"), 900, 550);
-        scene.getStylesheets().add(App.class.getResource("stylesheet.css").toExternalForm());
+//        scene = new Scene(loadFXML("Skeletton"), 900, 550);
+//        scene.getStylesheets().add(App.class.getResource("stylesheet.css").toExternalForm());
+
+        BorderPane rootBorderPane = new BorderPane();
+        SplitPane splitPane = new SplitPane();
+        rootBorderPane.setCenter(splitPane);
+        splitPane.getItems().add(loadFXML("Editor"));
+
+//        FXMLLoader listLoader = new FXMLLoader(App.class.getResource("/mvp/list/list.fxml"));
+//        rootBorderPane.setCenter(listLoader.load());
+//        ListController listController = listLoader.getController();
+//
+//
+//        mvp.model.DataModel model = new mvp.model.DataModel();
+//        listController.initModel(model);
+
+        scene = new Scene(rootBorderPane, 900, 550);
         stage.setScene(scene);
+        stage.setTitle("BisimVerifier");
         stage.show();
+
+
+
     }
 
     static void setRoot(String fxml) throws IOException {
@@ -35,8 +56,7 @@ public class App extends Application {
     }
 
     private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+        return new FXMLLoader(App.class.getResource(fxml + ".fxml")).load();
     }
 
     public static void main(String[] args) {
@@ -47,14 +67,28 @@ public class App extends Application {
 
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //Creates a dummy graph
     private static void setExampleGraph(DataModel model){
         for (int i = 0; i < 5; i++) {
             Node node = new Node(Integer.toString(i));
             if (i % 2 == 1) {
-                Edge edge = new Edge("a", model.getNodes().get(i - 1), node);
+                Edge edge = new Edge("a", model.getNodeList().get(i - 1), node);
                 model.addEdge(edge);
             } else if (i != 0) {
-                Edge edge = new Edge("b", model.getNodes().get(i - 1), node);
+                Edge edge = new Edge("b", model.getNodeList().get(i - 1), node);
                 model.addEdge(edge);
             }
             model.addNode(node);
