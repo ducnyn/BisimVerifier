@@ -16,15 +16,15 @@ public class ContactApp extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         BorderPane root = new BorderPane();
-        FXMLLoader listLoader = new FXMLLoader(getClass().getResource("/mvp/list/list.fxml"));
+        FXMLLoader listLoader = new FXMLLoader(getClass().getResource("/src/main/mvp/list/list.fxml"));
         root.setCenter(listLoader.load());
         ListController listController = listLoader.getController();
 
-        FXMLLoader editorLoader = new FXMLLoader(getClass().getResource("/mvp/editor/editor.fxml"));
+        FXMLLoader editorLoader = new FXMLLoader(getClass().getResource("/src/main/mvp/editor/editor.fxml"));
         root.setRight(editorLoader.load());
         EditorController editorController = editorLoader.getController();
 
-        FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/mvp/menu/menu.fxml"));
+        FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("/src/main/mvp/menu/menu.fxml"));
         root.setTop(menuLoader.load());
         MenuController menuController = menuLoader.getController();
 

@@ -4,7 +4,8 @@ public enum View {
     MENU("menu.fxml"),
     EDITOR("editor.fxml"),
     CANVAS("canvas.fxml"),
-    SIDEBAR("sidebar.fxml");
+    SIDEBAR("sidebar.fxml"),
+    ABOUT("about.fxml");
 
     private final String fileName;
 

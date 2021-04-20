@@ -2,17 +2,15 @@ package me.ducanh.thesis;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import me.ducanh.thesis.model.DataModel;
 import me.ducanh.thesis.model.Edge;
 import me.ducanh.thesis.model.Node;
-import mvp.editor.EditorController;
-import mvp.list.ListController;
-import mvp.menu.MenuController;
+
 
 import java.io.IOException;
 
@@ -29,20 +27,29 @@ public class App extends Application {
 //        scene = new Scene(loadFXML("Skeletton"), 900, 550);
 //        scene.getStylesheets().add(App.class.getResource("stylesheet.css").toExternalForm());
 
-        BorderPane rootBorderPane = new BorderPane();
+        VBox rootVBox = new VBox();
+
+        FXMLLoader menuLoader = createLoader(View.MENU);
+        rootVBox.getChildren().add(menuLoader.load());
+        MenuController menuController = menuLoader.getController();
+
         SplitPane splitPane = new SplitPane();
-        rootBorderPane.setCenter(splitPane);
-        splitPane.getItems().add(loadFXML("Editor"));
+        splitPane.setDividerPositions(0.35);
+        rootVBox.getChildren().add(splitPane);
 
-//        FXMLLoader listLoader = new FXMLLoader(App.class.getResource("/mvp/list/list.fxml"));
-//        rootBorderPane.setCenter(listLoader.load());
-//        ListController listController = listLoader.getController();
-//
-//
-//        mvp.model.DataModel model = new mvp.model.DataModel();
-//        listController.initModel(model);
+        FXMLLoader editorLoader = createLoader(View.EDITOR);
+        splitPane.getItems().add(editorLoader.load());
+        EditorController editorController = editorLoader.getController();
 
-        scene = new Scene(rootBorderPane, 900, 550);
+        FXMLLoader canvasLoader = createLoader(View.CANVAS);
+        splitPane.getItems().add(canvasLoader.load());
+        CanvasController canvasController = canvasLoader.getController();
+
+        DataModel data = new DataModel();
+        editorController.inject(data);
+
+        scene = new Scene(rootVBox, 900, 550);
+//        scene.getStylesheets();
         stage.setScene(scene);
         stage.setTitle("BisimVerifier");
         stage.show();
@@ -50,51 +57,27 @@ public class App extends Application {
 
 
     }
+    //TODO Don't just throw generic exception like this.
+    static void setRoot(View view) throws Exception {
+        try{
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(view.getFileName()));
+            scene.setRoot(fxmlLoader.load());
+        }catch (Exception e) {
+            System.out.println("FXML file " + view.getFileName() + " doesn't exist.");
+        }
 
-    static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(View.EDITOR));
+
     }
 
-    private static Parent loadFXML(View view) throws IOException {
-        return new FXMLLoader(App.class.getResource(view.getFileName())).load();
+    private FXMLLoader createLoader(View view)  {
+        return new FXMLLoader(getClass().getResource(view.getFileName()));
     }
 
     public static void main(String[] args) {
-        DataModel datamodel = new DataModel();
-        setExampleGraph(datamodel);
-        System.out.println(datamodel.toDot());
-        launch();
-
+           launch();
     }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-    //Creates a dummy graph
-    private static void setExampleGraph(DataModel model){
-        for (int i = 0; i < 5; i++) {
-            Node node = new Node(Integer.toString(i));
-            if (i % 2 == 1) {
-                Edge edge = new Edge("a", model.getNodeList().get(i - 1), node);
-                model.addEdge(edge);
-            } else if (i != 0) {
-                Edge edge = new Edge("b", model.getNodeList().get(i - 1), node);
-                model.addEdge(edge);
-            }
-            model.addNode(node);
-        }
-//        Graph graph = new Graph(model.getNodes(), model.getEdges());
-//        System.out.println(graph);
-    }
 
 }

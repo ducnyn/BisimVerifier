@@ -1,14 +1,7 @@
 package me.ducanh.thesis.model;
 
-import javafx.beans.Observable;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import mvp.model.Person;
-
-import java.io.File;
-import java.util.ArrayList;
 
 public class DataModel {
     private final ObservableList<Node> nodeList = FXCollections.observableArrayList();
@@ -32,7 +25,7 @@ public class DataModel {
 
 
     //Outputs Graph in Dotfile Notation String for Graphviz and Dot2Tex
-    public String toDot() { //TODO : How about toDot for sub graphs
+    public String currentToDot() { //TODO : How about toDot for sub graphs
         StringBuilder graphString = new StringBuilder();
         graphString
                 .append("digraph {");
