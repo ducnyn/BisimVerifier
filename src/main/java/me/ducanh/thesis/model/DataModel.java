@@ -33,15 +33,15 @@ public class DataModel {
         for (Node node : nodeList) {
             graphString
                     .append("\n\t")
-                    .append(node.getName());
+                    .append(node.getId());
         }
         graphString.append("\n");
         for (Edge edge : edgeList) {
             graphString
                     .append("\n\t")
-                    .append(edge.getSource().getName())
+                    .append(edge.getSource().getId())
                     .append(" -> ")
-                    .append(edge.getTarget().getName())
+                    .append(edge.getTarget().getId())
                     .append("[label = ")
                     .append(edge.getLabel())
                     .append("]");
