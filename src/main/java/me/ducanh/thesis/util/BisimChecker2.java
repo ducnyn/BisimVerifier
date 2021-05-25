@@ -1,17 +1,20 @@
 package me.ducanh.thesis.util;
 
+import me.ducanh.thesis.model.NodeList;
 import me.ducanh.thesis.model.Node;
+import me.ducanh.thesis.model.BlockList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class BisimChecker {
+public class BisimChecker2 {
 
 //TODO: Might need to check if there's a need to clone lists whenever they're used as parameters, due to side effects;
 
-private static List<List<Node>> split (List<Node> sourceBlock, String act, List<Node> targetBlock){
-        ArrayList<List<Node>> partition = new ArrayList<>();
-        ArrayList<Node> newBlock = new ArrayList<>();
-        ArrayList<Node> remainderBlock = new ArrayList<>(sourceBlock);
+private static BlockList split (NodeList sourceBlock, String act, NodeList targetBlock) throws CloneNotSupportedException {
+        BlockList partition = new BlockList();
+        NodeList newBlock = new NodeList();
+        NodeList remainderBlock = sourceBlock;
 
         for (Node node: sourceBlock) {
             for (Node target: node.getBlock(act)){
@@ -29,7 +32,7 @@ private static List<List<Node>> split (List<Node> sourceBlock, String act, List<
 
 
 
-    public static void bisim(List<Node> nodes) {
+    public static List<List<Node>> bisim(List<Node> nodes) {
         List<List<Node>> newPartition = new ArrayList<>();
         List<List<Node>> oldPartition = new ArrayList<>();
 
@@ -37,9 +40,9 @@ private static List<List<Node>> split (List<Node> sourceBlock, String act, List<
 
         while (!newPartition.equals(oldPartition)) {
             oldPartition = newPartition;
-            newPartition.clear();
-//TODO Any node with the highest amount of outgoing edges can be used to look for a distinguishing transition (NOT Action btw)
+            newPartition = new ArrayList<>();
             for (List<Node> block : oldPartition) {
+                if (oldPartition.indexOf(oldPartition.stream().filter(b -> block.stream().filter())));
                         block
                         .stream()
                         .filter(node -> !split(block,act,block.any.transition(act).getBlock()).contains(block))
@@ -49,6 +52,7 @@ private static List<List<Node>> split (List<Node> sourceBlock, String act, List<
             }//TODO WATCH THAT VIDEO TO SEE HOW YOU CAN MAP THE RESULTS
 
         }
+        return newPartition;
     }
 
 

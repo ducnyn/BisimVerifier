@@ -7,12 +7,17 @@ import java.util.Map;
 
 public class Node {
     private String id;
-    //A Map of actions to Lists of all targetNodes
-    HashMap<String,List<Node>> transitions;
+    private int blockID;
+    HashMap<String,List<Node>> transitions;    //A Map of actions to Lists of all targetNodes
 
 
+public void setBlockID(int id){
+    this.blockID = id;
+}
 
-
+public int getBlockID(){
+    return blockID;
+}
 public Node(String id){
     this.id = id;
 }
@@ -39,7 +44,9 @@ public void addTransition(String action, Node target){
 public List<Node> getTransitionList(String action){
     return transitions.getOrDefault(action, null);
 }
+
 public Map<String, List<Node>> getAllTransitionLists(){return transitions;}
+
 public Boolean transExists(String action){
     return transitions.containsKey(action);
 }
