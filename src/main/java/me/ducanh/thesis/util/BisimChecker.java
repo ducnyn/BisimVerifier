@@ -5,47 +5,53 @@ import me.ducanh.thesis.model.Node;
 import java.util.*;
 
 public class BisimChecker {
+    /**
+     * @param sourceBlock
+     * @param act
+     * @param targetBlock
+     * @return
+     */
 
 //TODO: Might need to check if there's a need to clone lists whenever they're used as parameters, due to side effects;
 
-private static List<List<Node>> split (List<Node> sourceBlock, String act, List<Node> targetBlock){
-        ArrayList<List<Node>> partition = new ArrayList<>();
-        ArrayList<Node> newBlock = new ArrayList<>();
-        ArrayList<Node> remainderBlock = new ArrayList<>(sourceBlock);
+private static Set<Set<Node>> split (Set<Node> sourceBlock, String act, Set<Node> targetBlock){
+        Set<Set<Node>> result = new HashSet<>();
+        Set<Node> newBlock = new HashSet<>();
+        Set<Node> remainderBlock = new HashSet<>(sourceBlock);
 
         for (Node node: sourceBlock) {
-            for (Node target: node.getBlock(act)){
+            for (Node target: node.getTargetNodes(act)){
                 if (targetBlock.contains(target)) {
                     newBlock.add(node);
                     remainderBlock.remove(node);
+                    break;
                 }
             }
         }
-
-        partition.add(newBlock);
-        partition.add(remainderBlock);
-        return partition;
+        result.add(newBlock);
+        result.add(remainderBlock);
+        return result;
     }
 
 
 
-    public static void bisim(List<Node> nodes) {
-        List<List<Node>> newPartition = new ArrayList<>();
-        List<List<Node>> oldPartition = new ArrayList<>();
+    public static void bisim(Set<Node> nodes) {
+        Set<Set<Node>> currentPartition = new HashSet<>();
+        Set<Set<Node>> parentPartition = new HashSet<>();
 
-        newPartition.add(nodes);
+        currentPartition.add(nodes);
 
-        while (!newPartition.equals(oldPartition)) {
-            oldPartition = newPartition;
-            newPartition.clear();
-//TODO Any node with the highest amount of outgoing edges can be used to look for a distinguishing transition (NOT Action btw)
-            for (List<Node> block : oldPartition) {
+        while (!currentPartition.equals(parentPartition)) {
+            parentPartition = currentPartition;
+            currentPartition.clear();
+//TODO iterate through actions and the blocks that contains such actions
+            for (List<Node> block : parentPartition) {
                         block
                         .stream()
                         .filter(node -> !split(block,act,block.any.transition(act).getBlock()).contains(block))
                         .findAny()
-                        .ifPresentOrElse( act -> newPartition.addAll(split(block,act,firstNode.getTransitionList((act)))),
-                                        () -> newPartition.add(block) );
+                        .ifPresentOrElse( act -> currentPartition.addAll(split(block,act,firstNode.getTransitionList((act)))),
+                                        () -> currentPartition.add(block) );
             }//TODO WATCH THAT VIDEO TO SEE HOW YOU CAN MAP THE RESULTS
 
         }

@@ -1,14 +1,15 @@
 package me.ducanh.thesis.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import com.google.common.collect.Multimap;
+import com.google.common.collect.ArrayListMultimap;
+
 
 public class Node {
     private String id;
     private int blockID;
-    HashMap<String,List<Node>> transitions;    //A Map of actions to Lists of all targetNodes
+    Multimap<String,Node> transitions;    //A Map of actions to Lists of all targetNodes
 
 
 public void setBlockID(int id){
@@ -22,8 +23,8 @@ public Node(String id){
     this.id = id;
 }
 
-public List<String> getActions(){
-    return new ArrayList<>((transitions.keySet()));
+public Set<String> getActions(){
+    return (transitions.keySet());
 }
 
 public String getId() {
@@ -31,23 +32,22 @@ public String getId() {
 }
 
 public void addTransition(String action, Node target){
-    if(transitions.containsKey(action)){
-        transitions.get(action).add(target);
-    } else {
-        ArrayList<Node> targetList = new ArrayList<>();
-        targetList.add(target);
-        transitions.put(action,targetList);
-    }
+        transitions.put(action,target);
+}
+
+public void removeTransition(String action, Node target){
+        transitions.remove(action,target);
+
 }
 
 
-public List<Node> getTransitionList(String action){
-    return transitions.getOrDefault(action, null);
+public Set<Node> getTargetNodes(String action){
+    return new HashSet<>(transitions.get(action));
 }
 
-public Map<String, List<Node>> getAllTransitionLists(){return transitions;}
+public Multimap<String,Node> getTransitions(){return transitions;}
 
-public Boolean transExists(String action){
+public Boolean actionExists(String action){
     return transitions.containsKey(action);
 }
 @Override

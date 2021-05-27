@@ -1,9 +1,9 @@
 package me.ducanh.thesis.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
-public class BlockList extends ArrayList<NodeList> {
+public class Partition extends HashSet {
+
 int ID;
 
 public void setID(int ID){

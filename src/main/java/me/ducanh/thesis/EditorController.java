@@ -21,7 +21,7 @@ public class EditorController {
         editorTextArea.setText(data.currentToDot());
 
         editorTextArea.setOnKeyTyped(a->{
-            editorTextArea.appendText(a.getCharacter()f);
+            editorTextArea.appendText(a.getCharacter());
         });
 
     }
