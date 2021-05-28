@@ -1,9 +1,8 @@
 package me.ducanh.thesis.model;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class Block extends ArrayList<Node> {
+public class Block extends ArrayList<Vertex> {
 int ID;
 
 public void setID(int ID){

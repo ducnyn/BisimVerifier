@@ -3,13 +3,12 @@ package me.ducanh.thesis.model;
 import java.util.*;
 
 import com.google.common.collect.Multimap;
-import com.google.common.collect.ArrayListMultimap;
 
 
-public class Node {
+public class Vertex {
     private String id;
     private int blockID;
-    Multimap<String,Node> transitions;    //A Map of actions to Lists of all targetNodes
+    Multimap<String, Vertex> transitions;    //A Map of actions to Lists of all targetNodes
 
 
 public void setBlockID(int id){
@@ -19,7 +18,7 @@ public void setBlockID(int id){
 public int getBlockID(){
     return blockID;
 }
-public Node(String id){
+public Vertex(String id){
     this.id = id;
 }
 
@@ -31,21 +30,21 @@ public String getId() {
     return id;
 }
 
-public void addTransition(String action, Node target){
+public void addTransition(String action, Vertex target){
         transitions.put(action,target);
 }
 
-public void removeTransition(String action, Node target){
+public void removeTransition(String action, Vertex target){
         transitions.remove(action,target);
 
 }
 
 
-public Set<Node> getTargetNodes(String action){
+public Set<Vertex> getTargetNodes(String action){
     return new HashSet<>(transitions.get(action));
 }
 
-public Multimap<String,Node> getTransitions(){return transitions;}
+public Multimap<String, Vertex> getTransitions(){return transitions;}
 
 public Boolean actionExists(String action){
     return transitions.containsKey(action);

@@ -2,25 +2,26 @@ package me.ducanh.thesis.model;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 
-public class DataModel {
-    private final ObservableList<Node> nodeList = FXCollections.observableArrayList();
-    private final ObservableList<Edge> edgeList = FXCollections.observableArrayList();
+public class Model {
+    private final ObservableSet<Vertex> vertices = FXCollections.observableSet();
+    private final ObservableSet<Edge> edges = FXCollections.observableSet();
 
-    public void addNode(Node node){
-        nodeList.add(node);
+    public void addVertex(Vertex vertex){
+        vertices.add(vertex);
     }
 
     public void addEdge(Edge edge){
-        edgeList.add(edge);
+        edges.add(edge);
     }
 
-    public ObservableList<Node> getNodeList(){
-        return nodeList;
+    public ObservableSet<Vertex> getVertices(){
+        return vertices;
     }
 
-    public ObservableList<Edge> getEdgeList() {
-        return edgeList;
+    public ObservableSet<Edge> getEdges() {
+        return edges;
     }
 
 
@@ -30,13 +31,13 @@ public class DataModel {
         graphString
                 .append("digraph {");
 
-        for (Node node : nodeList) {
+        for (Vertex vertex : vertices) {
             graphString
                     .append("\n\t")
-                    .append(node.getId());
+                    .append(vertex.getId());
         }
         graphString.append("\n");
-        for (Edge edge : edgeList) {
+        for (Edge edge : edges) {
             graphString
                     .append("\n\t")
                     .append(edge.getSource().getId())

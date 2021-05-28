@@ -4,12 +4,9 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import me.ducanh.thesis.model.DataModel;
-import me.ducanh.thesis.model.Edge;
-import me.ducanh.thesis.model.Node;
+import me.ducanh.thesis.model.Model;
 
 
 import java.io.IOException;
@@ -45,7 +42,7 @@ public class App extends Application {
         splitPane.getItems().add(canvasLoader.load());
         CanvasController canvasController = canvasLoader.getController();
 
-        DataModel data = new DataModel();
+        Model data = new Model();
         editorController.inject(data);
 
         scene = new Scene(rootVBox, 900, 550);

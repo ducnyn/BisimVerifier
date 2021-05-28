@@ -2,10 +2,10 @@ package me.ducanh.thesis.model;
 
 public class Edge {
 private String label;
-private Node source;
-private Node target;
+private Vertex source;
+private Vertex target;
 
-public Edge(String label, Node source, Node target) {
+public Edge(String label, Vertex source, Vertex target) {
     this.label = label;
     this.source = source;
     this.target = target;
@@ -15,11 +15,11 @@ public Edge(String label, Node source, Node target) {
 public String toString(){
     return source.toString() + " -" + label + "> " + target.toString();
 }
-public Node getTarget() {
+public Vertex getTarget() {
     return target;
 }
 
-public Node getSource() {
+public Vertex getSource() {
     return source;
 }
 

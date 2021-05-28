@@ -1,6 +1,6 @@
 package me.ducanh.thesis.util;
 
-import me.ducanh.thesis.model.Node;
+import me.ducanh.thesis.model.Vertex;
 
 import java.util.*;
 
@@ -14,16 +14,16 @@ public class BisimChecker {
 
 //TODO: Might need to check if there's a need to clone lists whenever they're used as parameters, due to side effects;
 
-private static Set<Set<Node>> split (Set<Node> sourceBlock, String act, Set<Node> targetBlock){
-        Set<Set<Node>> result = new HashSet<>();
-        Set<Node> newBlock = new HashSet<>();
-        Set<Node> remainderBlock = new HashSet<>(sourceBlock);
+private static Set<Set<Vertex>> split (Set<Vertex> sourceBlock, String act, Set<Vertex> targetBlock){
+        Set<Set<Vertex>> result = new HashSet<>();
+        Set<Vertex> newBlock = new HashSet<>();
+        Set<Vertex> remainderBlock = new HashSet<>(sourceBlock);
 
-        for (Node node: sourceBlock) {
-            for (Node target: node.getTargetNodes(act)){
+        for (Vertex vertex : sourceBlock) {
+            for (Vertex target: vertex.getTargetNodes(act)){
                 if (targetBlock.contains(target)) {
-                    newBlock.add(node);
-                    remainderBlock.remove(node);
+                    newBlock.add(vertex);
+                    remainderBlock.remove(vertex);
                     break;
                 }
             }
@@ -35,17 +35,19 @@ private static Set<Set<Node>> split (Set<Node> sourceBlock, String act, Set<Node
 
 
 
-    public static void bisim(Set<Node> nodes) {
-        Set<Set<Node>> currentPartition = new HashSet<>();
-        Set<Set<Node>> parentPartition = new HashSet<>();
+    public static void bisim(Set<Vertex> vertices) {
 
-        currentPartition.add(nodes);
+        Set<Set<Vertex>> currentPartition = new HashSet<>();
+        Set<Set<Vertex>> parentPartition = new HashSet<>();
+
+        currentPartition.add(vertices);
 
         while (!currentPartition.equals(parentPartition)) {
             parentPartition = currentPartition;
-            currentPartition.clear();
-//TODO iterate through actions and the blocks that contains such actions
-            for (List<Node> block : parentPartition) {
+            currentPartition = new HashSet<>();
+//TODO iterate through actions and the blocks that contains such action
+//TODO Find any splitting action and get new childPartition through that
+            for (Set<Vertex> block : parentPartition) {
                         block
                         .stream()
                         .filter(node -> !split(block,act,block.any.transition(act).getBlock()).contains(block))
