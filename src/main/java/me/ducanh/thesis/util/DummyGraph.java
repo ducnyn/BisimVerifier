@@ -7,8 +7,8 @@ public class DummyGraph {
 
     public Graph defaultGraph(){
         Graph graph = new Graph();
-        graph.addVertices("1","2");
-        graph.addEdges
+        graph.addVertices(1,2);
+        graph.getVertex(1);
         return graph;
     }
 

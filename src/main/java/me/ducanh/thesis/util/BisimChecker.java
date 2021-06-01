@@ -3,57 +3,71 @@ package me.ducanh.thesis.util;
 import me.ducanh.thesis.model.Vertex;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BisimChecker {
-    /**
-     * @param sourceBlock
-     * @param act
-     * @param targetBlock
-     * @return
-     */
-
-//TODO: Might need to check if there's a need to clone lists whenever they're used as parameters, due to side effects;
+static private boolean transitionExists(Vertex vertex, String act, Set<Vertex> targetBlock){
+    return vertex.getTargetNodes(act)
+            .stream()
+            .anyMatch(targetBlock::contains);
+}
 
 private static Set<Set<Vertex>> split (Set<Vertex> sourceBlock, String act, Set<Vertex> targetBlock){
         Set<Set<Vertex>> result = new HashSet<>();
-        Set<Vertex> newBlock = new HashSet<>();
-        Set<Vertex> remainderBlock = new HashSet<>(sourceBlock);
+        Set<Vertex> leftChild = new HashSet<>();
+        Set<Vertex> rightChild = new HashSet<>();
 
         for (Vertex vertex : sourceBlock) {
-            for (Vertex target: vertex.getTargetNodes(act)){
-                if (targetBlock.contains(target)) {
-                    newBlock.add(vertex);
-                    remainderBlock.remove(vertex);
-                    break;
-                }
+            if (transitionExists(vertex,act,targetBlock)) {
+                leftChild.add(vertex);
+            } else {
+                rightChild.add(vertex);
             }
         }
-        result.add(newBlock);
-        result.add(remainderBlock);
+        result.add(leftChild);
+        result.add(rightChild);
         return result;
     }
 
+//private static Set<Set<Vertex>> split (Set<Vertex> sourceBlock, String act, Set<Vertex> targetBlock){
+//    Set<Vertex> block = new HashSet<>(sourceBlock);
+//    Set<Set<Vertex>> result = new HashSet<>();
+//
+//    Map<Boolean,List<Vertex>> splittedBlocks =
+//            block.stream().collect(Collectors.partitioningBy(v -> transitionExists(v,act,targetBlock)));
+//
+//    result.add(new HashSet<>(splittedBlocks.get(true)));
+//    result.add(new HashSet<>(splittedBlocks.get(false)));
+//    return result;
+//}
 
 
     public static void bisim(Set<Vertex> vertices) {
 
         Set<Set<Vertex>> currentPartition = new HashSet<>();
         Set<Set<Vertex>> parentPartition = new HashSet<>();
-
         currentPartition.add(vertices);
 
         while (!currentPartition.equals(parentPartition)) {
             parentPartition = currentPartition;
             currentPartition = new HashSet<>();
-//TODO iterate through actions and the blocks that contains such action
-//TODO Find any splitting action and get new childPartition through that
-            for (Set<Vertex> block : parentPartition) {
-                        block
-                        .stream()
-                        .filter(node -> !split(block,act,block.any.transition(act).getBlock()).contains(block))
-                        .findAny()
-                        .ifPresentOrElse( act -> currentPartition.addAll(split(block,act,firstNode.getTransitionList((act)))),
-                                        () -> currentPartition.add(block) );
+
+            for (Set<Vertex> sourceBlock : parentPartition) {
+                for (Set<Vertex> targetBlock : parentPartition) {
+                    for (Vertex sourceVertex : sourceBlock){
+
+                    }
+
+                        currentPartition.addAll(split(sourceBlock,"a",targetBlock));
+                }
+//                if split then break, else run till end and current = parent.
+
+//                        block
+//                        .stream()
+//                        .filter(node -> !split(block,act,block.any.transition(act).getBlock()).contains(block))
+//                        .findAny()
+//                        .ifPresentOrElse( act -> currentPartition.addAll(split(block,act,firstNode.getTransitionList((act)))),
+//                                        () -> currentPartition.add(block) );
             }//TODO WATCH THAT VIDEO TO SEE HOW YOU CAN MAP THE RESULTS
 
         }

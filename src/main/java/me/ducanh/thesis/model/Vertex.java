@@ -6,10 +6,26 @@ import com.google.common.collect.Multimap;
 
 
 public class Vertex {
-    private String id;
+    private int id;
     private int blockID;
-    Multimap<String, Vertex> transitions;    //A Map of actions to Lists of all targetNodes
+    Multimap<String, Vertex> transitions;
 
+@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Vertex vertex = (Vertex) o;
+    return id == vertex.id;
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(id);
+}
+
+public Vertex(int id){
+    this.id = id;
+}
 
 public void setBlockID(int id){
     this.blockID = id;
@@ -18,15 +34,13 @@ public void setBlockID(int id){
 public int getBlockID(){
     return blockID;
 }
-public Vertex(String id){
-    this.id = id;
-}
+
 
 public Set<String> getActions(){
     return (transitions.keySet());
 }
 
-public String getId() {
+public int getId() {
     return id;
 }
 
@@ -49,11 +63,10 @@ public Multimap<String, Vertex> getTransitions(){return transitions;}
 public Boolean actionExists(String action){
     return transitions.containsKey(action);
 }
+
 @Override
-    public String toString(){
-        return id;
-    }
-
-
+public String toString(){
+    return String.valueOf(id);
+}
 
 }
