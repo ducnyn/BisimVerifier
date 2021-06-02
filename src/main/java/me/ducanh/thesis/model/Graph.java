@@ -7,18 +7,32 @@ import java.util.Set;
 public class Graph {
     Set<Vertex> vertices;
     Set<Edge> edges;
+    int currentVertex;
 
-    public void addVertices(Vertex vertex){
-        if (vertices.stream().noneMatch(v -> v.getId() == vertex.getId())){
-            vertices.add(vertex);
+    public void addVertices(Vertex v){
+        vertices.add(v);
+    }
+
+    public void addVertex(){
+        Vertex vertex = new Vertex(this, currentVertex++);
+        vertices.add(vertex);
+    }
+
+
+    public  <C extends Collection<Vertex>> void addVertices(C vCollection){
+        for(Vertex v : vCollection){
+            this.addVertices(v);
         }
     }
 
-    public  <C extends Collection<Vertex>> void addVertices(C vertexCollection){
-        for(Vertex vertex:vertexCollection){
-            this.addVertices(vertex);
-        }
-    }
+public void addEdge(Vertex source, String label, Vertex target){
+    edges.add(new Edge(this, source,label,target));
+}
+
+
+
+
+/** These are just for convenience and testing, might delete again*/
 
     public void addVertices(int id){
         addVertices(new Vertex(id));
@@ -39,7 +53,5 @@ public class Graph {
           return null;
     }
 
-    public void addEdge(String source, String label, String target){
-        edges.add(new Edge(source,label,target));
-    }
+
 }

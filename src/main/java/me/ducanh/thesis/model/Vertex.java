@@ -8,7 +8,13 @@ import com.google.common.collect.Multimap;
 public class Vertex {
     private int id;
     private int blockID;
+    Graph graph;
     Multimap<String, Vertex> transitions;
+
+public Vertex(Graph graph, int id){
+    this.graph = graph;
+    this.id = id;
+}
 
 @Override
 public boolean equals(Object o) {
@@ -23,9 +29,6 @@ public int hashCode() {
     return Objects.hash(id);
 }
 
-public Vertex(int id){
-    this.id = id;
-}
 
 public void setBlockID(int id){
     this.blockID = id;

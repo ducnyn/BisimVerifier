@@ -2,10 +2,12 @@ package me.ducanh.thesis.model;
 
 public class Edge {
 private String label;
-private int source;
-private int target;
+private Vertex source;
+private Vertex target;
+private Graph graph;
 
-public Edge(int source, String label, int target) {
+public Edge(Graph graph, Vertex source, String label, Vertex target) {
+    this.graph = graph;
     this.label = label;
     this.source = source;
     this.target = target;

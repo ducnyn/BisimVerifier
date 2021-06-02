@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class BisimChecker {
+
 static private boolean transitionExists(Vertex vertex, String act, Set<Vertex> targetBlock){
     return vertex.getTargetNodes(act)
             .stream()
