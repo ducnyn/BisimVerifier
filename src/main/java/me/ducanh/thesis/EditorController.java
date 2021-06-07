@@ -10,13 +10,11 @@ public class EditorController {
 
     @FXML
     private TextArea editorTextArea;
-
-
     private Model data;
+
     public void inject(Model data){
         this.data = data;
-        DummyGraph.setExampleGraph(data);
-        System.out.println(data.currentToDot());
+//        DummyGraph.setExampleGraph(data);
         editorTextArea.setText(data.currentToDot());
 
         editorTextArea.setOnKeyTyped(a->{

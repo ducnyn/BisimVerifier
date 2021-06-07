@@ -35,12 +35,12 @@ public void addEdge(Vertex source, String label, Vertex target){
 /** These are just for convenience and testing, might delete again*/
 
     public void addVertices(int id){
-        addVertices(new Vertex(id));
+        addVertices(new Vertex(this, id));
     }
 
     public void addVertices(int... ids){
         for(int id : ids){
-            addVertices(new Vertex(id));
+            addVertices(new Vertex(this, id));
         }
     }
 

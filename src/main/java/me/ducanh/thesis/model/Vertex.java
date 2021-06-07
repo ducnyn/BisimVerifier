@@ -2,6 +2,7 @@ package me.ducanh.thesis.model;
 
 import java.util.*;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 
@@ -14,6 +15,7 @@ public class Vertex {
 public Vertex(Graph graph, int id){
     this.graph = graph;
     this.id = id;
+    transitions = ArrayListMultimap.create();
 }
 
 @Override
@@ -47,6 +49,8 @@ public int getId() {
     return id;
 }
 
+public Graph getGraph(){return this.graph;}
+
 public void addTransition(String action, Vertex target){
         transitions.put(action,target);
 }
@@ -57,7 +61,7 @@ public void removeTransition(String action, Vertex target){
 }
 
 
-public Set<Vertex> getTargetNodes(String action){
+public Set<Vertex> getTargets(String action){
     return new HashSet<>(transitions.get(action));
 }
 
