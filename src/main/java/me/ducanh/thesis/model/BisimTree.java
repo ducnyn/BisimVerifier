@@ -3,27 +3,27 @@ package me.ducanh.thesis.model;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Block {
+public class BisimTree {
 Set<Vertex> vertices;
 
-Block trueChild;
-Block falseChild;
+BisimTree trueChild;
+BisimTree falseChild;
 boolean predicate;
 String splitter;
 
-public Block(Set<Vertex> vertices) {
+public BisimTree(Set<Vertex> vertices) {
     this.vertices = new HashSet<>(vertices);
 }
 
-public Block getTrueChild() {
+public BisimTree getTrueChild() {
     return trueChild;
 }
 
-public void setTrueChild(Block block) {
-    this.trueChild = block;
+public void setTrueChild(BisimTree bisimTree) {
+    this.trueChild = bisimTree;
 }
 
-public Block getFalseChild() {
+public BisimTree getFalseChild() {
     return falseChild;
 }
 
@@ -35,8 +35,8 @@ public void setVertices(Set<Vertex> vertices) {
     this.vertices = vertices;
 }
 
-public void setFalseChild(Block block) {
-    this.falseChild = block;
+public void setFalseChild(BisimTree bisimTree) {
+    this.falseChild = bisimTree;
 }
 }
 

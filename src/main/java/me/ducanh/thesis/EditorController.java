@@ -12,10 +12,10 @@ public class EditorController {
     private TextArea editorTextArea;
     private Model data;
 
-    public void inject(Model data){
-        this.data = data;
+    public void inject(Model dataModel){
+        this.data = dataModel;
 //        DummyGraph.setExampleGraph(data);
-        editorTextArea.setText(data.currentToDot());
+        editorTextArea.setText(dataModel.currentToDot());
 
         editorTextArea.setOnKeyTyped(a->{
             editorTextArea.appendText(a.getCharacter());

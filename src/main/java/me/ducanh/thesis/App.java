@@ -6,10 +6,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import me.ducanh.thesis.model.Graph;
 import me.ducanh.thesis.model.Model;
+import me.ducanh.thesis.model.Vertex;
+import me.ducanh.thesis.util.BisimChecker;
+import me.ducanh.thesis.util.DummyGraph;
 
 
 import java.io.IOException;
+import java.util.HashSet;
 
 /**
  * JavaFX App
@@ -44,7 +49,7 @@ public class App extends Application {
 
         Model data = new Model();
         editorController.inject(data);
-
+        canvasController.inject(data);
         scene = new Scene(rootVBox, 900, 550);
 //        scene.getStylesheets();
         stage.setScene(scene);
@@ -71,7 +76,9 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+            BisimChecker.bisim(new HashSet<Vertex>(DummyGraph.defaultGraph().getVertices()));
            launch();
+
     }
 
 

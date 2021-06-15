@@ -1,107 +1,195 @@
 package me.ducanh.thesis.util;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.Sets;
+import me.ducanh.thesis.model.BisimTree;
 import me.ducanh.thesis.model.Vertex;
 
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.partitioningBy;
+import static java.util.stream.Collectors.toSet;
 
 public class BisimChecker {
 
+private static final HashMap<Vertex, Set<Vertex>> vertexInBlock = new HashMap<>();
+private static BisimTree rootNode;
+private static BisimTree currentNode;
+
 //static private boolean transitionExists(Vertex vertex, String act, Set<Vertex> targetBlock) {
-//    for (Vertex target : vertex.getTargetNodes(act)) {
-//        if (targetBlock.contains(target)) {
-//            return true;
-//        }
-//    }
-//    return false;
+////    for (Vertex target : vertex.getTargets(act)) {
+////        if (targetBlock.contains(target)) {
+////            return true;
+////        }
+////    }
+////    return false;
+//
+//    return vertex.getTargets(act)
+//            .stream()
+//            .map(currentBlock::get)
+//            .anyMatch(targetBlock::equals);
+//
 //}
 
 //private static Set<Set<Vertex>> split (Set<Vertex> sourceBlock, String act, Set<Vertex> targetBlock){
-//        Set<Set<Vertex>> result = new HashSet<>();
-//        Set<Vertex> leftChild = new HashSet<>();
-//        Set<Vertex> rightChild = new HashSet<>();
+//    Set<Set<Vertex>> result = new HashSet<>();
+//    Set<Vertex> leftChild = new HashSet<>();
+//    Set<Vertex> rightChild = new HashSet<>();
 //
 //        for (Vertex vertex : sourceBlock) {
 //            if (transitionExists(vertex,act,targetBlock)) {
 //                leftChild.add(vertex);
+//                vertex.setBlock(leftChild);
 //            } else {
 //                rightChild.add(vertex);
+//                vertex.setBlock(rightChild);
 //            }
 //        }
+//
+//
+//
+//    if (rightChild.isEmpty()||leftChild.isEmpty()){
+//        result.add(sourceBlock);
+//    } else {
 //        result.add(leftChild);
 //        result.add(rightChild);
-//        return result;
-//
 //    }
+//
+//
+//    return result;
+//
+//}
 
-private static Stream<Set<Vertex>> split(Set<Vertex> sourceBlock, String act, Set<Vertex> targetBlock) {
-    Set<Set<Vertex>> result = new HashSet<>();
+//Checks if vertices have a transition to a given set of vertices and splits them into two sets accordingly.
+private static Map<Boolean, Set<Vertex>> split(Set<Vertex> vertices, String act, Set<Vertex> targets) {
 
-    return sourceBlock  .stream() //could use parallelstream? There no side effects, so no race condition
-                        .collect(Collectors.partitioningBy(
-                        vertex -> vertex.getTargets(act)
-                                        .stream()
-                                        .anyMatch(targetBlock::contains)))
-                        .values()
-                        .stream()
-                        .map(HashSet::new);
+    return vertices.stream()
+            .collect(partitioningBy(
+                    vertex -> vertex.getTargets(act).stream()
+                            .anyMatch(targets::contains)
+                    , toSet()));
 }
+//private static Set<Set<Vertex>> split(Set<Vertex> sourceBlock, String act, Set<Vertex> targetBlock) {
+//    Set<Set<Vertex>> partition =
+//            sourceBlock.stream()
+//            .collect(Collectors.partitioningBy(
+//                    vertex -> vertex.getTargets(act)
+//                            .stream()
+//                            .anyMatch(targetBlock::contains)))
+//            .values()
+//            .stream()
+//            .filter(not(Collection::isEmpty))
+//            .map(HashSet::new)
+//            .collect(Collectors.toSet());
+//
+//    for (Set<Vertex> block : partition) {
+//        for (Vertex vertex : block) getBlock.put(vertex,block);
+//    }
+//
+//    return partition;
+//}
 
 
-//public static void bisim(Set<Vertex> vertices) {
+public static void bisim(Set<Vertex> vertices) {
+    System.out.println("BisimChecker.bisim(vertices):");
+    System.out.println("vertices = " + vertices);
+
+
+    Set<Set<Vertex>> newPartition = new HashSet<>();
+    Set<Set<Vertex>> parentPartition = new HashSet<>();
+    newPartition.add(vertices);
+    rootNode = new BisimTree(vertices);
+    currentNode = rootNode;
+
+    while (!newPartition.equals(parentPartition)) {
+
+        parentPartition = newPartition;
+        newPartition = new HashSet<>();
+
+        for (Set<Vertex> block : parentPartition) {
+            for (Vertex vertex : block) { vertexInBlock.put(vertex, block); } }
+
+
+        for (Set<Vertex> block : parentPartition) {
+
+            Set<Multimap<String, Set<Vertex>>> bisimTransitions = MapToBisimTransitions(block);
+            Set<Map.Entry<String, Set<Vertex>>> someComplement = findAnyComplement(bisimTransitions);
+//            Multimap<String, Set<Vertex>> someComplement = findAnyComplement(bisimTransitions);
+
+            Map.Entry<String, Set<Vertex>> splittingEdge =
+                    someComplement
+                            .stream()
+                            .findAny()
+                            .orElse(null);
+
+                    if(splittingEdge != null){
+                        newPartition.addAll(split(block,splittingEdge.getKey(), splittingEdge.getValue()).values());
+                        System.out.println("split by: " + splittingEdge);
+
+                    } else {
+                        newPartition.add(block);
+                        System.out.println("not split");
+
+                    }
+        }
+        System.out.println("new partition: " + newPartition);
+
+    }
+}
+//map each vertex to its transitions to current Blocks
+private static Set<Multimap<String,Set<Vertex>>> MapToBisimTransitions(Set<Vertex> block){
+    return block.stream()
+            .map(vertex -> vertex.getTransitions()
+                    .entries()
+                    .stream()
+                    .collect(Multimaps.toMultimap(Map.Entry::getKey,
+                            entryKey -> vertexInBlock.get(entryKey.getValue()),
+                            HashMultimap::create)))
+            .collect(toSet());
+}
+/*Pairwise comparison of sets of BlockTransitions. If any pair is not identical, return the list of transitions that distinguishes them.
+ * This code is less optimized because it iterates over the same comparisons again, compared to the one beneath
+ */
+//private static Multimap<String, Set<Vertex>> findAnyComplement(Set<Multimap<String, Set<Vertex>>> blockTransitionSets) {
 //
-//    Set<Set<Vertex>> currentPartition = new HashSet<>();
-//    Set<Set<Vertex>> parentPartition = new HashSet<>();
-//    currentPartition.add(vertices);
+//    for (Multimap<String, Set<Vertex>> v : blockTransitionSets) {
+//        for (Multimap<String, Set<Vertex>> v2 : blockTransitionSets) {
 //
-//    while (!currentPartition.equals(parentPartition)) {
-//        parentPartition = currentPartition;
-//        currentPartition = new HashSet<>();
+//            Multimap<String, Set<Vertex>> difference =
+//                    Multimaps.filterEntries(v, entry -> !v2.containsEntry(entry.getKey(), entry.getValue()));
 //
-//        for (Set<Vertex> srcBlock : parentPartition) {
-//
-//            srcBlock
-//                    .stream()
-//                    .flatMap(vertex -> vertex.getTransitions().entries().stream())
-//                    .distinct()
-//                    .filter(trans -> !split(srcBlock,trans.getKey(),trans.getValue()).contains(srcBlock))
-//                    .findAny()
-//                    .ifPresentOrElse(
-//                            trans -> currentPartition.addAll(split(srcBlock,trans.act(),trans.target())),
-//                            () -> currentPartition.add(srcBlock));
-//
-//
-//                    //TODO after a block has gone through split, add the new sub-blocks to the bisim tree.
-//
+//            if (!difference.isEmpty()) {
+//                return difference;
+//            }
 //        }
+//    }
+//    return HashMultimap.create();
+//}
 
-//}
+
+/**Pairwise comparison of sets of BlockTransitions. If any pair is not identical, return the list of transitions that distinguishes them */
+private static Set<Map.Entry<String, Set<Vertex>>> findAnyComplement(Set<Multimap<String, Set<Vertex>>> blockTransitionSets) {
+
+    List<Multimap<String,Set<Vertex>>> list = new ArrayList<>(blockTransitionSets);
+
+    for (int i = 0; i<list.size(); i++){
+        for(int j = i+1 ; j<list.size(); j++){
+
+            Set<Map.Entry<String, Set<Vertex>>> difference =
+                    new HashSet<>(Sets.symmetricDifference(new HashSet<>(list.get(i).entries()), (new HashSet<>(list.get(j).entries()))));
+
+            if (!difference.isEmpty()){
+
+                return difference;
+            }
+
+        }
+    } return new HashSet<>();
 }
-//
-//
-////    //Per definition Bisimulation = a~b, if for a -x> a2, there is a b-x>b2 and a2~b2
-////    public Boolean altBisim(NodeInt a, NodeInt b) {
-////        if(!a.getActs().equals(b.getActs())){
-////            return false;
-////        }
-////
-////        for (String act:a.getActs()) {
-////            //this will probably iterate infinitely when it enters a loop in the graph
-////
-////            for(NodeInt nodeA : a.getTargets(act)){ //or edgeA: model.getEdges(a,act) .. altBisim(edgeA.getTarget(),edgeB.getTarget())
-////                for(NodeInt nodeB : b.getTargets(act)){
-////                    if (!altBisim(nodeA,nodeB)){
-////                        return false;
-////                    }
-////                }
-////            }
-////
-////        }
-////        return true;
-////
-////    }
-//}
+
+
+}
 
 

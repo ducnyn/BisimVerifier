@@ -16,6 +16,7 @@ public class Model {
         edges.add(edge);
     }
 
+
     public ObservableSet<Vertex> getVertices(){
         return vertices;
     }
@@ -48,6 +49,7 @@ public class Model {
                     .append("]");
         }
         return graphString.append("\n}").toString();
+
     }
 }
 

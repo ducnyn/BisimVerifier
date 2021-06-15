@@ -7,8 +7,7 @@ import com.google.common.collect.Multimap;
 
 
 public class Vertex {
-    private int id;
-    private int blockID;
+    private final int id;
     Graph graph;
     Multimap<String, Vertex> transitions;
 
@@ -31,16 +30,6 @@ public int hashCode() {
     return Objects.hash(id);
 }
 
-
-public void setBlockID(int id){
-    this.blockID = id;
-}
-
-public int getBlockID(){
-    return blockID;
-}
-
-
 public Set<String> getActions(){
     return (transitions.keySet());
 }
@@ -57,9 +46,7 @@ public void addTransition(String action, Vertex target){
 
 public void removeTransition(String action, Vertex target){
         transitions.remove(action,target);
-
 }
-
 
 public Set<Vertex> getTargets(String action){
     return new HashSet<>(transitions.get(action));
