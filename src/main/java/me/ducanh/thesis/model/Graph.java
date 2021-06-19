@@ -1,41 +1,24 @@
 package me.ducanh.thesis.model;
 
+import com.google.common.collect.Multimap;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Graph {
-ArrayList<Vertex> vertices;
-Set<Edge> edges;
-private int vertexCount;
+private ObservableList<Vertex> vertices = FXCollections.observableArrayList();
+private ObservableList<Edge> edges = FXCollections.observableArrayList();
+private int vertexCount = 0;
+private Map<String,Integer> labelToID = new HashMap<>();
+private Map<Integer,String> idToLabel = new HashMap<>();
 
-public Graph(){
-    vertexCount = 0;
-    this.vertices = new ArrayList<>();
-    this.edges = new HashSet<>();
-}
 
-public int getVertexCount(){
-    return vertexCount;
-}
-public List<Vertex> getVertices() {
+
+public ObservableList<Vertex> getVertices() {
     return vertices;
 }
-
-public Set<Edge> getEdges() {
-    return edges;
-}
-
-
-
-public void addEdge(int source, String label, int target) { //this assumes all vertices actually exist already.
-
-    if(source < vertexCount && target < vertexCount){
-        edges.add(new Edge(this, vertices.get(source), label, vertices.get(target)));
-        vertices.get(source).addTransition(label,vertices.get(target));
-    }
-
-}
-
-
 
 public void addVertex() {
     Vertex vertex = new Vertex(this, vertexCount++);
@@ -49,20 +32,23 @@ public void addVertices(int id) {
     }
 }
 
-public void addVertices(Vertex v) {
-    vertices.add(v);
-}
+//if the vertices are missing, they're added before the edge.
+public void addEdge(int source, String label, int target)  {
 
-public <C extends Collection<Vertex>> void addVertices(C vCollection) {
-    for (Vertex v : vCollection) {
-        this.addVertices(v);
+        while (vertexCount<= source || vertexCount<=target) {
+            addVertex();
+        }
+        vertices.get(source).addTransition(label,vertices.get(target));
+        edges.add(new Edge(this,vertices.get(source),label,vertices.get(target)));
     }
+
+
+
+public List<Edge> getEdges() {
+//    return  vertices.stream()
+//            .collect(Collectors.toMap(Vertex::getId,Vertex::getTransitions));
+    return this.edges;
 }
-//public void addVertices(int... ids) {
-//    for (int id : ids) {
-//        addVertices(new Vertex(this, id));
-//    }
-//}
 
 public Vertex getVertex(int id) {
     for (Vertex vertex : vertices) {
@@ -72,6 +58,5 @@ public Vertex getVertex(int id) {
     }
     return null;
 }
-
 
 }

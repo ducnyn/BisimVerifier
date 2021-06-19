@@ -92,10 +92,7 @@ private static Map<Boolean, Set<Vertex>> split(Set<Vertex> vertices, String act,
 //}
 
 
-public static void bisim(Set<Vertex> vertices) {
-    System.out.println("BisimChecker.bisim(vertices):");
-    System.out.println("vertices = " + vertices);
-
+public static String bisim(Set<Vertex> vertices) {
 
     Set<Set<Vertex>> newPartition = new HashSet<>();
     Set<Set<Vertex>> parentPartition = new HashSet<>();
@@ -137,6 +134,7 @@ public static void bisim(Set<Vertex> vertices) {
         System.out.println("new partition: " + newPartition);
 
     }
+    return newPartition.toString();
 }
 //map each vertex to its transitions to current Blocks
 private static Set<Multimap<String,Set<Vertex>>> MapToBisimTransitions(Set<Vertex> block){

@@ -4,12 +4,15 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="Content" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.ducanh.thesis.CanvasController">
+<AnchorPane id="Content"
+            xmlns="http://javafx.com/javafx/15.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="me.ducanh.thesis.CanvasController">
 <cursor>
     <Cursor fx:constant="DEFAULT" />
 </cursor>
    <children>
-      <Canvas fx:id="canvas" height="200.0" width="200.0" />
+
    </children>
 
 </AnchorPane>

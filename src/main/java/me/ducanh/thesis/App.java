@@ -4,17 +4,14 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import me.ducanh.thesis.model.Graph;
 import me.ducanh.thesis.model.Model;
-import me.ducanh.thesis.model.Vertex;
-import me.ducanh.thesis.util.BisimChecker;
-import me.ducanh.thesis.util.DummyGraph;
 
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * JavaFX App
@@ -25,42 +22,44 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-
-//        scene = new Scene(loadFXML("Skeletton"), 900, 550);
-//        scene.getStylesheets().add(App.class.getResource("stylesheet.css").toExternalForm());
+        final String cssPath = Objects.requireNonNull(getClass().getResource("stylesheet.css"),"missing main stylesheet").toExternalForm();
+        final Model model = new Model();
 
         VBox rootVBox = new VBox();
+        HBox mainHBox = new HBox();
+        SplitPane splitPane = new SplitPane();
 
         FXMLLoader menuLoader = createLoader(View.MENU);
-        rootVBox.getChildren().add(menuLoader.load());
-        MenuController menuController = menuLoader.getController();
-
-        SplitPane splitPane = new SplitPane();
-        splitPane.setDividerPositions(0.35);
-        rootVBox.getChildren().add(splitPane);
-
+        FXMLLoader sidebarLoader = createLoader(View.SIDEBAR);
         FXMLLoader editorLoader = createLoader(View.EDITOR);
-        splitPane.getItems().add(editorLoader.load());
-        EditorController editorController = editorLoader.getController();
-
         FXMLLoader canvasLoader = createLoader(View.CANVAS);
+
+        rootVBox.getChildren().add(menuLoader.load());
+        rootVBox.getChildren().add(mainHBox);
+        mainHBox.getChildren().add(sidebarLoader.load());
+        mainHBox.getChildren().add(splitPane);
+        splitPane.getItems().add(editorLoader.load());
         splitPane.getItems().add(canvasLoader.load());
+
+        MenuController menuController = menuLoader.getController();
+        SidebarController sideBarController = sidebarLoader.getController();
+        EditorController editorController = editorLoader.getController();
         CanvasController canvasController = canvasLoader.getController();
 
-        Model data = new Model();
-        editorController.inject(data);
-        canvasController.inject(data);
+        splitPane.setDividerPositions(0.35);
+
+        editorController.inject(model);
+        canvasController.inject(model);
+        sideBarController.inject(model);
+
         scene = new Scene(rootVBox, 900, 550);
-//        scene.getStylesheets();
+        scene.getStylesheets().add(cssPath);
         stage.setScene(scene);
-        stage.setTitle("BisimVerifier");
+        stage.setTitle("Bisimulation Check");
         stage.show();
 
-
-
     }
-    //TODO Don't just throw generic exception like this.
-    static void setRoot(View view) throws Exception {
+    static void setRoot(View view) {
         try{
             FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(view.getFileName()));
             scene.setRoot(fxmlLoader.load());
@@ -76,8 +75,9 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-            BisimChecker.bisim(new HashSet<Vertex>(DummyGraph.defaultGraph().getVertices()));
-           launch();
+
+
+        launch();
 
     }
 
