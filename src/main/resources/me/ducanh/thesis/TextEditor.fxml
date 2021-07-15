@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx"
+            fx:controller="me.ducanh.thesis.TextEditor"
+            prefHeight="5000" prefWidth="400"
+            minWidth="400"
+>
+    <TextArea fx:id="editorTextArea"
+              AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+
+        <font>
+            <Font name="input mono" size="14.0"/>
+        </font>
+        <ContextMenu fx:id="editorCM">
+            <items>
+                <MenuItem text="Add"/>
+                <MenuItem text="Remove"/>
+                <MenuItem text="Enhance"/>
+            </items>
+        </ContextMenu>
+    </TextArea>
+</AnchorPane>

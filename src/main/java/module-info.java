@@ -3,6 +3,7 @@ module me.ducanh.thesis {
     requires javafx.fxml;
     requires javafx.graphics;
     requires com.google.common;
+    requires java.desktop;
 
     opens me.ducanh.thesis to javafx.fxml;
     exports me.ducanh.thesis;

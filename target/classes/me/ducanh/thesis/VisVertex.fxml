@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           xmlns="http://javafx.com/javafx"
+           fx:controller="me.ducanh.thesis.VisVertex"
+           fx:id="rootPane"
+           styleClass="vertex">
+    <Circle fx:id="vertexCircle" styleClass="vertexCircle" radius="40" stroke="darkgray" fill="lightblue">
+
+    </Circle>
+
+    <Text fx:id="vertexLabel" styleClass="vertexLabel">
+
+    </Text>
+
+</StackPane>

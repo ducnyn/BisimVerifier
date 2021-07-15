@@ -4,14 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class BisimTree {
-Set<Vertex> vertices;
+Set<Integer> vertices;
 
 BisimTree trueChild;
 BisimTree falseChild;
 boolean predicate;
 String splitter;
 
-public BisimTree(Set<Vertex> vertices) {
+public BisimTree(Set<Integer> vertices) {
     this.vertices = new HashSet<>(vertices);
 }
 
@@ -27,16 +27,16 @@ public BisimTree getFalseChild() {
     return falseChild;
 }
 
-public Set<Vertex> getVertices() {
+public void setFalseChild(BisimTree bisimTree) {
+    this.falseChild = bisimTree;
+}
+
+public Set<Integer> getVertices() {
     return vertices;
 }
 
-public void setVertices(Set<Vertex> vertices) {
+public void setVertices(Set<Integer> vertices) {
     this.vertices = vertices;
-}
-
-public void setFalseChild(BisimTree bisimTree) {
-    this.falseChild = bisimTree;
 }
 }
 

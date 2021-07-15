@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="scrollPane"
+            xmlns="http://javafx.com/javafx/15.0.1"
+            fx:controller="me.ducanh.thesis.VisEditor"
+            pannable="true"
+            fitToHeight="true"
+            fitToWidth="true">
+    <VBox   fx:id = "centerBox"
+            id="visualBackground"
+            alignment="CENTER">
+        <Group fx:id = "group">
+            <AnchorPane id="anchorPane"
+                        fx:id="anchorPane"
+                        style="-fx-background-color: white;">
+            </AnchorPane>
+        </Group>
+    </VBox>
+</ScrollPane>

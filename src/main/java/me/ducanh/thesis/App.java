@@ -5,10 +5,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import me.ducanh.thesis.model.Model;
-
 
 import java.io.IOException;
 import java.util.Objects;
@@ -18,70 +18,84 @@ import java.util.Objects;
  */
 public class App extends Application {
 
-    private static Scene scene;
+  private static Scene scene;
+  private double relDivPos;
+  final private double absDivPos = 400;
 
-    @Override
-    public void start(Stage stage) throws IOException {
-        final String cssPath = Objects.requireNonNull(getClass().getResource("stylesheet.css"),"missing main stylesheet").toExternalForm();
-        final Model model = new Model();
+  public static void main(String[] args) {
 
-        VBox rootVBox = new VBox();
-        HBox mainHBox = new HBox();
-        SplitPane splitPane = new SplitPane();
+    launch();
+  }
 
-        FXMLLoader menuLoader = createLoader(View.MENU);
-        FXMLLoader sidebarLoader = createLoader(View.SIDEBAR);
-        FXMLLoader editorLoader = createLoader(View.EDITOR);
-        FXMLLoader canvasLoader = createLoader(View.CANVAS);
-
-        rootVBox.getChildren().add(menuLoader.load());
-        rootVBox.getChildren().add(mainHBox);
-        mainHBox.getChildren().add(sidebarLoader.load());
-        mainHBox.getChildren().add(splitPane);
-        splitPane.getItems().add(editorLoader.load());
-        splitPane.getItems().add(canvasLoader.load());
-
-        MenuController menuController = menuLoader.getController();
-        SidebarController sideBarController = sidebarLoader.getController();
-        EditorController editorController = editorLoader.getController();
-        CanvasController canvasController = canvasLoader.getController();
-
-        splitPane.setDividerPositions(0.35);
-
-        editorController.inject(model);
-        canvasController.inject(model);
-        sideBarController.inject(model);
-
-        scene = new Scene(rootVBox, 900, 550);
-        scene.getStylesheets().add(cssPath);
-        stage.setScene(scene);
-        stage.setTitle("Bisimulation Check");
-        stage.show();
-
+  static void setRoot(FXMLPATH FXMLPATH) {
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(FXMLPATH.getFileName()));
+      scene.setRoot(fxmlLoader.load());
+    } catch (Exception e) {
+      System.out.println("FXMLPATH file " + FXMLPATH.getFileName() + " doesn't exist.");
     }
-    static void setRoot(View view) {
-        try{
-            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(view.getFileName()));
-            scene.setRoot(fxmlLoader.load());
-        }catch (Exception e) {
-            System.out.println("FXML file " + view.getFileName() + " doesn't exist.");
-        }
+  }
+
+  @Override
+  public void start(Stage stage) throws IOException {
+    final String cssPath =
+            Objects.requireNonNull(getClass().getResource("stylesheet.css"), "missing main stylesheet")
+                    .toExternalForm();
+    final Model model = new Model();
+
+    VBox rootVBox = new VBox();
+    HBox mainHBox = new HBox();
+    SplitPane splitPane = new SplitPane();
+
+    FXMLLoader menuLoader = new FXMLLoader(getClass().getResource(FXMLPATH.ALTMENU.getFileName()));
+    FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource(FXMLPATH.SIDEBAR.getFileName()));
+    FXMLLoader textEditorLoader = new FXMLLoader(getClass().getResource(FXMLPATH.TEXTEDITOR.getFileName()));
+    FXMLLoader visEditorLoader = new FXMLLoader(getClass().getResource(FXMLPATH.VISEDITOR.getFileName()));
+
+    Region visEditorView = visEditorLoader.load();
 
 
-    }
+//    visEditorView.setPrefHeight(splitPane.getHeight());
 
-    private FXMLLoader createLoader(View view)  {
-        return new FXMLLoader(getClass().getResource(view.getFileName()));
-    }
+    rootVBox.getChildren().addAll(menuLoader.load(), mainHBox);
+    mainHBox.getChildren().addAll(sidebarLoader.load(), splitPane);
+    splitPane.getItems().add(textEditorLoader.load());
+    splitPane.getItems().add(visEditorView);
 
-    public static void main(String[] args) {
+    splitPane.prefWidthProperty().bind(mainHBox.widthProperty());
+    visEditorView.prefHeightProperty().bind(splitPane.heightProperty());
+    visEditorView.prefWidthProperty().bind(splitPane.widthProperty());
+
+    AltMenu altMenu = menuLoader.getController();
+    SideBar sideBar = sidebarLoader.getController();
+    TextEditor textEditor = textEditorLoader.getController();
+    VisEditor visEditor = visEditorLoader.getController();
+
+    scene = new Scene(rootVBox, 1600, 900);
+    scene.getStylesheets().add(cssPath);
+    stage.setScene(scene);
+    stage.setTitle("Graph Theory Tools");
+    stage.setMinWidth(440);
+    stage.show();
+    textEditor.intialize(model);
+    visEditor.initialize(model);
+    sideBar.initialize(model);
+
+    // These are to maintain split ratio while resizing windows
+
+    relDivPos = absDivPos / splitPane.getWidth();
+    splitPane.setDividerPositions(relDivPos);
+    splitPane.getDividers().get(0).positionProperty().addListener((obs, oldV, newV) -> {
+      relDivPos = newV.doubleValue() * splitPane.getWidth();
+    });
+
+    splitPane.widthProperty().addListener((observableV, oldV, newV) -> {
+      double width = newV.doubleValue();
+      System.out.println(splitPane.getWidth());
+      splitPane.setDividerPosition(0, relDivPos / width); // splitPane.getWidth worked
+      splitPane.getItems().get(1).prefWidth(((Double) newV-splitPane.getDividers().get(0).getPosition()));
+    });
 
 
-        launch();
-
-    }
-
-
-
-
+  }
 }

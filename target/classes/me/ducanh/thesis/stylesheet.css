@@ -4,21 +4,37 @@
 }
 * {
     /*-fx-focus-color: transparent;*/
-    -fx-border-style: none;
-    -fx-background-radius: 0.0px;
-    -fx-border-radius: 0.0px;
-
-
+    /*-fx-border-style: none;*/
+    /*-fx-background-radius: 0.0px;*/
+    /*-fx-border-radius: 0.0px;*/
 }
 .text-area {
     -fx-text-fill:black;
 }
 .text-area .content {
-    /*-fx-background-color:  #2E3440;*/
+    /*-fx-background-color:  #1C1E26;*/
 }
 
-#sidebar .button {
+
+
+
+
+/*********************************************************** CLASSES *********************************************************************/
+#visualBackground{
+    -fx-background-color: dimgray;
+}
+#sidebar{
+    /*-fx-background-color: #1C1E26;*/
+}
+.sideBarButton {
     -fx-pref-height: 40px;
     -fx-pref-width: 40px;
+}
 
+.vertexLabel {
+    -fx-font-size: 20;
+}
+
+.vertexCircle {
+    -fx-fill: lightgray;
 }

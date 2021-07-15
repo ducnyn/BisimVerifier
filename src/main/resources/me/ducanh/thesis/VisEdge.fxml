@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx"
+            fx:controller="me.ducanh.thesis.VisEdge"
+            fx:id="pane">
+    <Line fx:id="line">
+    </Line>
+</AnchorPane>
+
+

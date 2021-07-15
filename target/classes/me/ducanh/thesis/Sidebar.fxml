@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.AnchorPane?>
-
-
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:id = "sidebar"
-            fx:controller="me.ducanh.thesis.SidebarController"
-            >
-            <VBox xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
-            <children>
-               <Button fx:id="addButton" mnemonicParsing="false" onAction="#addNode" text="V" />
-               <Button fx:id="delButton" mnemonicParsing="false" onAction="#addEdge" text="E" />
-               <Button fx:id="initButton" mnemonicParsing="false"  onAction="#init" text="T" />
-               <Button fx:id="partitionButton" mnemonicParsing="false"  onAction="#part" text="part" />
-
-            </children>
-            </VBox>
+<?import javafx.scene.layout.VBox?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx"
+            fx:id="sidebar"
+            fx:controller="me.ducanh.thesis.SideBar"
+            minWidth="40"
+>
+    <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/15.0.1">
+        <Button styleClass="sideBarButton" fx:id="aButton" mnemonicParsing="false" onAction="#A" text="V"/>
+        <Button styleClass="sideBarButton" fx:id="bButton" mnemonicParsing="false" onAction="#B" text="E"/>
+        <Button styleClass="sideBarButton" fx:id="cButton" mnemonicParsing="false" onAction="#C" text="T"/>
+        <Button styleClass="sideBarButton" fx:id="dButton" mnemonicParsing="false" onAction="#D" text="part"/>
+    </VBox>
 </AnchorPane>
