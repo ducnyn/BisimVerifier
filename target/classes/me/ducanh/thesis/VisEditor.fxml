@@ -12,14 +12,14 @@
             pannable="true"
             fitToHeight="true"
             fitToWidth="true">
-    <VBox   fx:id = "centerBox"
+    <StackPane   fx:id = "centerBox"
             id="visualBackground"
-            alignment="CENTER">
+            >
         <Group fx:id = "group">
             <AnchorPane id="anchorPane"
                         fx:id="anchorPane"
                         style="-fx-background-color: white;">
             </AnchorPane>
         </Group>
-    </VBox>
+    </StackPane>
 </ScrollPane>

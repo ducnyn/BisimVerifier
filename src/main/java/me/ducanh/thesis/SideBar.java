@@ -2,8 +2,9 @@ package me.ducanh.thesis;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextInputDialog;
+import me.ducanh.thesis.model.Block;
 import me.ducanh.thesis.model.Model;
-import me.ducanh.thesis.util.Algorithms;
+import me.ducanh.thesis.model.Algorithms;
 import me.ducanh.thesis.util.StringCheck;
 
 import java.util.*;
@@ -93,29 +94,20 @@ private void B() throws Exception {
 
 @FXML
 private void C() throws InterruptedException {
-
-
     model.removeAllEdges();
     ArrayList<Integer> vertices = new ArrayList<>(model.getVertices());
     for (Integer vertex: vertices) {
-        char randomChar;
         String alphabet = "abc";
 
         Random random = new Random();
-//        int edgesOutDegree = random.nextInt()%2+4;
         int edgesOutDegree = random.nextInt(4);
 
         for (int j = 0; j < edgesOutDegree; j++) {
-
-
-            randomChar = alphabet.charAt(random.nextInt(alphabet.length()));
-
-            model.addEdge(vertex, Character.toString(randomChar), vertices.get(random.nextInt(vertices.size()-1)));
-//            vertices.size()%3
+            String randomLabel = String.valueOf(alphabet.charAt(random.nextInt(alphabet.length())));
+            int randomVertex = vertices.get(random.nextInt(vertices.size()-1));
+            model.addEdge(vertex, randomLabel, randomVertex);
         }
-
     }
-    D();
 }
 
 @FXML
@@ -125,7 +117,7 @@ private void D() throws InterruptedException {
     Thread taskThread = new Thread(new Runnable() {
         @Override
         public void run() {
-            Set<Set<Integer>> partition = Algorithms.groupByBisimilarity(model);
+            Set<Block> partition = Algorithms.groupByBisimilarity(model);
             model.setAlertString("\n Grouped by bisimilar vertices: \n" + partition.toString());
             model.updatePartition(partition);
             System.out.println("Vertices: " + model.getVertices());

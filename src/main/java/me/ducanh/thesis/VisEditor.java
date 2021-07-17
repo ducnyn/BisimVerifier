@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.util.Pair;
+import me.ducanh.thesis.model.Block;
 import me.ducanh.thesis.model.Edge;
 import me.ducanh.thesis.model.Model;
 import me.ducanh.thesis.util.Colors;
@@ -33,7 +34,7 @@ public class VisEditor {
   @FXML
   AnchorPane anchorPane;
   @FXML
-  VBox centerBox;
+  StackPane centerBox;
   @FXML
   Group group;
 
@@ -128,9 +129,9 @@ public class VisEditor {
       }
     });
 
-    model.getPartition().addListener((SetChangeListener<Set<Integer>>) change -> {
+    model.getPartition().addListener((SetChangeListener<Block>) change -> {
       if (change.wasAdded()) {
-        if (change.getElementAdded().size() > 1) {
+        if (change.getElementAdded().getVertices().size() > 1) {
           Paint color = Colors.array[colorID++ % 120];
 
           for (Integer vertex : change.getElementAdded()) {
@@ -140,22 +141,11 @@ public class VisEditor {
           drawnVertices.get(change.getElementAdded().iterator().next()).setFill(Color.LIGHTGRAY);
         }
       } else {
-        if (change.getElementRemoved().size() > 1) {
+        if (change.getElementRemoved().getVertices().size() > 1) {
           colorID--;
         }
       }
     });
-
-//    scrollPane.setOnScroll((ScrollEvent event) -> {
-//      // Adjust the zoom factor as per your requirement
-//      double deltaY = event.getDeltaY();
-//      double zoom = (deltaY > 0) ? 1.05 : 0.95;
-//
-//      anchorPane.setScaleX(anchorPane.getScaleX()*zoom);
-//      anchorPane.setScaleY(anchorPane.getScaleY()*zoom);
-//
-//      System.out.println(anchorPane.getTransforms());
-//    });
 
 
     centerBox.setOnScroll(scroll->{
@@ -179,7 +169,7 @@ public class VisEditor {
         scrollPane.setHvalue((offsetX + delta.getX()) / (group.getBoundsInLocal().getWidth() - scrollPane.getViewportBounds().getWidth()));
         scrollPane.setVvalue((offsetY + delta.getY()) / (group.getBoundsInLocal().getHeight() - scrollPane.getViewportBounds().getHeight()));
         //inspired by https://stackoverflow.com/questions/39827911/javafx-8-scaling-zooming-scrollpane-relative-to-mouse-position
-      
+
     });
   }
 

@@ -16,7 +16,7 @@ public class Model {
   private final ObservableMap<Integer, ObservableSet<Edge>> obsGraph = FXCollections.observableMap(new TreeMap<>());
   private final ObservableSet<Edge> obsEdgeSet = FXCollections.observableSet(new TreeSet<>());
 
-  private final ObservableSet<Set<Integer>> partition = FXCollections.observableSet(new HashSet<>());
+  private final ObservableSet<Block> partition = FXCollections.observableSet(new HashSet<>());
   private final ObservableSet<Integer> selectedVertices = FXCollections.observableSet();
   private final TreeSet<Integer> deletedIDs = new TreeSet<>();
   private final StringProperty dotString = new SimpleStringProperty("digraph {\n\n}");
@@ -101,6 +101,7 @@ public class Model {
 //      this.addedByVis = addedByVis;
 //
 //  }
+
   public boolean addVertex(int id) {
     if (obsGraph.containsKey(id))
       return false;
@@ -179,11 +180,11 @@ public class Model {
     newAlert.set(false);
   }
 
-  public ObservableSet<Set<Integer>> getPartition() {
+  public ObservableSet<Block> getPartition() {
     return partition;
   }
 
-  public void updatePartition(Set<Set<Integer>> newPartition) {
+  public void updatePartition(Set<Block> newPartition) {
 
     this.partition.clear();
     this.partition.addAll(newPartition);
