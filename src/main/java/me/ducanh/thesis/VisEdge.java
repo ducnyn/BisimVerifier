@@ -1,6 +1,8 @@
 package me.ducanh.thesis;
 
+import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
 import me.ducanh.thesis.model.Edge;
@@ -9,30 +11,38 @@ public class VisEdge {
   @FXML
   public Line line = new Line();
   @FXML
-  public AnchorPane pane = new AnchorPane();
-  int sourceID;
-  int targetID;
-  String label;
-
-  public void init(){
+  private AnchorPane anchorPane = new AnchorPane();
+  private Edge edge;
+  public void init(Edge edge){
+    this.edge = edge;
+    anchorPane.setPickOnBounds(false);
 
   }
-  public VisEdge(Edge edge){
-    this.sourceID = edge.getSource();
-    this.label = edge.getLabel();
-    this.targetID = edge.getTarget();
+
+  public Node getRoot(){
+    return anchorPane;
   }
-  public VisEdge(){
-    super();
+  public DoubleProperty startXProperty(){
+    return line.startXProperty();
+  }
+
+  public DoubleProperty startYProperty(){
+    return line.startYProperty();
+  }
+
+  public DoubleProperty endXProperty(){
+    return line.endXProperty();
+  }
+
+  public DoubleProperty endYProperty(){
+    return line.endYProperty();
   }
   @Override
   public String toString(){
-    StringBuilder stringbuilder = new StringBuilder();
-    stringbuilder.append(sourceID);
-    stringbuilder.append("-");
-    stringbuilder.append(label);
-    stringbuilder.append(">");
-    stringbuilder.append(targetID);
-    return stringbuilder.toString();
+    return edge.toString();
+  }
+
+  public void toBack() {
+    anchorPane.toBack();
   }
 }

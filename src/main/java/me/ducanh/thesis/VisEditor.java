@@ -6,16 +6,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
-import javafx.util.Pair;
 import me.ducanh.thesis.model.Block;
 import me.ducanh.thesis.model.Edge;
 import me.ducanh.thesis.model.Model;
@@ -23,8 +21,6 @@ import me.ducanh.thesis.util.Colors;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.Stack;
 
 public class VisEditor {
   private final HashMap<Integer, VisVertex> drawnVertices = new HashMap<>();
@@ -42,8 +38,7 @@ public class VisEditor {
   private int colorID = 0;
   double spawnPosX = 1;
   double spawnPosY = 1;
-  Stack<Pair<Double,Double>> spawnPositions;
-//  {spawnPositions.add(new Pair<Double,Double>(1.0,1.0));}
+
 
 //TODO scroll pane when item dragged past boundaries
 //TODO When you add/remove an edge, the edgeVis doesn't have to be drawn again, just add / remove a label
@@ -51,8 +46,7 @@ public class VisEditor {
     anchorPane.setMinHeight(600);
     anchorPane.setMinWidth(900);
 
-//    anchorPane.minWidthProperty().bind(scrollPane.widthProperty());
-//    anchorPane.minHeightProperty().bind(scrollPane.heightProperty());
+
     anchorPane.setOnMousePressed(pressed -> {
       if (pressed.getButton().equals(MouseButton.PRIMARY) && (pressed.isControlDown())) {
          spawnPosX = pressed.getX() - radius;
@@ -62,49 +56,41 @@ public class VisEditor {
       }
     });
 
-//    anchorPane.setOnScroll(scroll -> {
-//      if (scroll.getDeltaY() > 9) {
-//        group.setScaleX(group.getScaleX() * scroll.getDeltaY());
-//        group.setScaleY(group.getScaleY() * scroll.getDeltaY());
-//      } else {
-//        group.setScaleX(group.getScaleX() / scroll.getDeltaY());
-//        group.setScaleY(group.getScaleY() / scroll.getDeltaY());
-//      }
-//    });
-
     model.getUnmodifiableEdgeSetObs().addListener((SetChangeListener<? super Edge>) change->{
 
       if(change.wasAdded()){
-        Edge edge = change.getElementAdded();
-        FXMLLoader edgeLoader = new FXMLLoader(getClass().getResource(FXMLPATH.VISEDGE.getFileName()));
         try {
-          anchorPane.getChildren().add(edgeLoader.load());
+          Edge edge = change.getElementAdded();
+          FXMLLoader visEdgeLoader = new FXMLLoader(getClass().getResource(FXMLPATH.VISEDGE.getFileName()));
+          Node visEdgeRoot = visEdgeLoader.load();
+          VisEdge visEdge = visEdgeLoader.getController();
+          visEdge.init(edge);
+          drawnVertices.get(edge.getSource()).bindToCenter(visEdge.startXProperty(),visEdge.startYProperty());
+          drawnVertices.get(edge.getTarget()).bindToCenter(visEdge.endXProperty(),visEdge.endYProperty());
+          drawnEdges.put(edge,visEdge);
+
+          Platform.runLater(()->{
+            anchorPane.getChildren().add(visEdgeRoot);
+            visEdge.toBack();
+          });
+
         } catch (IOException ioException) {
           ioException.printStackTrace();
         }
-        VisEdge visEdge = edgeLoader.getController();
-        drawnEdges.put(edge,visEdge);
-        Line edgeLine = visEdge.line;
-        edgeLine.startXProperty().bind(drawnVertices.get(change.getElementAdded().getSource()).centerX);
-        edgeLine.startYProperty().bind(drawnVertices.get(change.getElementAdded().getSource()).centerY);
-        edgeLine.endXProperty().bind(drawnVertices.get(change.getElementAdded().getTarget()).centerX);
-        edgeLine.endYProperty().bind(drawnVertices.get(change.getElementAdded().getTarget()).centerY);
-        visEdge.pane.toBack();
 
 
-//      } else {//TODO Edge object
-//        drawnEdges.remove()
+
+
+
+
+//        edgeLine.startXProperty().bind(drawnVertices.get(change.getElementAdded().getSource()).centerX);
+//        edgeLine.startYProperty().bind(drawnVertices.get(change.getElementAdded().getSource()).centerY);
+//        edgeLine.endXProperty().bind(drawnVertices.get(change.getElementAdded().getTarget()).centerX);
+//        edgeLine.endYProperty().bind(drawnVertices.get(change.getElementAdded().getTarget()).centerY);
+
+
       } else {
-//        drawnEdges.stream()
-//                .filter(visEdge->
-//                  visEdge.sourceID == change.getElementRemoved().getSource()
-//                  && visEdge.targetID == change.getElementRemoved().getTarget()
-//                  && visEdge.label.equals(change.getElementRemoved().getLabel()))
-//                .forEach(visEdge -> {
-//                  anchorPane.getChildren().remove(visEdge);
-//                  drawnEdges.remove(visEdge);
-//                });
-        anchorPane.getChildren().remove(drawnEdges.get(change.getElementRemoved()).pane);
+        anchorPane.getChildren().remove(drawnEdges.get(change.getElementRemoved()).getRoot());
         drawnEdges.remove(change.getElementRemoved());
       }
     });
@@ -115,17 +101,13 @@ public class VisEditor {
       int id = vertex.getKey();
       if (vertex.wasAdded()) {
         if (!drawnVertices.containsKey(id)){
-          Platform.runLater(()->{
-            drawnVertices.put(id,spawnVertex(model,id, spawnPosX, spawnPosY));
+            drawnVertices.put(id, drawVertex(model,id, spawnPosX, spawnPosY));
             this.spawnPosX = 1;
             this.spawnPosY = 1;
-//            while(anchorPane.get)
-          });
-
         }
       } else {
-        anchorPane.getChildren().remove(drawnVertices.get(id).getRootPane());
-        drawnVertices.remove(id);
+        VisVertex deletedVisVertex = drawnVertices.remove(id);
+        Platform.runLater(()-> anchorPane.getChildren().remove(deletedVisVertex.getRootPane()));
       }
     });
 
@@ -133,24 +115,25 @@ public class VisEditor {
       if (change.wasAdded()) {
         if (change.getElementAdded().getVertices().size() > 1) {
           Paint color = Colors.array[colorID++ % 120];
+          System.out.println("block added (colorListener" + change.getElementAdded().getVertices());
 
           for (Integer vertex : change.getElementAdded()) {
             drawnVertices.get(vertex).setFill(color);
           }
-        } else {
+        } else if (change.getElementAdded().getVertices().size() == 1){
           drawnVertices.get(change.getElementAdded().iterator().next()).setFill(Color.LIGHTGRAY);
         }
       } else {
         if (change.getElementRemoved().getVertices().size() > 1) {
+          System.out.println("block removed (colorListener" + change.getElementRemoved().getVertices());
+
           colorID--;
         }
-      }
+      } //TODO doesn't remove color when clearing the partition list
     });
 
 
     centerBox.setOnScroll(scroll->{
-
-
         double zoom = (scroll.getDeltaY()>0)? 1.05 : 0.95;
 
         //calculate pixel offsets from [0,1] range
@@ -168,27 +151,24 @@ public class VisEditor {
 
         scrollPane.setHvalue((offsetX + delta.getX()) / (group.getBoundsInLocal().getWidth() - scrollPane.getViewportBounds().getWidth()));
         scrollPane.setVvalue((offsetY + delta.getY()) / (group.getBoundsInLocal().getHeight() - scrollPane.getViewportBounds().getHeight()));
-        //inspired by https://stackoverflow.com/questions/39827911/javafx-8-scaling-zooming-scrollpane-relative-to-mouse-position
-
+        //inspired by this over-engineered version with no practical difference : https://stackoverflow.com/questions/39827911/javafx-8-scaling-zooming-scrollpane-relative-to-mouse-position
     });
   }
 
 
-  private VisVertex spawnVertex(Model model, int id, double mouseX, double mouseY) {
-    Platform.runLater(()->{
+  private VisVertex drawVertex(Model model, int id, double mouseX, double mouseY) {
 
-    });
-    FXMLLoader vertexLoader = new FXMLLoader(getClass().getResource(FXMLPATH.VERTEX.getFileName()));
+    FXMLLoader visVertexLoader = new FXMLLoader(getClass().getResource(FXMLPATH.VISVERTEX.getFileName()));
     try {
-      StackPane rootPane = vertexLoader.load();
-      anchorPane.getChildren().add(rootPane);
+      StackPane rootPane = visVertexLoader.load();
+      Platform.runLater(()-> anchorPane.getChildren().add(rootPane));
     } catch (IOException ioException) {
       ioException.printStackTrace();
     }
-    VisVertex vertex = vertexLoader.getController();
-    vertex.init(model, id, mouseX, mouseY);
+    VisVertex visVertex = visVertexLoader.getController();
+    visVertex.init(model, id, mouseX, mouseY);
 
-    return vertex;
+    return visVertex;
 
   }
 

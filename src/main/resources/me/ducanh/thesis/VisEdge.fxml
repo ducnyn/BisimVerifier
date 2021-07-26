@@ -6,7 +6,7 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             fx:controller="me.ducanh.thesis.VisEdge"
-            fx:id="pane">
+            fx:id="anchorPane">
     <Line fx:id="line">
     </Line>
 </AnchorPane>

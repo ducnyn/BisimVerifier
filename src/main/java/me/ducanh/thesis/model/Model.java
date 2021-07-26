@@ -22,6 +22,7 @@ public class Model {
   private final StringProperty dotString = new SimpleStringProperty("digraph {\n\n}");
   private final StringProperty alertString = new SimpleStringProperty("");
   private final BooleanProperty newAlert = new SimpleBooleanProperty(false);
+  private final StringProperty outputString = new SimpleStringProperty();
   private boolean addedByVis = false;
 
 
@@ -63,7 +64,11 @@ public class Model {
     obsEdgeSet.addListener((SetChangeListener<? super Edge>) change -> {
       System.out.println(obsEdgeSet + " in obsEdgeSet now");
     });
-    
+
+
+
+
+
   }
 
   public ObservableSet<Edge> getUnmodifiableEdgeSetObs(){
@@ -71,16 +76,14 @@ public class Model {
   }
 
   public void addEdge(int source, String label, int target) {
-
-    if (obsGraph.containsKey(source)) {
-      obsGraph.get(source).add(new Edge(source, label, target));
-    } else {
-      addVertex(source);
-      obsGraph.get(source).add(new Edge(source, label, target));
-    }
     if (!obsGraph.containsKey(target)) {
       addVertex(target);
     }
+    if (!obsGraph.containsKey(source)) {
+      addVertex(source);
+    }
+    obsGraph.get(source).add(new Edge(source, label, target));
+
   }
 
 //public boolean removeEdge(int edgeID) {
@@ -197,7 +200,16 @@ public class Model {
   }
 
   public String getDot() {
-    return dotString.toString();
+    return dotString.getValue();
+  }
+
+  public void setOutputString(String s){
+    this.outputString.setValue(s);
+  }
+  public void appendOutputString(String s){this.outputString.setValue(this.outputString.getValue() +"\n"+ s);}
+
+  public void bindOutputString(StringProperty sp){
+    sp.bind(this.outputString);
   }
 
 

@@ -1,14 +1,12 @@
 package me.ducanh.thesis.model;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.partitioningBy;
-import static java.util.stream.Collectors.toSet;
 
-public class Block implements Iterable<Integer> {
+public class Block implements Iterable<Integer>{
   Set<Integer> vertices;
   BlockEdge splitter;
   Block leftChild;
@@ -25,7 +23,22 @@ public class Block implements Iterable<Integer> {
     this.vertices = vertices;
   }
 
+  public void printTree(){
+    Block block = this;
+    Queue<Block> queue = new LinkedList<>();
+    queue.add(block);
+    while(!queue.isEmpty()){
+      block = queue.remove();
+      System.out.print(block.vertices + " ");
 
+      if(block.left()!=null){
+        queue.add(block.left());
+      }
+      if(block.right()!=null){
+        queue.add(block.right());
+      }
+    }
+  }
 
   @Override
   public String toString() {
@@ -44,7 +57,7 @@ public class Block implements Iterable<Integer> {
     this.splitter = splitter;
   }
 
-  public Block getLeftChild() {
+  public Block left() {
     return leftChild;
   }
 
@@ -52,7 +65,7 @@ public class Block implements Iterable<Integer> {
     this.leftChild = leftChild;
   }
 
-  public Block getRightChild() {
+  public Block right() {
     return rightChild;
   }
 
@@ -86,4 +99,9 @@ public class Block implements Iterable<Integer> {
   public boolean contains(Integer integer) {
     return vertices.contains(integer);
   }
+
+  public boolean containsAll(Integer... i) {
+    return this.vertices.containsAll(Arrays.stream(i).collect(Collectors.toList()));
+  }
+
 }

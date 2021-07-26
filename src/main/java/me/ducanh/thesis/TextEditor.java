@@ -23,12 +23,10 @@ private TextArea editorTextArea;
 private ContextMenu editorCM;
 private final ObservableSet<KeyCode> pressedKeys = FXCollections.observableSet();
 
-{
 
-}
 public void intialize(Model model) {
     Font font = Font.loadFont(getClass().getResourceAsStream("InputMono.ttf"), 14);
-    editorTextArea.setFont(font);
+    editorTextArea.setFont(Font.font("lucida console",14));
     editorTextArea.setText(model.getDot());
     model.addDotListener((obs, oldText, newText) ->
                     Platform.runLater(()->

@@ -8,6 +8,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -35,7 +36,7 @@ public class VisVertex {
 
 
   public void init(Model model, int id) {
-    init(model, id, 0, 0);
+    init(model, id, 1, 1);
   }
 
   public void init(Model model, int id, double initX, double initY) {
@@ -61,12 +62,10 @@ public class VisVertex {
       if (press.isAltDown()) {
         model.removeVertex(this.id);
       }
-
       rootPane.toFront();
       mouseOrigin[0] = press.getScreenX();
       mouseOrigin[1] = press.getScreenY();
     });
-
 
     rootPane.setOnMouseDragged((drag) -> {
 
@@ -88,14 +87,9 @@ public class VisVertex {
         System.out.print(" absMousePosY:" + drag.getSceneY());
         System.out.print(" relNodePosX: " + rootPane.getLayoutX());
         System.out.print(" relNodePosY: " + rootPane.getLayoutY());
-
-
-
-
-
-
       }
     });
+
 
 
     rootPane.setOnMouseReleased(released -> {
@@ -130,4 +124,8 @@ public class VisVertex {
     rootPane.setLayoutY(relPosY);
   }
 
+  public void bindToCenter(DoubleProperty xVal, DoubleProperty yVal){
+    xVal.bind(centerX);
+    yVal.bind(centerY);
+  }
 }

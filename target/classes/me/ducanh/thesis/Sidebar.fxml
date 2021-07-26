@@ -6,14 +6,16 @@
 <?import javafx.scene.layout.VBox?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
+            id="sidebar"
             fx:id="sidebar"
             fx:controller="me.ducanh.thesis.SideBar"
-            minWidth="40"
 >
     <VBox xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/15.0.1">
-        <Button styleClass="sideBarButton" fx:id="aButton" mnemonicParsing="false" onAction="#A" text="A"/>
-        <Button styleClass="sideBarButton" fx:id="bButton" mnemonicParsing="false" onAction="#B" text="B"/>
-        <Button styleClass="sideBarButton" fx:id="cButton" mnemonicParsing="false" onAction="#C" text="C"/>
-        <Button styleClass="sideBarButton" fx:id="dButton" mnemonicParsing="false" onAction="#D" text="D"/>
+        <Button styleClass="sideBarButton" fx:id="aButton" mnemonicParsing="false" onAction="#vertices" text="Vertex"/>
+        <Button styleClass="sideBarButton" fx:id="bButton" mnemonicParsing="false" onAction="#edges" text="Edge"/>
+        <Button styleClass="sideBarButton" fx:id="cButton" mnemonicParsing="false" onAction="#randomEdges" text="Random Edges"/>
+        <Button styleClass="sideBarButton" fx:id="dButton" mnemonicParsing="false" onAction="#bisimulation" text="Bisimulation"/>
+        <Button styleClass="sideBarButton" fx:id="eButton" mnemonicParsing="false" onAction="#deltaFormula" text="Delta Formula"/>
+
     </VBox>
 </AnchorPane>

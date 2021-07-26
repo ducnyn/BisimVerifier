@@ -7,9 +7,10 @@ public enum FXMLPATH {
     SIDEBAR("sidebar.fxml"),
     ABOUT("about.fxml"),
     VISEDGE("visedge.fxml"),
-    VERTEX("visvertex.fxml");
+    VISVERTEX("visvertex.fxml"),
+    OUTPUT("output.fxml");
 
-private final String fileName;
+  private final String fileName;
 
 FXMLPATH(String fileName) {
     this.fileName = fileName;

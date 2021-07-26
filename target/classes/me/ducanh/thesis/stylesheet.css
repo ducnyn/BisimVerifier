@@ -24,11 +24,13 @@
     -fx-background-color: dimgray;
 }
 #sidebar{
+    -fx-pref-width: 100px;
+
     /*-fx-background-color: #1C1E26;*/
 }
 .sideBarButton {
     -fx-pref-height: 40px;
-    -fx-pref-width: 40px;
+    -fx-pref-width: 100px;
 }
 
 .vertexLabel {
