@@ -6,38 +6,72 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.partitioningBy;
 
-public class Block implements Iterable<Integer>{
-  Set<Integer> vertices;
+public class Block implements Iterable<Vertex>{
+  Set<Vertex> vertices;
   BlockEdge splitter;
   Block leftChild;
   Block rightChild;
 
-  public Block(Set<Integer> vertices, BlockEdge splitter, Block leftChild, Block rightChild) {
+  public Block(Set<Vertex> vertices, BlockEdge splitter, Block leftChild, Block rightChild) {
     this.vertices = vertices;
     this.splitter = splitter;
     this.leftChild = leftChild;
     this.rightChild = rightChild;
   }
 
-  public Block(Set<Integer> vertices) {
+  public Block(Set<Vertex> vertices) {
     this.vertices = vertices;
   }
 
   public void printTree(){
-    Block block = this;
+    Block rootBlock = this;
+    int currentLayer = 0;
+    ArrayList<Queue<Block>> treeLayers = new ArrayList<>();
     Queue<Block> queue = new LinkedList<>();
-    queue.add(block);
-    while(!queue.isEmpty()){
-      block = queue.remove();
-      System.out.print(block.vertices + " ");
+    treeLayers.add(queue);
+    queue.add(rootBlock);
 
-      if(block.left()!=null){
-        queue.add(block.left());
+    while(true){
+      Queue<Block> childQueue = new LinkedList<>();
+      for(Block tBlock : treeLayers.get(currentLayer)){
+        if (tBlock.left()!=null) {
+          childQueue.add(tBlock.left());
+        }
+        if (tBlock.right()!=null) {
+          childQueue.add(tBlock.right());
+        }
+        if(tBlock.getVertices().size()==1){
+          childQueue.add(tBlock);
+        }
       }
-      if(block.right()!=null){
-        queue.add(block.right());
+      if (childQueue.isEmpty()){
+        break;
+      } else if (childQueue.stream().allMatch(b->b.getVertices().size() ==1)){
+        break;
       }
+      treeLayers.add(childQueue);
+      currentLayer = treeLayers.indexOf(childQueue);
     }
+    for(Queue<Block> layer : treeLayers){
+      System.out.println(layer);
+//      for(Block block : layer){
+//        if(block.getVertices()!=null)
+//        System.out.println("splitter for " + block + "is" + block.getSplitter());
+//      }
+    }
+//    treeLayers.add(queue);
+//    queue.add(rootBlock);
+//    while(!queue.isEmpty()){
+//      rootBlock = queue.remove();
+//      System.out.print(rootBlock.vertices + " ");
+//
+//      if(rootBlock.left()!=null){
+//        queue.add(rootBlock.left());
+//      }
+//      if(rootBlock.right()!=null){
+//        queue.add(rootBlock.right());
+//      }
+//    }
   }
 
   @Override
@@ -45,7 +79,7 @@ public class Block implements Iterable<Integer>{
     return vertices.toString();
   }
 
-  public Set<Integer> getVertices() {
+  public Set<Vertex> getVertices() {
     return vertices;
   }
 
@@ -73,7 +107,7 @@ public class Block implements Iterable<Integer>{
     this.rightChild = rightChild;
   }
 
-  public Stream<Integer> stream(){
+  public Stream<Vertex> stream(){
     return vertices.stream();
   }
   @Override
@@ -92,16 +126,17 @@ public class Block implements Iterable<Integer>{
   }
 
   @Override
-  public Iterator<Integer> iterator() {
+  public Iterator<Vertex> iterator() {
     return vertices.iterator();
   }
 
-  public boolean contains(Integer integer) {
-    return vertices.contains(integer);
+  public boolean contains(Vertex vertex) {
+    return vertices.contains(vertex);
   }
 
-  public boolean containsAll(Integer... i) {
-    return this.vertices.containsAll(Arrays.stream(i).collect(Collectors.toList()));
+  public boolean containsAll(Vertex... v) {
+    return Arrays.stream(v).allMatch(vertices::contains);
+//    return this.vertices.containsAll(Arrays.stream(i).collect(Collectors.toList()));
   }
 
 }

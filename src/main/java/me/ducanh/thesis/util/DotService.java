@@ -5,6 +5,7 @@ import me.ducanh.thesis.model.Edge;
 import me.ducanh.thesis.model.Model;
 
 import java.util.Collection;
+import java.util.List;
 
 public class DotService {
 private Model model;
@@ -19,7 +20,7 @@ public static void parse(String string) {
 //public final String getDotString() {
 //    return dotString.get();
 //}
-public static String write(Collection<Integer> vertices, Collection<ObservableSet<Edge>> edges){
+public static String write(Collection<Integer> vertices, Collection<Edge> edges){
 
 
 
@@ -43,9 +44,9 @@ public static String write(Collection<Integer> vertices, Collection<ObservableSe
         graphString.append("\n");
 
 
-        for (Collection<Edge> edgeSet : edges){
+        for (Edge edge : edges){
             graphString.append("\n\t");
-            for(Edge edge: edgeSet){
+
                 //        graphString
 //                .append("\n\t")
 //                .append(Edge.getSource())
@@ -59,7 +60,7 @@ public static String write(Collection<Integer> vertices, Collection<ObservableSe
                         .append(edge.getSource())
                         .append(" -").append(edge.getLabel()).append("> ")
                         .append(edge.getTarget());
-            }
+
         }
 
 

@@ -2,9 +2,7 @@ package me.ducanh.thesis;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextInputDialog;
-import me.ducanh.thesis.model.Block;
-import me.ducanh.thesis.model.Model;
-import me.ducanh.thesis.model.Algorithms;
+import me.ducanh.thesis.model.*;
 import me.ducanh.thesis.util.StringCheck;
 
 import java.util.*;
@@ -46,14 +44,29 @@ private void vertices() {
 //    }
     model.addEdge(1,"a",2);
     model.addEdge(2,"b",3);
-    model.addEdge(2,"c",4);
+    model.addEdge(2,"c",3);
 
-    model.addEdge(5,"a",6);
+    model.addEdge(4,"a",5);
 
-    model.addEdge(5,"a",7);
+    model.addEdge(4,"a",6);
 
-    model. addEdge(6,"b",8);
-    model.addEdge(7,"c",8);
+    model. addEdge(5,"b",7);
+    model.addEdge(6,"c",7);
+
+
+    Block rootBlock = Algorithms.bisim(model.getVertices()).getKey();
+    System.out.println("The deltaFormula is " + Algorithms.getDeltaFormula(model.getVertex(1),model.getVertex(4),model,rootBlock));
+
+    for(int i = 1;i<7;i++){
+        boolean a =
+        model.getEdges(i).stream()
+                .anyMatch(e->e.getLabel().equals("a") && e.getTarget().getEdges().stream()
+                .noneMatch(e2->e2.getLabel().equals("b")));
+
+
+        System.out.println("vertex "+ i + " satisfies <a><~b>? -> " +a);
+    }
+
 }
 
 @FXML
@@ -102,10 +115,10 @@ private void edges() throws Exception {
 }
 
 @FXML
-private void randomEdges() throws InterruptedException {
+private void randomEdges() {
     model.removeAllEdges();
-    ArrayList<Integer> vertices = new ArrayList<>(model.getVertices());
-    for (Integer vertex: vertices) {
+    ArrayList<Vertex> vertices = new ArrayList<>(model.getVertices());
+    for (Vertex vertex: vertices) {
         String alphabet = "abc";
 
         Random random = new Random();
@@ -113,8 +126,8 @@ private void randomEdges() throws InterruptedException {
 
         for (int j = 0; j < edgesOutDegree; j++) {
             String randomLabel = String.valueOf(alphabet.charAt(random.nextInt(alphabet.length())));
-            int randomVertex = vertices.get(random.nextInt(vertices.size()-1));
-            model.addEdge(vertex, randomLabel, randomVertex);
+            Vertex randomVertex = vertices.get(random.nextInt(vertices.size()-1));
+            model.addEdge(vertex.getID(), randomLabel, randomVertex.getID());
         }
     }
 }
@@ -126,7 +139,7 @@ private void bisimulation() throws InterruptedException {
     Thread taskThread = new Thread(new Runnable() {
         @Override
         public void run() {
-            Set<Block> partition = Algorithms.bisim(model).getValue();
+            Set<Block> partition = Algorithms.bisim(model.getVertices()).getValue();
             model.setOutputString("\n Equivalence classes (Bisimulation): \n" + partition.toString());
             model.updatePartition(partition);
             System.out.println("Vertices: " + model.getVertices());
@@ -141,8 +154,8 @@ private void bisimulation() throws InterruptedException {
 
 @FXML
     private void deltaFormula(){
-    Optional<String> firstOK = null;
-    Optional<String> secondOK = null;
+    Optional<String> firstOK;
+    Optional<String> secondOK;
 
     String first = "";
     String second = "";
@@ -152,7 +165,7 @@ private void bisimulation() throws InterruptedException {
         firstPrompt.setHeaderText("first vertex (int):");
         firstOK = firstPrompt.showAndWait();
         first = firstPrompt.getEditor().getText();
-    } while (!StringCheck.notInteger(first) && !model.getVertices().contains(parseInt(first)) || firstOK.isPresent() && (StringCheck.notInteger(first) || first.isBlank() || first.isEmpty()));
+    } while (firstOK.isPresent() &&(!StringCheck.notInteger(first) && model.getVertex(parseInt(first))==null ||StringCheck.notInteger(first) || first.isBlank() || first.isEmpty() ));
 
     if (firstOK.isPresent()) {
         do {
@@ -160,21 +173,24 @@ private void bisimulation() throws InterruptedException {
             secondPrompt.setHeaderText("second vertex (int):");
             secondOK = secondPrompt.showAndWait();
             second = secondPrompt.getEditor().getText();
-        } while (!StringCheck.notInteger(second) && !model.getVertices().contains(parseInt(second)) ||secondOK.isPresent() && (StringCheck.notInteger(second) || second.isBlank() || second.isEmpty()));
+        } while (secondOK.isPresent() && (!StringCheck.notInteger(second) && model.getVertex(parseInt(second))==null ||StringCheck.notInteger(second) || second.isBlank() || second.isEmpty() ));
+
+        if (secondOK.isPresent()) {
+            Vertex firstVertex = model.getVertex(parseInt(first));
+            Vertex secondVertex = model.getVertex(parseInt(second));
+            Thread taskThread = new Thread(() -> {
+
+                String deltaFormula = Algorithms.getDeltaFormula(
+                        firstVertex,secondVertex,model, Algorithms.bisim(model.getVertices()).getKey());
+                model.setOutputString("\n Distinguishing Formula: " + deltaFormula);
+            });
+            taskThread.setDaemon(true);
+            taskThread.start();
+        }
+
     }
 
 
-    if (secondOK != null && secondOK.isPresent()) {
-        String finalFirst = first;
-        String finalSecond = second;
-        Thread taskThread = new Thread(() -> {
-            String deltaFormula = Algorithms.getDeltaFormula(
-                    parseInt(finalFirst),parseInt(finalSecond),model, Algorithms.bisim(model).getKey());
-            model.setOutputString("\n Distinguishing Formula: " + deltaFormula);
-        });
-        taskThread.setDaemon(true);
-        taskThread.start();
-    }
 
 }
 }

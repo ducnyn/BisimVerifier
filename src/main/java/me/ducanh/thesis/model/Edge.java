@@ -4,10 +4,11 @@ import java.util.Objects;
 
 public class Edge implements Comparable<Edge>{
 private final String label;
-private final Integer source;
-private final Integer target;
+private final Vertex source;
+private final Vertex target;
 
-public Edge(Integer source, String label, Integer target) {
+
+public Edge(Vertex source, String label, Vertex target) {
     this.label = label;
     this.source = source;
     this.target = target;
@@ -31,11 +32,11 @@ public String toString() {
     return source + " -" + label + "> " + target;
 }
 
-public Integer getTarget() {
+public Vertex getTarget() {
     return target;
 }
 
-public Integer getSource() {
+public Vertex getSource() {
     return source;
 }
 
@@ -47,13 +48,13 @@ public String getLabel() {
 public int compareTo(Edge o) {
 
     if(!this.getSource().equals(o.getSource())){
-        return Integer.compare(this.getSource(),o.getSource());
+        return Integer.compare(this.getSource().hashCode(),o.getSource().hashCode()); // better to do this in Verteex Class
     }
     if(!this.getLabel().equals(o.getLabel())){
         return this.getLabel().compareTo(o.getLabel());
     }
     if(!this.getTarget().equals(o.getTarget())){
-        return Integer.compare(this.getTarget(),o.getTarget());
+        return Integer.compare(this.getTarget().hashCode(),o.getTarget().hashCode());
     }
     return 0;
 }

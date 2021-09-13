@@ -9,7 +9,7 @@ import static java.util.stream.Collectors.partitioningBy;
 import static java.util.stream.Collectors.toSet;
 
 public class Algorithms {
-  private static Model model;
+
 
 //  private static Map<Boolean, Set<Integer>> split(Model model, Set<Integer> block, BlockEdge splitter) {
 //    String label = splitter.getLabel();
@@ -20,13 +20,21 @@ public class Algorithms {
 //                            .anyMatch(targetBlock::contains)
 //                    , toSet()));
 //  }
+public static Map<Boolean, Set<Vertex>> split(Block block, BlockEdge blockEdge) {
+//    System.out.println("attempting to split " + block);
+  return block.stream()
+          .collect(partitioningBy(
+                  vertex -> vertex.getTargets(blockEdge.getLabel())
+                          .stream()
+                          .anyMatch(blockEdge.getTargetBlock()::contains)
+                  , toSet()));
 
-  public static Pair<Block, Set<Block>> bisim(Model data) {
-    model = data;
-    HashMap<Integer, Block> containingBlock = new HashMap<>();
+}
+  public static Pair<Block, Set<Block>> bisim(Set<Vertex> vertices) {
+    HashMap<Vertex, Block> containingBlock = new HashMap<>();
     Set<Block> newPartition = new HashSet<>();
     Set<Block> parentPartition = new HashSet<>();
-    Block rootBlock = new Block(model.getVertices());
+    Block rootBlock = new Block(vertices);
     newPartition.add(rootBlock);
 
 
@@ -36,7 +44,7 @@ public class Algorithms {
       newPartition = new HashSet<>();
 
       for (Block block : parentPartition) {
-        for (Integer vertex : block) {
+        for (Vertex vertex : block) {
           containingBlock.put(vertex, block);
         }
       }
@@ -45,13 +53,13 @@ public class Algorithms {
 
         Optional<BlockEdge> splitter =
                 block.stream()
-                        .flatMap(vertex -> model.getEdges(vertex).stream())
+                        .flatMap(vertex -> vertex.getEdges().stream())
                         .map(edge -> new BlockEdge(edge.getLabel(), containingBlock.get(edge.getTarget())))
                         .filter(bEdge -> !split(block, bEdge).containsValue(block.getVertices()))
                         .findAny();
 
         if (splitter.isPresent()) {
-          Map<Boolean, Set<Integer>> splitBlock = split(block, splitter.get());
+          Map<Boolean, Set<Vertex>> splitBlock = split(block, splitter.get());
           block.setSplitter(splitter.get());
           block.setLeftChild(new Block(splitBlock.get(true)));
           block.setRightChild(new Block(splitBlock.get(false)));
@@ -67,13 +75,11 @@ public class Algorithms {
     return new Pair<>(rootBlock, newPartition);
   }
 
-  public static String getDeltaFormula(Integer s1, Integer s2, Model model, Block rootBlock) {
+  public static String getDeltaFormula(Vertex s1, Vertex s2, Model model, Block rootBlock) {
     Block currentBlock = rootBlock;
     StringBuilder deltaFormula = new StringBuilder();
 
     //base case
-
-
     while (true) {
       if (currentBlock.getSplitter() == null) {
         return "tt";
@@ -87,48 +93,64 @@ public class Algorithms {
         break; //neither left or right contains all -> next split will separate
       }
     }
-      System.out.println("\nThe deepest block including " + s1 + " and " + s2 + " is" + currentBlock);
-      System.out.println("\nThe splitter is" + currentBlock.getSplitter());
+    System.out.println("Comparing " + s1 + " with " + s2);
+    System.out.println("The deepest block is" + currentBlock);
+    System.out.println("The splitter is" + currentBlock.getSplitter());
+    System.out.println("The leftChild is " + currentBlock.left());
+    System.out.println("The rightChild is " + currentBlock.right());
     String a = currentBlock.getSplitter().getLabel();
-    Set<Integer> BP = currentBlock.getSplitter().getTargetBlock().getVertices();
-    deltaFormula = new StringBuilder("<").append(a).append(">");
-
+    Set<Vertex> B = currentBlock.getSplitter().getTargetBlock().getVertices();
+    Set<Vertex> LTargetsInB;
+    Set<Vertex> RTargets;
+    Vertex L;
+    Vertex R;
     if (currentBlock.left().contains(s1)) {
-      Set<Integer> SL = Sets.intersection(model.getTargets(s1, a), BP);
-      Set<Integer> SR = model.getTargets(s2, a);
-      System.out.println(SL.toString() + SR);
-
-      for (Integer sL : SL) {
-        for (Integer sR : SR) {
-          deltaFormula.append(getDeltaFormula(sL, sR, model, rootBlock));
-        }
-      }
+      L = s1;
+      R = s2;
+      deltaFormula.append("<").append(a).append(">");
 
     } else {
-      Set<Integer> SL = Sets.intersection(model.getTargets(s2, a), BP);
-      Set<Integer> SR = model.getTargets(s1, a);
-
-      for (Integer sL : SL) {
-        for (Integer sR : SR) {
-          deltaFormula.append(getDeltaFormula(sL, sR, model, rootBlock));
-        }
-      }
+      L = s2;
+      R = s1;
+      deltaFormula.append("<¬").append(a).append(">");
 
     }
-    System.out.println(deltaFormula.toString());
+    LTargetsInB = Sets.intersection(L.getTargets(a), B);
+    RTargets = R.getTargets(a);
+
+    System.out.println("SL = " + LTargetsInB);
+    System.out.println("SR = " + RTargets);
+
+    Set<String> formulaSet = new HashSet<>();
+    for (Vertex LTarget : LTargetsInB) {
+      for (Vertex RTarget : RTargets) {
+        formulaSet.add(getDeltaFormula(LTarget, RTarget, model, rootBlock));
+      }
+//TODO to check satisfaction, you first need to define how it is checked.
+// a formula PHI : formulae is kept, if there is at least one state in SR that satisfies all formulas besides PHI
+      List<String> formulaList = new ArrayList<>(formulaSet);
+
+      for (int i = 0; i < formulaList.size(); i++) {
+        String formula = formulaList.get(i);
+        Set<Integer> Targets;
+//                RTargets.stream()
+//                        .filter(target -> satisfies..)
+
+
+      }
+    }
+//    List<String> formulaList = new ArrayList<>(formulaSet);
+//    for (int i = 0; i < formulaList.size(); i++) {
+//      if (i > 0) {
+//        deltaFormula.append("∧");
+//      }
+//      deltaFormula.append(formulaList.get(i));
+//    }
+    System.out.println(deltaFormula);
     return deltaFormula.toString();
   }
 
-  public static Map<Boolean, Set<Integer>> split(Block block, BlockEdge blockEdge) {
-//    System.out.println("attempting to split " + block);
-    return block.stream()
-            .collect(partitioningBy(
-                    vertex -> model.getTargets(vertex, blockEdge.getLabel())
-                            .stream()
-                            .anyMatch(blockEdge.getTargetBlock()::contains)
-                    , toSet()));
 
-  }
 }
 
 

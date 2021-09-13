@@ -17,6 +17,7 @@ import javafx.scene.shape.Line;
 import me.ducanh.thesis.model.Block;
 import me.ducanh.thesis.model.Edge;
 import me.ducanh.thesis.model.Model;
+import me.ducanh.thesis.model.Vertex;
 import me.ducanh.thesis.util.Colors;
 
 import java.io.IOException;
@@ -56,7 +57,7 @@ public class VisEditor {
       }
     });
 
-    model.getUnmodifiableEdgeSetObs().addListener((SetChangeListener<? super Edge>) change->{
+    model.getFlatEdges().addListener((SetChangeListener<? super Edge>) change->{
 
       if(change.wasAdded()){
         try {
@@ -65,13 +66,13 @@ public class VisEditor {
           Node visEdgeRoot = visEdgeLoader.load();
           VisEdge visEdge = visEdgeLoader.getController();
           visEdge.init(edge);
-          drawnVertices.get(edge.getSource()).bindToCenter(visEdge.startXProperty(),visEdge.startYProperty());
-          drawnVertices.get(edge.getTarget()).bindToCenter(visEdge.endXProperty(),visEdge.endYProperty());
+          drawnVertices.get(edge.getSource().getID()).bindToCenter(visEdge.startXProperty(),visEdge.startYProperty());
+          drawnVertices.get(edge.getTarget().getID()).bindToCenter(visEdge.endXProperty(),visEdge.endYProperty());
           drawnEdges.put(edge,visEdge);
 
           Platform.runLater(()->{
             anchorPane.getChildren().add(visEdgeRoot);
-            visEdge.toBack();
+            visEdge.getRoot().toBack();
           });
 
         } catch (IOException ioException) {
@@ -117,11 +118,11 @@ public class VisEditor {
           Paint color = Colors.array[colorID++ % 120];
           System.out.println("block added (colorListener" + change.getElementAdded().getVertices());
 
-          for (Integer vertex : change.getElementAdded()) {
-            drawnVertices.get(vertex).setFill(color);
+          for (Vertex vertex : change.getElementAdded()) {
+            drawnVertices.get(vertex.getID()).setFill(color);
           }
         } else if (change.getElementAdded().getVertices().size() == 1){
-          drawnVertices.get(change.getElementAdded().iterator().next()).setFill(Color.LIGHTGRAY);
+          drawnVertices.get(change.getElementAdded().iterator().next().getID()).setFill(Color.LIGHTGRAY);
         }
       } else {
         if (change.getElementRemoved().getVertices().size() > 1) {
