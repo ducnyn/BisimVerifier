@@ -75,12 +75,74 @@ public static Map<Boolean, Set<Vertex>> split(Block block, BlockEdge blockEdge) 
     return new Pair<>(rootBlock, newPartition);
   }
 
-  public static String getDeltaFormula(Vertex s1, Vertex s2, Model model, Block rootBlock) {
+  public static Boolean isFormula(String string){
+  System.out.println("Evaluate if " + string + " is a formula.");
+    if(string.equals("tt")){
+      return true;
+    }
+    if(string.equals("ff")){
+      return true;
+    }
+    if(string.matches("^\\[[a-z]\\].*")){ // <a>PHI := Es gibt einen a-Nachfolger, der PHI erfüllt...
+      return isFormula(string.substring(string.indexOf(']')+1));
+    }
+    if(string.matches("^<[a-z]>.*")){ // [a] := Alle a-Nachfolger erfüllen ...
+      return isFormula(string.substring(string.indexOf('>')+1));
+    }
+    if(string.matches("^!.*")){
+      return isFormula(string.substring(1));
+    }
+    if(string.matches("^&&.*")){
+      return isFormula(string.substring(2));
+    }
+
+    return false;
+  }
+
+
+
+  public static Boolean evaluate(Vertex v, String formula){
+
+    if(formula.equals("tt")){
+      return true;
+    }
+    if(formula.equals("ff")){
+      return false;
+    }
+    if(formula.matches("^\\[[a-z]\\].*")){ // [a] := Alle a-Nachfolger erfüllen phi ...
+      String action = formula.substring(formula.indexOf('[')+1,formula.indexOf(']'));
+      String rest = formula.substring(formula.indexOf(']')+1);
+      for (Vertex target: v.getTargets(action)){
+        if(!evaluate(target,rest)){
+          return false;
+        }
+      }
+      return true;
+    }
+    if(formula.matches("^<[a-z]>.*")){ // <a> := Es gibt einen a-Nachfolger, der phi erfüllt...
+      String action = formula.substring(formula.indexOf('<')+1,formula.indexOf('>'));
+      String rest = formula.substring(formula.indexOf('>')+1);
+      for (Vertex target: v.getTargets(action)){
+        if(evaluate(target,rest)){
+          return true;
+        }
+      }
+      return false;
+    }
+    if(formula.matches("^!.*")){
+      return !evaluate(v,formula.substring(1));
+    }
+    return false;
+  }
+
+
+  public static String getDeltaFormula(Vertex s1, Vertex s2, Block rootBlock) {
     Block currentBlock = rootBlock;
     StringBuilder deltaFormula = new StringBuilder();
 
     //base case
     while (true) {
+      System.out.println("current Splitter is" + currentBlock.getSplitter());
       if (currentBlock.getSplitter() == null) {
         return "tt";
       }
@@ -93,50 +155,58 @@ public static Map<Boolean, Set<Vertex>> split(Block block, BlockEdge blockEdge) 
         break; //neither left or right contains all -> next split will separate
       }
     }
-    System.out.println("Comparing " + s1 + " with " + s2);
-    System.out.println("The deepest block is" + currentBlock);
-    System.out.println("The splitter is" + currentBlock.getSplitter());
-    System.out.println("The leftChild is " + currentBlock.left());
-    System.out.println("The rightChild is " + currentBlock.right());
-    String a = currentBlock.getSplitter().getLabel();
+//    System.out.println("Comparing " + s1 + " with " + s2);
+//    System.out.println("The deepest block is" + currentBlock);
+//    System.out.println("The splitter is" + currentBlock.getSplitter());
+//    System.out.println("The leftChild is " + currentBlock.left());
+//    System.out.println("The rightChild is " + currentBlock.right());
+
+    String action = currentBlock.getSplitter().getLabel();
     Set<Vertex> B = currentBlock.getSplitter().getTargetBlock().getVertices();
-    Set<Vertex> LTargetsInB;
-    Set<Vertex> RTargets;
-    Vertex L;
-    Vertex R;
+
+    Vertex sL;
+    Vertex sR;
+
     if (currentBlock.left().contains(s1)) {
-      L = s1;
-      R = s2;
-      deltaFormula.append("<").append(a).append(">");
-
+      sL = s1;
+      sR = s2;
+      deltaFormula.append("<").append(action).append(">");
     } else {
-      L = s2;
-      R = s1;
-      deltaFormula.append("<¬").append(a).append(">");
-
+      sL = s2;
+      sR = s1;
+      deltaFormula.append("!<").append(action).append(">");
     }
-    LTargetsInB = Sets.intersection(L.getTargets(a), B);
-    RTargets = R.getTargets(a);
+    int smallest = Integer.MAX_VALUE;
+    Set<Vertex> SL; //SL
+    Set<Vertex> SR; //SR
 
-    System.out.println("SL = " + LTargetsInB);
-    System.out.println("SR = " + RTargets);
+    SL = Sets.intersection(sL.getTargets(action), B);
+    SR = sR.getTargets(action);
 
-    Set<String> formulaSet = new HashSet<>();
-    for (Vertex LTarget : LTargetsInB) {
-      for (Vertex RTarget : RTargets) {
-        formulaSet.add(getDeltaFormula(LTarget, RTarget, model, rootBlock));
+    for (Vertex LTarget : SL) {
+      List<String> Formulas = new ArrayList<>(); //GAMMA
+
+      for (Vertex RTarget : SR) {
+        Formulas.add(getDeltaFormula(LTarget, RTarget, rootBlock));
       }
-//TODO to check satisfaction, you first need to define how it is checked.
-// a formula PHI : formulae is kept, if there is at least one state in SR that satisfies all formulas besides PHI
-      List<String> formulaList = new ArrayList<>(formulaSet);
 
-      for (int i = 0; i < formulaList.size(); i++) {
-        String formula = formulaList.get(i);
-        Set<Integer> Targets;
-//                RTargets.stream()
-//                        .filter(target -> satisfies..)
+      for (String formula: Formulas) { //for each Phi in Gamma
+        ArrayList<String> otherFormulas = new ArrayList<>(Formulas);
+        otherFormulas.remove(formula);
 
+         if(SR.stream().noneMatch(vertex->!evaluate(vertex,formula)
+         && otherFormulas.stream().allMatch(otherFormula->evaluate(vertex,otherFormula)))){
+           Formulas.remove(formula);
+         }
+      }
 
+      if(Formulas.size()<smallest){
+        smallest = Formulas.size();
+        deltaFormula = new StringBuilder();
+        deltaFormula.append(Formulas.get(0));
+        for(int i = 1; i<Formulas.size();i++){
+          deltaFormula.append("&&").append(Formulas.get(i));
+        }
       }
     }
 //    List<String> formulaList = new ArrayList<>(formulaSet);

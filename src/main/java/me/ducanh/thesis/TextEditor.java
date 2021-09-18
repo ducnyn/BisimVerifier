@@ -25,8 +25,8 @@ private final ObservableSet<KeyCode> pressedKeys = FXCollections.observableSet()
 
 
 public void intialize(Model model) {
-    Font font = Font.loadFont(getClass().getResourceAsStream("InputMono.ttf"), 14);
-    editorTextArea.setFont(Font.font("lucida console",14));
+//    Font font = Font.loadFont(getClass().getResourceAsStream("InputMono.ttf"), 14);
+    editorTextArea.setFont(Font.font("lucida console",16));
     editorTextArea.setText(model.getDot());
     model.addDotListener((obs, oldText, newText) ->
                     Platform.runLater(()->

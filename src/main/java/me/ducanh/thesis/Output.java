@@ -11,8 +11,8 @@ public class Output {
 
 
   public void initialize(Model model){
-    Font font = Font.loadFont(getClass().getResourceAsStream("InputMono.ttf"), 14);
-    textArea.setFont(Font.font("lucida console",14));
+//    Font font = Font.loadFont(getClass().getResourceAsStream("InputMono.ttf"), 14);
+    textArea.setFont(Font.font("lucida console",16));
 
     model.bindOutputString(textArea.textProperty());
   }

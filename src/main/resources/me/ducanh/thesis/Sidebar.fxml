@@ -16,6 +16,7 @@
         <Button styleClass="sideBarButton" fx:id="cButton" mnemonicParsing="false" onAction="#randomEdges" text="Random Edges"/>
         <Button styleClass="sideBarButton" fx:id="dButton" mnemonicParsing="false" onAction="#bisimulation" text="Bisimulation"/>
         <Button styleClass="sideBarButton" fx:id="eButton" mnemonicParsing="false" onAction="#deltaFormula" text="Delta Formula"/>
+        <Button styleClass="sideBarButton" fx:id="fButton" mnemonicParsing="false" onAction="#formulaSat" text="FormulaSat"/>
 
     </VBox>
 </AnchorPane>

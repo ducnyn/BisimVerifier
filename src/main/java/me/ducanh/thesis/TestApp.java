@@ -14,14 +14,15 @@ public class TestApp {
     private static ObservableSet<Integer> int2Set = FXCollections.unmodifiableObservableSet(intSet);
 
 public static void main(String[] args){
-    int2Set.addListener((SetChangeListener<Integer>)s->{
-        if (s.wasAdded()){
-            System.out.println("this works: " + s.getElementAdded());
-        }
-    });
-
-    intSet.add(1);
-    int2Set.add(2);
+    System.out.println("[a]whatever".matches("^\\[[a-z]].*"));
+//    int2Set.addListener((SetChangeListener<Integer>)s->{
+//        if (s.wasAdded()){
+//            System.out.println("this works: " + s.getElementAdded());
+//        }
+//    });
+//
+//    intSet.add(1);
+//    int2Set.add(2);
 }
 //    private static final ArrayList<Integer> iList = new ArrayList<>();
 //
