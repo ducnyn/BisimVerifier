@@ -8,15 +8,17 @@ public enum TokenType {
   DIAMOND(3),
   TRUE(4),
   FALSE(5),
-  NOT(6);
+  NOT(6),
+  LEFTPAR(7),
+  RIGHTPAR(8);
 
-  private final int fileName;
+  private final int ID;
 
   TokenType(int fileName) {
-    this.fileName = fileName;
+    this.ID = fileName;
   }
 
-  public int getFileName() {
-    return fileName;
+  public int getID() {
+    return ID;
   }
 }

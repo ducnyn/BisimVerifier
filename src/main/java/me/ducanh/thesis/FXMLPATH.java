@@ -1,14 +1,14 @@
 package me.ducanh.thesis;
 
 public enum FXMLPATH {
-    ALTMENU("altmenu.fxml"),
-    TEXTEDITOR("texteditor.fxml"),
-    VISEDITOR("viseditor.fxml"),
-    SIDEBAR("sidebar.fxml"),
-    ABOUT("about.fxml"),
-    VISEDGE("visedge.fxml"),
-    VISVERTEX("visvertex.fxml"),
-    OUTPUT("output.fxml");
+    ALTMENU("AltMenu.fxml"),
+    TEXTEDITOR("TextEditor.fxml"),
+    VISEDITOR("VisEditor.fxml"),
+    SIDEBAR("Sidebar.fxml"),
+    ABOUT("About.fxml"),
+    VISEDGE("VisEdge.fxml"),
+    VISVERTEX("VisVertex.fxml"),
+    OUTPUT("Output.fxml");
 
   private final String fileName;
 
