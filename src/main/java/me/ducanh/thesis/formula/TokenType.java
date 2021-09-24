@@ -1,4 +1,4 @@
-package me.ducanh.thesis.parser;
+package me.ducanh.thesis.formula;
 
 public enum TokenType {
 
@@ -10,7 +10,8 @@ public enum TokenType {
   FALSE(5),
   NOT(6),
   LEFTPAR(7),
-  RIGHTPAR(8);
+  RIGHTPAR(8),
+  ERROR(9);
 
   private final int ID;
 

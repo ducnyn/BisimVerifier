@@ -1,8 +1,8 @@
-package me.ducanh.thesis.parser;
+package me.ducanh.thesis.formula;
 
 public class Token {
-  TokenType type;
-  String value;
+  private final TokenType type;
+  private final String value;
 
   public Token(TokenType type){
     this.type = type;
@@ -23,5 +23,13 @@ public class Token {
     else {
       return "[" + type + "]";
     }
+  }
+
+  public TokenType getType(){
+    return type;
+  }
+
+  public String getValue(){
+    return value;
   }
 }

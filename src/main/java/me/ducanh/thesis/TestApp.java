@@ -1,26 +1,18 @@
 package me.ducanh.thesis;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
-import javafx.collections.SetChangeListener;
-import me.ducanh.thesis.parser.FormulaLexer;
+import me.ducanh.thesis.formula.FormulaLexer;
 
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
 import java.util.TreeSet;
 
 public class TestApp {
-    private static ObservableSet<Integer> intSet = FXCollections.observableSet(new TreeSet<Integer>());
+    private static ObservableSet<Integer> intSet = FXCollections.observableSet(new TreeSet<>());
     private static ObservableSet<Integer> int2Set = FXCollections.unmodifiableObservableSet(intSet);
 
 public static void main(String[] args){
 
-    FormulaLexer formulaLexer = new FormulaLexer("(<a>tt)||[b]ff");
-    System.out.println(formulaLexer.generateToken());
+    System.out.println(FormulaLexer.generateTokenList("(<asadat>)|[b]ff"));
 
 //    Set<Character> whiteSpace = Set.of('\t', ' ', '\n');
 //    String texte = "2 1  3   242 2";

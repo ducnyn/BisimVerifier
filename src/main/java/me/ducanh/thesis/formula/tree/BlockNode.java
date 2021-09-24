@@ -1,13 +1,13 @@
-package me.ducanh.thesis.parser;
+package me.ducanh.thesis.formula.tree;
 
 import me.ducanh.thesis.model.Vertex;
 
-public class ForAll implements FormulaTree {
+public class BlockNode implements TreeNode {
 
   private String action;
-  private FormulaTree child;
+  private TreeNode child;
 
-  public ForAll(String action, FormulaTree child){
+  public BlockNode(String action, TreeNode child){
     this.action = action;
     this.child = child;
   }
@@ -25,7 +25,7 @@ public class ForAll implements FormulaTree {
     return action;
   }
 
-  public FormulaTree getChild() {
+  public TreeNode getChild() {
     return child;
   }
 }

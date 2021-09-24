@@ -1,10 +1,10 @@
-package me.ducanh.thesis.parser;
+package me.ducanh.thesis.formula.tree;
 
 import me.ducanh.thesis.model.Vertex;
 
-public class Not implements FormulaTree
+public class NegationNode implements TreeNode
 {
-  FormulaTree child;
+  TreeNode child;
 
   @Override
   public Boolean evaluate(Vertex vertex) {

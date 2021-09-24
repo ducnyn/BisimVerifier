@@ -1,11 +1,17 @@
-package me.ducanh.thesis.parser;
+package me.ducanh.thesis.formula.tree;
 
 import me.ducanh.thesis.model.Vertex;
 
-public class Exists implements FormulaTree {
+public class DiamondNode implements TreeNode {
   String action;
-  FormulaTree child;
-  @Override
+  TreeNode child;
+
+    public DiamondNode(String action, TreeNode child) {
+      this.action = action;
+      this.child = child;
+    }
+
+    @Override
   public Boolean evaluate(Vertex vertex) {
     return vertex.getTargets(action).stream().anyMatch(targetVertex->child.evaluate(targetVertex));
   }
@@ -19,7 +25,7 @@ public class Exists implements FormulaTree {
     return action;
   }
 
-  public FormulaTree getChild() {
+  public TreeNode getChild() {
     return child;
   }
 }

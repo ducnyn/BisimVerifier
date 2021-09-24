@@ -1,6 +1,6 @@
-package me.ducanh.thesis.parser;
+package me.ducanh.thesis.formula.tree;
 
-public class Action {
+public class ActionNode {
   private String id;
 
   public String getId() {

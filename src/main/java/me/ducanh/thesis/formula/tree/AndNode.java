@@ -1,13 +1,13 @@
-package me.ducanh.thesis.parser;
+package me.ducanh.thesis.formula.tree;
 
 import me.ducanh.thesis.model.Vertex;
 
-public class And implements FormulaTree {
+public class AndNode implements TreeNode {
 
-  FormulaTree leftChild;
-  FormulaTree rightChild;
+  TreeNode leftChild;
+  TreeNode rightChild;
 
-  public And(FormulaTree leftChild, FormulaTree rightChild){
+  public AndNode(TreeNode leftChild, TreeNode rightChild){
     this.leftChild = leftChild;
     this.rightChild = rightChild;
   }
@@ -18,10 +18,10 @@ public class And implements FormulaTree {
   }
   @Override
   public String getString(){return "("+leftChild.toString() + " && " + rightChild.toString()+")";}
-  public FormulaTree getLeftChild() {
+  public TreeNode getLeftChild() {
     return leftChild;
   }
-  public FormulaTree getRightChild() {
+  public TreeNode getRightChild() {
     return rightChild;
   }
 }

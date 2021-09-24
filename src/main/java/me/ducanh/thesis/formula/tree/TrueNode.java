@@ -1,8 +1,8 @@
-package me.ducanh.thesis.parser;
+package me.ducanh.thesis.formula.tree;
 
 import me.ducanh.thesis.model.Vertex;
 
-public class TT implements FormulaTree {
+public class TrueNode implements TreeNode {
   @Override
   public Boolean evaluate(Vertex vertex) {
     return true;
