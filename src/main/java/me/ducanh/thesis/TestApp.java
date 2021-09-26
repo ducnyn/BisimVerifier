@@ -3,16 +3,56 @@ package me.ducanh.thesis;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import me.ducanh.thesis.formula.FormulaLexer;
+import me.ducanh.thesis.formula.FormulaParser;
+import me.ducanh.thesis.formula.Token;
+import me.ducanh.thesis.formula.tree.TreeNode;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
 import java.util.TreeSet;
 
 public class TestApp {
     private static ObservableSet<Integer> intSet = FXCollections.observableSet(new TreeSet<>());
     private static ObservableSet<Integer> int2Set = FXCollections.unmodifiableObservableSet(intSet);
 
-public static void main(String[] args){
+public static void main(String[] args) {
+    while (true) {
+        System.out.println("enter some formula:");
+        Scanner scanner = new Scanner(System.in);
+        String formula = scanner.next();
 
-    System.out.println(FormulaLexer.generateTokenList("(<asadat>)|[b]ff"));
+        try {
+            List<Token> tokenList = FormulaLexer.generateTokenList(formula);
+            System.out.println(tokenList);
+            TreeNode rootNode = FormulaParser.parse(tokenList);
+            System.out.println(rootNode);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            continue;
+        }
+
+        if (!cont()) {
+            break;
+        }
+    }
+
+
+}
+    private static Boolean cont() {
+
+        while(true) {
+            System.out.println("want to enter new formula? y/n");
+            String cont = new Scanner(System.in).next();
+            if (cont.equals("y")) {
+                return true;
+            } else if (cont.equals("n")) {
+                return false;
+            }
+        }
+    }
+
 
 //    Set<Character> whiteSpace = Set.of('\t', ' ', '\n');
 //    String texte = "2 1  3   242 2";
@@ -41,7 +81,7 @@ public static void main(String[] args){
 //
 //    intSet.add(1);
 //    int2Set.add(2);
-}
+//}
 //    private static final ArrayList<Integer> iList = new ArrayList<>();
 //
 //    public static void main(String[] args){

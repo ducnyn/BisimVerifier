@@ -9,7 +9,7 @@ public class TrueNode implements TreeNode {
   }
 
   @Override
-  public String getString() {
+  public String toString() {
     return "tt";
   }
 }

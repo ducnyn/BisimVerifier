@@ -12,7 +12,7 @@ public class NegationNode implements TreeNode
   }
 
   @Override
-  public String getString() {
-    return "-"+child.getString();
+  public String toString() {
+    return "-"+child.toString();
   }
 }

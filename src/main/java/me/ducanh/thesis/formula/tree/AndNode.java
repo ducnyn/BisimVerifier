@@ -17,7 +17,7 @@ public class AndNode implements TreeNode {
     return leftChild.evaluate(vertex) && rightChild.evaluate(vertex);
   }
   @Override
-  public String getString(){return "("+leftChild.toString() + " && " + rightChild.toString()+")";}
+  public String toString(){return "("+leftChild.toString() + " && " + rightChild.toString()+")";}
   public TreeNode getLeftChild() {
     return leftChild;
   }

@@ -11,7 +11,7 @@ public enum TokenType {
   NOT(6),
   LEFTPAR(7),
   RIGHTPAR(8),
-  ERROR(9);
+  EOL(9);
 
   private final int ID;
 

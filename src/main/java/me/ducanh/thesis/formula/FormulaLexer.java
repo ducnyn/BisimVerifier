@@ -23,7 +23,7 @@ public class FormulaLexer {
     return actionBuilder.toString();
   }
 
-  public static List<Token> generateTokenList(String formulaString){
+  public static List<Token> generateTokenList(String formulaString) throws NoMatchingTokenException{
     List<Token> tokenList = new ArrayList<>();
     StringCharacterIterator iter = new StringCharacterIterator(formulaString);
     while(iter.current()!=CharacterIterator.DONE){
@@ -35,7 +35,7 @@ public class FormulaLexer {
         tokenList.add(new Token(TokenType.AND));
       } else if (iter.current() == '|') {
         tokenList.add(new Token(TokenType.OR));
-      } else if (iter.current() == '-') {
+      } else if (iter.current() == '!') {
         tokenList.add(new Token(TokenType.NOT));
       } else if (iter.current() == '('){
         tokenList.add(new Token(TokenType.LEFTPAR));
@@ -45,19 +45,26 @@ public class FormulaLexer {
         if (iter.next()=='t'){
           tokenList.add(new Token(TokenType.TRUE));
         } else {
-          tokenList.add(new Token(TokenType.ERROR,"undefined character seq t"+iter.current()));
+          throw new NoMatchingTokenException("undefined character sequence: t"+iter.current());
+//          tokenList.add(new Token(TokenType.ERROR,"undefined character seq t"+iter.current()));
         }
       } else if (iter.current() == 'f') {
         if (iter.next()=='f'){
           tokenList.add(new Token(TokenType.FALSE));
         } else {
-          tokenList.add(new Token(TokenType.ERROR,"undefined character seq f"+iter.current()));
+          throw new NoMatchingTokenException("undefined character sequence: f"+iter.current());
+//          tokenList.add(new Token(TokenType.ERROR,"undefined character seq f"+iter.current()));
         }
       } else if (!whiteSpace.contains(iter.current())){
-        tokenList.add(new Token(TokenType.ERROR,"undefined character \"" + iter.current() +"\""));
+        StringBuilder undefined = new StringBuilder(String.valueOf(iter.current()));
+        while(iter.current()!=CharacterIterator.DONE){
+          undefined.append(iter.next());
+        }
+        throw new NoMatchingTokenException("undefined character: "+undefined);
+//        tokenList.add(new Token(TokenType.ERROR,"undefined character \"" + iter.current() +"\""));
       }
       iter.next();
-    }
+    } tokenList.add(new Token(TokenType.EOL,"EOL"));
     return tokenList;
   }
 }

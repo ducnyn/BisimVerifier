@@ -15,29 +15,40 @@ public class FormulaParser {
 
 
     private static void iterate() {
-        currentToken = iter.next();
+        if (iter.hasNext()){
+            currentToken = iter.next();
+        } else {
+            currentToken = null;
+        }
     }
 
-    public static TreeNode parse(List<Token> tokenList) {
+    public static TreeNode parse(List<Token> tokenList) throws SyntaxErrorException {
         iter = tokenList.iterator();
         TreeNode result;
 
         if (!iter.hasNext()) {
             return null;
         }
-
+        iterate();
         result = parseConnective();
 
-        if (iter.hasNext()) { // shold be finished after parsing the whole expression
-            throw new RuntimeException("Invalid Syntax");
+        if (iter.hasNext()) { // should be finished after parsing the whole expression
+            throw new SyntaxErrorException("Expected: Connective operator. Received: "+ iter.next());
         }
         return result;
     }
 
-    private static TreeNode parseConnective() {
+    private static TreeNode parseConnective() throws SyntaxErrorException{
         TreeNode result = parseModal(); //get first modal
         while (currentToken != null && connectiveTokens.contains(currentToken.getType())) {
-            if (currentToken.getType() == TokenType.AND) {
+            if(currentToken.getType() == TokenType.LEFTPAR){
+                    iterate();
+                    result = parseConnective();
+                    if(currentToken.getType()!=TokenType.RIGHTPAR){
+                        throw new SyntaxErrorException("Missing right parenthesis for >("+result);
+                    } //testCase with several missing parentheses should return the deepest missing one
+                    break;
+            } else if (currentToken.getType() == TokenType.AND) {
                 iterate(); //iterate to get to next modal
                 result = new AndNode(result, parseModal());
             } else {
@@ -45,14 +56,21 @@ public class FormulaParser {
                 new OrNode(result, parseModal());
             }
         }
-
         return result;
     }
 
-    private static TreeNode parseModal() {
+    private static TreeNode parseModal() throws SyntaxErrorException{
         TreeNode result; //get first modal
         String action = currentToken.getValue();
         switch (currentToken.getType()) {
+            case LEFTPAR:
+                iterate();
+
+                result = parseConnective();
+                if(currentToken.getType()!=TokenType.RIGHTPAR){
+                    throw new SyntaxErrorException("Missing right parenthesis for >("+result);
+                } //testCase with several missing parentheses should return the deepest missing one
+                break;
             case BLOCK:
                 iterate();
                 result = new BlockNode(action, parseModal());
@@ -70,7 +88,7 @@ public class FormulaParser {
                 result = new FalseNode();
                 break;
             default:
-                result = null;
+                throw new SyntaxErrorException("Modal formula expected, starting with <,[,tt,ff or (. Instead received : "+currentToken.getType());
         }
         return result;
     }

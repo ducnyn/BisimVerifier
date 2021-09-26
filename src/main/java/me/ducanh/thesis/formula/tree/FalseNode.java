@@ -9,7 +9,7 @@ public class FalseNode implements TreeNode {
   }
 
   @Override
-  public String getString() {
+  public String toString() {
     return "ff";
   }
 }

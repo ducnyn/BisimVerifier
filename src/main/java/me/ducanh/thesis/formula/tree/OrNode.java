@@ -19,7 +19,7 @@ public class OrNode implements TreeNode {
   }
 
   @Override
-  public String getString(){return "("+leftChild.toString() + " || " + rightChild.toString()+")";}
+  public String toString(){return "("+leftChild.toString() + " || " + rightChild.toString()+")";}
 
   public TreeNode getLeftChild() {
     return leftChild;

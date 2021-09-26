@@ -8,7 +8,7 @@ public interface TreeNode {
 
    Boolean evaluate(Vertex vertex);
 
-   String getString();
+   String toString();
 
 
 }
