@@ -64,7 +64,7 @@ public class FormulaLexer {
 //        tokenList.add(new Token(TokenType.ERROR,"undefined character \"" + iter.current() +"\""));
       }
       iter.next();
-    } tokenList.add(new Token(TokenType.EOL,"EOL"));
+    } tokenList.add(new Token(TokenType.EOL,"End of Line"));
     return tokenList;
   }
 }

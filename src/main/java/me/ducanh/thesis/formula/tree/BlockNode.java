@@ -18,7 +18,7 @@ public class BlockNode implements TreeNode {
 
   @Override
   public String toString() {
-    return "(" + "[" + action + "]" + child.toString() + ")";
+    return   "[" + action + "]" + child.toString() ;
   }
 
   public String getAction() {
