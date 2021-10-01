@@ -21,7 +21,8 @@ public class FormulaParser {
         }
     }
 
-    public static TreeNode parse(List<Token> tokenList) throws SyntaxErrorException {
+    public static TreeNode parse(String formulaString) throws SyntaxErrorException, NoMatchingTokenException {
+        List<Token> tokenList = FormulaLexer.generateTokenList(formulaString);
         iter = tokenList.iterator();
         TreeNode result;
 
@@ -62,7 +63,7 @@ public class FormulaParser {
                 }
                 result = parseConnective();
                 if(currentToken.getType()!=TokenType.RIGHTPAR){
-                    throw new SyntaxErrorException("Missing right parenthesis for >("+result);
+                    throw new SyntaxErrorException("Missing right parenthesis for ("+result);
                 } //testCase with several missing parentheses should return the deepest missing one
                 iterate();
                 break;

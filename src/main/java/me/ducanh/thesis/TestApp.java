@@ -25,7 +25,7 @@ public static void main(String[] args) {
         try {
             List<Token> tokenList = FormulaLexer.generateTokenList(formula);
             System.out.println(tokenList);
-            TreeNode rootNode = FormulaParser.parse(tokenList);
+            TreeNode rootNode = FormulaParser.parse(formula);
             System.out.println(rootNode);
 
         } catch (Exception e) {

@@ -16,6 +16,6 @@ public class NotNode implements TreeNode
 
   @Override
   public String toString() {
-    return "-"+child.toString();
+    return "!"+child.toString();
   }
 }

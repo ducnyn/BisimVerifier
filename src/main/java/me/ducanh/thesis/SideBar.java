@@ -2,6 +2,10 @@ package me.ducanh.thesis;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextInputDialog;
+import me.ducanh.thesis.formula.FormulaParser;
+import me.ducanh.thesis.formula.NoMatchingTokenException;
+import me.ducanh.thesis.formula.SyntaxErrorException;
+import me.ducanh.thesis.formula.tree.TreeNode;
 import me.ducanh.thesis.model.*;
 import me.ducanh.thesis.util.StringUtils;
 
@@ -180,10 +184,13 @@ public class SideBar {
                 Vertex firstVertex = model.getVertex(parseInt(first));
                 Vertex secondVertex = model.getVertex(parseInt(second));
                 Thread taskThread = new Thread(() -> {
-
-                    String deltaFormula = Algorithms.getDeltaFormula(
-                            firstVertex, secondVertex, Algorithms.bisim(model.getVertices()).getKey());
-                    model.setOutputString("\n Distinguishing Formula: " + deltaFormula);
+                    try {
+                        model.setOutputString( "\n Distinguishing Formula: " +
+                                Algorithms.getDeltaFormula(firstVertex, secondVertex, Algorithms.bisim(model.getVertices()).getKey())
+                        );
+                    } catch (NoDistinguishingFormulaException e) {
+                        model.setOutputString(e.getMessage());
+                    }
                 });
                 taskThread.setDaemon(true);
                 taskThread.start();
@@ -208,19 +215,26 @@ public class SideBar {
         } while (firstOK.isPresent() && (!StringUtils.notInteger(first) && model.getVertex(parseInt(first)) == null || StringUtils.notInteger(first) || first.isBlank() || first.isEmpty()));
 
         if (firstOK.isPresent()) {
+            TreeNode formulaTree = null;
             do {
                 TextInputDialog secondPrompt = new TextInputDialog();
                 secondPrompt.setHeaderText("Which Formula should be evaluated?");
                 secondOK = secondPrompt.showAndWait();
                 second = secondPrompt.getEditor().getText();
-                System.out.println("is formula? "+ Algorithms.isFormula(second));
-            } while (secondOK.isPresent() && (!Algorithms.isFormula(second) || second.isBlank() || second.isEmpty()));
+                try {
+                    formulaTree = FormulaParser.parse(second);
+                } catch (SyntaxErrorException | NoMatchingTokenException e) {
+                    System.out.println(e.getMessage());
+                    formulaTree = null;
+                }
+            } while (secondOK.isPresent() && (formulaTree==null));
 
             if (secondOK.isPresent()) {
+                final TreeNode finalTree = formulaTree;
                 Vertex vertex = model.getVertex(parseInt(first));
                 String formula = second;
                 Thread taskThread = new Thread(() -> {
-                    if (Algorithms.evaluate(vertex, formula)) {
+                    if (finalTree.evaluate(vertex)) {
                         model.setOutputString("Vertex " + vertex + " satisfies the formula: " + formula);
                     } else {
                         model.setOutputString("Vertex " + vertex + " doesn't satisfy the formula: " + formula);
