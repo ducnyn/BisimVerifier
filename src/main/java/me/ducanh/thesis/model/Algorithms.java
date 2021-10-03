@@ -12,18 +12,18 @@ import static java.util.stream.Collectors.toSet;
 public class Algorithms {
 
 
-    //  private static Map<Boolean, Set<Integer>> split(Model model, Set<Integer> block, BlockEdge splitter) {
+    //  private static Map<Boolean, Set<Integer>> split(Model model, Set<Integer> blockNode, BlockEdge splitter) {
 //    String label = splitter.getLabel();
-//    Block targetBlock = splitter.getTargetBlock();
-//    return block.stream()
+//    BlockNode targetBlock = splitter.getTargetBlock();
+//    return blockNode.stream()
 //            .collect(partitioningBy(
 //                    vertex -> model.getTargets(vertex, label).stream()
 //                            .anyMatch(targetBlock::contains)
 //                    , toSet()));
 //  }
-    public static Map<Boolean, Set<Vertex>> split(Block block, BlockEdge blockEdge) {
-//    System.out.println("attempting to split " + block);
-        return block.stream()
+    public static Map<Boolean, Set<Vertex>> split(BlockNode blockNode, BlockEdge blockEdge) {
+//    System.out.println("attempting to split " + blockNode);
+        return blockNode.stream()
                 .collect(partitioningBy(
                         vertex -> vertex.getTargets(blockEdge.getLabel())
                                 .stream()
@@ -33,12 +33,12 @@ public class Algorithms {
     }
 
 
-    public static Pair<Block, Set<Block>> bisim(Set<Vertex> vertices) {
-        HashMap<Vertex, Block> containingBlock = new HashMap<>();
-        Set<Block> newPartition = new HashSet<>();
-        Set<Block> parentPartition = new HashSet<>();
-        Block rootBlock = new Block(vertices);
-        newPartition.add(rootBlock);
+    public static Pair<BlockNode, Set<BlockNode>> bisim(Set<Vertex> vertices) {
+        HashMap<Vertex, BlockNode> containingBlock = new HashMap<>();
+        Set<BlockNode> newPartition = new HashSet<>();
+        Set<BlockNode> parentPartition = new HashSet<>();
+        BlockNode rootBlockNode = new BlockNode(vertices);
+        newPartition.add(rootBlockNode);
 
 
         while (!newPartition.equals(parentPartition)) {
@@ -46,114 +46,123 @@ public class Algorithms {
             parentPartition = Set.copyOf(newPartition);
             newPartition = new HashSet<>();
 
-            for (Block block : parentPartition) {
-                for (Vertex vertex : block) {
-                    containingBlock.put(vertex, block);
+            for (BlockNode blockNode : parentPartition) {
+                for (Vertex vertex : blockNode) {
+                    containingBlock.put(vertex, blockNode);
                 }
             }
 
-            for (Block block : parentPartition) {
+            for (BlockNode blockNode : parentPartition) {
 
                 Optional<BlockEdge> splitter =
-                        block.stream()
+                        blockNode.stream()
                                 .flatMap(vertex -> vertex.getEdges().stream())
                                 .map(edge -> new BlockEdge(edge.getLabel(), containingBlock.get(edge.getTarget())))
-                                .filter(bEdge -> !split(block, bEdge).containsValue(block.getVertices()))
+                                .filter(bEdge -> !split(blockNode, bEdge).containsValue(blockNode.getVertices()))
                                 .findAny();
 
                 if (splitter.isPresent()) {
-                    Map<Boolean, Set<Vertex>> splitBlock = split(block, splitter.get());
-                    block.setSplitter(splitter.get());
-                    block.setLeftChild(new Block(splitBlock.get(true)));
-                    block.setRightChild(new Block(splitBlock.get(false)));
-                    newPartition.addAll(List.of(block.left(), block.right()));
-//          System.out.println("\tblock "+block+" split by " + block.getSplitter());
-//          System.out.println("\tinto " + block.left() + " and " + block.right());b
+                    Map<Boolean, Set<Vertex>> splitBlock = split(blockNode, splitter.get());
+                    blockNode.setSplitter(splitter.get());
+                    blockNode.setLeftChild(new BlockNode(splitBlock.get(true)));
+                    blockNode.setRightChild(new BlockNode(splitBlock.get(false)));
+                    newPartition.addAll(List.of(blockNode.left(), blockNode.right()));
+//          System.out.println("\tblockNode "+blockNode+" split by " + blockNode.getSplitter());
+//          System.out.println("\tinto " + blockNode.left() + " and " + blockNode.right());b
                 } else {
-                    newPartition.add(block);
+                    newPartition.add(blockNode);
                 }
             }
         }
 //    System.out.println("Final partition(bisimilar sets): " + newPartition);
-        return new Pair<>(rootBlock, newPartition);
+        return new Pair<>(rootBlockNode, newPartition);
     }
 
 
-    private static Block findLastBlock(Vertex state1, Vertex state2, Block root) throws NoDistinguishingFormulaException {
-        Block block = root;
+    private static BlockNode findLastBlock(Vertex state1, Vertex state2, BlockNode root) throws NoDistinguishingFormulaException {
+        BlockNode blockNode = root;
 
         while (true) {
-            if (block.getSplitter() == null) {
-                return block;
+            if (blockNode.getSplitter() == null) {
+                return blockNode;
             }
-            if (block.left().containsAll(state1, state2)) {
-                block = block.left();
-            } else if (block.right().containsAll(state1, state2)) {
-                block = block.right();
+            if (blockNode.left().containsAll(state1, state2)) {
+                blockNode = blockNode.left();
+            } else if (blockNode.right().containsAll(state1, state2)) {
+                blockNode = blockNode.right();
             } else {
-                return block; //neither left or right contains all -> next split will separate
+                return blockNode; //neither left or right contains all -> next split will separate
             }
         }
 
     }
 
-    public static TreeNode getDeltaFormula(Vertex state1, Vertex state2, Block rootBlock) throws NoDistinguishingFormulaException {
-        int minFormulaSize = Integer.MAX_VALUE;
+    public static TreeNode getDeltaFormula(Vertex state1, Vertex state2, Set<Vertex> vertexSet) throws NoDistinguishingFormulaException {
 
-        Block lastBlock = findLastBlock(state1, state2, rootBlock);
-        if (lastBlock.getSplitter() == null) {
+        BlockNode rootBlockNode = bisim(vertexSet).getKey();
+
+        TreeNode result = clevelandAlgo(state1,state2, rootBlockNode);
+        System.out.println(result);
+        return result;
+    }
+
+    private static TreeNode clevelandAlgo(Vertex state1, Vertex state2, BlockNode rootBlockNode) throws NoDistinguishingFormulaException {
+
+        BlockNode lastBlockNode = findLastBlock(state1, state2, rootBlockNode);
+        if (lastBlockNode.getSplitter() == null) {
             throw new NoDistinguishingFormulaException(
                     "The states are bisimilar. No formula distinguishes them.");
         }
+        if(!(rootBlockNode.contains(state1) & rootBlockNode.contains(state2))){
+            throw new RuntimeException("one or more of the compared states does not exist in the given set of vertices");
+        }
+
+        BlockEdge splitter = lastBlockNode.getSplitter();
+        String splitAction = splitter.getLabel();
+        Set<Vertex> splitBlock = splitter.getTargetBlock().getVertices();
 
         Vertex leftState;
         Vertex rightState;
         boolean reversed;
 
-        if (lastBlock.left().contains(state1)) {
+        if (lastBlockNode.left().contains(state1) & lastBlockNode.right().contains(state2)) {
             leftState = state1;
             rightState = state2;
             reversed = false;
-        } else {
+        } else if(lastBlockNode.left().contains(state2) & lastBlockNode.right().contains(state1)){
             leftState = state2;
             rightState = state1;
             reversed = true;
+        } else { //Test should never throw this
+            throw new RuntimeException("state 1 and 2 are not split or not contained in lastBlockNode.");
         }
 
-        Set<Vertex> SL;
-        Set<Vertex> SR;
 
-        String splitAction = lastBlock.getSplitter().getLabel();
-        Set<Vertex> splitBlock = lastBlock.getSplitter().getTargetBlock().getVertices();
+        Set<Vertex> SL = Sets.intersection(leftState.getTargets(splitAction), splitBlock);
+        Set<Vertex> SR = rightState.getTargets(splitAction);
+        int minFormulaSize = Integer.MAX_VALUE;
+        TreeNode nextNode = new TrueNode();
+//        TreeNode result = new DiamondNode(splitAction,nextNode);
 
-        SL = Sets.intersection(leftState.getTargets(splitAction), splitBlock);
-        SR = rightState.getTargets(splitAction);
-
-        TreeNode nextNode = null;
         for (Vertex LTarget : SL) {
             List<TreeNode> Formulas = new ArrayList<>(); //GAMMA
 
             for (Vertex RTarget : SR) {
-                Formulas.add(getDeltaFormula(LTarget, RTarget, rootBlock));
-                System.out.println("deltaFormula of " + LTarget + " and " + RTarget + " in Block " + rootBlock);
+                Formulas.add(clevelandAlgo(LTarget, RTarget, rootBlockNode));
             }
-            System.out.println("All SL SR deltaformulas: " + Formulas);
 
-            for (TreeNode formula : Formulas) { //for each Phi in Gamma
+            for (TreeNode formula : Formulas) {
                 ArrayList<TreeNode> otherFormulas = new ArrayList<>(Formulas);
                 otherFormulas.remove(formula);
 
                 if (SR.stream().noneMatch(vertex -> (!formula.evaluate(vertex)
-                        && otherFormulas.stream().allMatch(otherFormula -> formula.evaluate(vertex))))) {
+                        && otherFormulas.stream().allMatch(otherFormula -> otherFormula.evaluate(vertex))))) {
                     Formulas.remove(formula);
-                    System.out.println("removed formula" + formula);
                 }
-
             }
 
             if (Formulas.size() < minFormulaSize) {
                 minFormulaSize = Formulas.size();
-//        deltaFormula = new StringBuilder();
                 if (Formulas.size() == 1) {
                     nextNode = Formulas.get(0);
                 } else if (Formulas.size() > 1) {
@@ -164,23 +173,20 @@ public class Algorithms {
                 }
             }
         }
-        TreeNode result = new DiamondNode(splitAction, Objects.requireNonNullElse(nextNode,new TrueNode()));
-        if (reversed) result = new NotNode(result);
-
-        System.out.println(result);
-        return result;
-    }
+        TreeNode result = new DiamondNode(splitAction,nextNode);
+        return reversed? new NotNode(result) : result;
+    } //TEST IT AGAIN
 
 
     //computes a minimalistic formula satisfied by v1, but not v2. Both formulas satisfy the formula up until the second last vertex of the described path.
-//  public static String getDeltaFormula(Vertex s1, Vertex s2, Block rootBlock) throws NoDistinguishingFormulaException {
-//    Block currentBlock = rootBlock;
+//  public static String getDeltaFormula(Vertex s1, Vertex s2, BlockNode rootBlock) throws NoDistinguishingFormulaException {
+//    BlockNode currentBlock = rootBlock;
 //    StringBuilder deltaFormula = new StringBuilder();
 //
 //    //base case
 //    System.out.println("\n\nComparing " + s1 + " with " + s2);
 //    while (true) {
-//      System.out.println("current Block is " + currentBlock);
+//      System.out.println("current BlockNode is " + currentBlock);
 //      System.out.println("current left is " + currentBlock.left());
 //      System.out.println("current right is "+currentBlock.right());
 //      System.out.println("current Splitter is " + currentBlock.getSplitter());
@@ -228,7 +234,7 @@ public class Algorithms {
 //
 //      for (Vertex RTarget : SR) {
 //        Formulas.add(getDeltaFormula(LTarget, RTarget, rootBlock));
-//        System.out.println("deltaFormula of "+LTarget +" and "+RTarget+" in Block " +rootBlock);
+//        System.out.println("deltaFormula of "+LTarget +" and "+RTarget+" in BlockNode " +rootBlock);
 //      }
 //      System.out.println("All SL SR deltaformulas: "+Formulas);
 //

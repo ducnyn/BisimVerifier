@@ -2,7 +2,7 @@ package me.ducanh.thesis.model;
 
 public class BlockEdge {
   private String label;
-  private Block targetBlock;
+  private BlockNode targetBlockNode;
 
   public String getLabel() {
     return label;
@@ -12,21 +12,21 @@ public class BlockEdge {
     this.label = label;
   }
 
-  public Block getTargetBlock() {
-    return targetBlock;
+  public BlockNode getTargetBlock() {
+    return targetBlockNode;
   }
 
-  public void setTargetBlock(Block targetBlock) {
-    this.targetBlock = targetBlock;
+  public void setTargetBlock(BlockNode targetBlockNode) {
+    this.targetBlockNode = targetBlockNode;
   }
 
-  public BlockEdge(String label, Block targetBlock){
+  public BlockEdge(String label, BlockNode targetBlockNode){
     this.label = label;
-    this.targetBlock = targetBlock;
+    this.targetBlockNode = targetBlockNode;
   }
 
   @Override
   public String toString() {
-    return "-"+label+">"+targetBlock.toString();
+    return "-"+label+">"+ targetBlockNode.toString();
   }
 }

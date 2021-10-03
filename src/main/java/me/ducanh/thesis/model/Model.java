@@ -10,14 +10,13 @@ import javafx.collections.*;
 import me.ducanh.thesis.util.DotService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Model {
   private final ObservableMap<Integer, ObservableSet<Edge>> obsGraph = FXCollections.observableMap(new TreeMap<>());
   private final ObservableMap<Integer,Vertex> obsVertices= FXCollections.observableMap(new TreeMap<>());
   private final ObservableSet<Edge> obsEdgeSet = FXCollections.observableSet(new TreeSet<>());
 
-  private final ObservableSet<Block> partition = FXCollections.observableSet(new HashSet<>());
+  private final ObservableSet<BlockNode> partition = FXCollections.observableSet(new HashSet<>());
   private final ObservableSet<Integer> selectedVertices = FXCollections.observableSet();
   private final TreeSet<Integer> deletedIDs = new TreeSet<>();
   private final StringProperty dotString = new SimpleStringProperty("digraph {\n\n}");
@@ -195,11 +194,11 @@ public class Model {
     newAlert.set(false);
   }
 
-  public ObservableSet<Block> getPartition() {
+  public ObservableSet<BlockNode> getPartition() {
     return partition;
   }
 
-  public void updatePartition(Set<Block> newPartition) {
+  public void updatePartition(Set<BlockNode> newPartition) {
 
     this.partition.clear();
     this.partition.addAll(newPartition);

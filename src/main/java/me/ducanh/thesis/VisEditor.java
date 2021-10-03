@@ -13,8 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Line;
-import me.ducanh.thesis.model.Block;
+import me.ducanh.thesis.model.BlockNode;
 import me.ducanh.thesis.model.Edge;
 import me.ducanh.thesis.model.Model;
 import me.ducanh.thesis.model.Vertex;
@@ -112,7 +111,7 @@ public class VisEditor {
       }
     });
 
-    model.getPartition().addListener((SetChangeListener<Block>) change -> {
+    model.getPartition().addListener((SetChangeListener<BlockNode>) change -> {
       if (change.wasAdded()) {
         if (change.getElementAdded().getVertices().size() > 1) {
           Paint color = Colors.array[colorID++ % 120];
