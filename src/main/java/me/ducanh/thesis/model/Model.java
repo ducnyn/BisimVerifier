@@ -57,22 +57,11 @@ public class Model {
               obsVertices.get(edge.getSource().getID()).getEdges().remove(edge);
           }
         }
-
       }
-
       dotString.set(DotService.write(obsVertices.keySet(), getFlatEdges()));
 
     });
-
-
-    obsEdgeSet.addListener((SetChangeListener<? super Edge>) change -> {
-      System.out.println(obsEdgeSet + " in obsEdgeSet now");
-    });
-
-
-
-
-
+    obsEdgeSet.addListener((SetChangeListener<? super Edge>) change -> System.out.println(obsEdgeSet + " in obsEdgeSet now"));
   }
 
   public void addEdge(int source, String label, int target) {
