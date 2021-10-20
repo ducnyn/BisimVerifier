@@ -13,10 +13,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import me.ducanh.thesis.model.BlockNode;
-import me.ducanh.thesis.model.Edge;
+import me.ducanh.thesis.model.Block;
+import me.ducanh.thesis.model.CustomEdge;
 import me.ducanh.thesis.model.Model;
-import me.ducanh.thesis.model.Vertex;
+import me.ducanh.thesis.model.CustomVertex;
 import me.ducanh.thesis.util.Colors;
 
 import java.io.IOException;
@@ -24,7 +24,7 @@ import java.util.HashMap;
 
 public class VisEditor {
   private final HashMap<Integer, VisVertex> drawnVertices = new HashMap<>();
-  private final HashMap<Edge,VisEdge> drawnEdges = new HashMap<>();
+  private final HashMap<CustomEdge,VisEdge> drawnEdges = new HashMap<>();
   @FXML
   ScrollPane scrollPane ;
   @FXML
@@ -56,11 +56,11 @@ public class VisEditor {
       }
     });
 
-    model.getFlatEdges().addListener((SetChangeListener<? super Edge>) change->{
+    model.getFlatEdges().addListener((SetChangeListener<? super CustomEdge>) change->{
 
       if(change.wasAdded()){
         try {
-          Edge edge = change.getElementAdded();
+          CustomEdge edge = change.getElementAdded();
           FXMLLoader visEdgeLoader = new FXMLLoader(getClass().getResource(FXMLPATH.VISEDGE.getFileName()));
           Node visEdgeRoot = visEdgeLoader.load();
           VisEdge visEdge = visEdgeLoader.getController();
@@ -111,13 +111,13 @@ public class VisEditor {
       }
     });
 
-    model.getPartition().addListener((SetChangeListener<BlockNode>) change -> {
+    model.getPartition().addListener((SetChangeListener<Block>) change -> {
       if (change.wasAdded()) {
         if (change.getElementAdded().getVertices().size() > 1) {
           Paint color = Colors.array[colorID++ % 120];
           System.out.println("block added (colorListener" + change.getElementAdded().getVertices());
 
-          for (Vertex vertex : change.getElementAdded()) {
+          for (CustomVertex vertex : change.getElementAdded()) {
             drawnVertices.get(vertex.getID()).setFill(color);
           }
         } else if (change.getElementAdded().getVertices().size() == 1){

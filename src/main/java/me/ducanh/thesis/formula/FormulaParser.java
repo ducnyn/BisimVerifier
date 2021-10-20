@@ -69,7 +69,7 @@ public class FormulaParser {
                 break;
             case BLOCK:
                 iterate();
-                result = new BlockNode(action, parseModal());
+                result = new Block(action, parseModal());
                 break;
             case DIAMOND:
                 iterate();

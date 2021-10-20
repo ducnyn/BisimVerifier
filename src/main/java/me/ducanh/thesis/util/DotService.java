@@ -1,11 +1,9 @@
 package me.ducanh.thesis.util;
 
-import javafx.collections.ObservableSet;
-import me.ducanh.thesis.model.Edge;
+import me.ducanh.thesis.model.CustomEdge;
 import me.ducanh.thesis.model.Model;
 
 import java.util.Collection;
-import java.util.List;
 
 public class DotService {
 private Model model;
@@ -20,7 +18,7 @@ public static void parse(String string) {
 //public final String getDotString() {
 //    return dotString.get();
 //}
-public static String write(Collection<Integer> vertices, Collection<Edge> edges){
+public static String write(Collection<Integer> vertices, Collection<CustomEdge> edges){
 
 
 
@@ -44,16 +42,16 @@ public static String write(Collection<Integer> vertices, Collection<Edge> edges)
         graphString.append("\n");
 
 
-        for (Edge edge : edges){
+        for (CustomEdge edge : edges){
             graphString.append("\n\t");
 
                 //        graphString
 //                .append("\n\t")
-//                .append(Edge.getSource())
+//                .append(CustomEdge.getSource())
 //                .append(" -> ")
-//                .append(Edge.getTarget())
+//                .append(CustomEdge.getTarget())
 //                .append("[label = ")
-//                .append(Edge.getLabel())
+//                .append(CustomEdge.getLabel())
 //                .append("]");
                 graphString
                         .append("\n\t")

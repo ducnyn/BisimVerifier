@@ -58,7 +58,7 @@ public class SideBar {
 //        model.addEdge(6, "c", 7);
 //
 //
-//        BlockNode rootBlock = Algorithms.bisim(model.getVertices()).getKey();
+//        Block rootBlock = Algorithms.bisim(model.getVertices()).getKey();
 //        System.out.println("The deltaFormula is " + Algorithms.getDeltaFormula(model.getVertex(1), model.getVertex(4), rootBlock));
 //
 //        for (int i = 1; i < 7; i++) {
@@ -122,8 +122,8 @@ public class SideBar {
     @FXML
     private void randomEdges() {
         model.removeAllEdges();
-        ArrayList<Vertex> vertices = new ArrayList<>(model.getVertices());
-        for (Vertex vertex : vertices) {
+        ArrayList<CustomVertex> vertices = new ArrayList<>(model.getVertices());
+        for (CustomVertex vertex : vertices) {
             String alphabet = "abc";
 
             Random random = new Random();
@@ -131,7 +131,7 @@ public class SideBar {
 
             for (int j = 0; j < edgesOutDegree; j++) {
                 String randomLabel = String.valueOf(alphabet.charAt(random.nextInt(alphabet.length())));
-                Vertex randomVertex = vertices.get(random.nextInt(vertices.size() - 1));
+                CustomVertex randomVertex = vertices.get(random.nextInt(vertices.size() - 1));
                 model.addEdge(vertex.getID(), randomLabel, randomVertex.getID());
             }
         }
@@ -144,7 +144,7 @@ public class SideBar {
         Thread taskThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                Set<BlockNode> partition = Algorithms.bisim(model.getVertices()).getValue();
+                Set<Block> partition = Algorithms.bisim(model.getVertices()).getValue();
                 model.setOutputString("\n Equivalence classes (Bisimulation): \n" + partition.toString());
                 model.updatePartition(partition);
                 System.out.println("Vertices: " + model.getVertices());
@@ -181,8 +181,8 @@ public class SideBar {
             } while (secondOK.isPresent() && (!StringUtils.notInteger(second) && model.getVertex(parseInt(second)) == null || StringUtils.notInteger(second) || second.isBlank() || second.isEmpty()));
 
             if (secondOK.isPresent()) {
-                Vertex firstVertex = model.getVertex(parseInt(first));
-                Vertex secondVertex = model.getVertex(parseInt(second));
+                CustomVertex firstVertex = model.getVertex(parseInt(first));
+                CustomVertex secondVertex = model.getVertex(parseInt(second));
                 Thread taskThread = new Thread(() -> {
                     try {
                         model.setOutputString( "\n Distinguishing Formula: " +
@@ -209,7 +209,7 @@ public class SideBar {
 
         do {
             TextInputDialog firstPrompt = new TextInputDialog();
-            firstPrompt.setHeaderText("Which Vertex should be checked on formula satisfaction?");
+            firstPrompt.setHeaderText("Which CustomVertex should be checked on formula satisfaction?");
             firstOK = firstPrompt.showAndWait();
             first = firstPrompt.getEditor().getText();
         } while (firstOK.isPresent() && (!StringUtils.notInteger(first) && model.getVertex(parseInt(first)) == null || StringUtils.notInteger(first) || first.isBlank() || first.isEmpty()));
@@ -231,13 +231,13 @@ public class SideBar {
 
             if (secondOK.isPresent()) {
                 final TreeNode finalTree = formulaTree;
-                Vertex vertex = model.getVertex(parseInt(first));
+                CustomVertex vertex = model.getVertex(parseInt(first));
                 String formula = second;
                 Thread taskThread = new Thread(() -> {
                     if (finalTree.evaluate(vertex)) {
-                        model.setOutputString("Vertex " + vertex + " satisfies the formula: " + formula);
+                        model.setOutputString("CustomVertex " + vertex + " satisfies the formula: " + formula);
                     } else {
-                        model.setOutputString("Vertex " + vertex + " doesn't satisfy the formula: " + formula);
+                        model.setOutputString("CustomVertex " + vertex + " doesn't satisfy the formula: " + formula);
                     }
 
 //                String deltaFormula = Algorithms.getDeltaFormula(

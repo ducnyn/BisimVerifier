@@ -1,6 +1,6 @@
 package me.ducanh.thesis.formula.tree;
 
-import me.ducanh.thesis.model.Vertex;
+import me.ducanh.thesis.model.CustomVertex;
 
 public class AndNode implements TreeNode {
 
@@ -13,7 +13,7 @@ public class AndNode implements TreeNode {
   }
 
   @Override
-  public Boolean evaluate(Vertex vertex) {
+  public Boolean evaluate(CustomVertex vertex) {
     return leftChild.evaluate(vertex) && rightChild.evaluate(vertex);
   }
   @Override

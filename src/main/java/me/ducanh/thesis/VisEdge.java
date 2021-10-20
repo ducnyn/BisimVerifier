@@ -5,15 +5,15 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
-import me.ducanh.thesis.model.Edge;
+import me.ducanh.thesis.model.CustomEdge;
 
 public class VisEdge {
   @FXML
   public Line line = new Line();
   @FXML
   private AnchorPane anchorPane = new AnchorPane();
-  private Edge edge;
-  public void init(Edge edge){
+  private CustomEdge edge;
+  public void init(CustomEdge edge){
     this.edge = edge;
     anchorPane.setPickOnBounds(false);
 

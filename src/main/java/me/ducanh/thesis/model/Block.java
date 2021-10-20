@@ -5,42 +5,43 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.partitioningBy;
 
-public class BlockNode implements Iterable<Vertex>{
-  Set<Vertex> vertices;
+public class Block implements Iterable<CustomVertex>{
+  Set<CustomVertex> vertices;
   BlockEdge splitter;
-  BlockNode leftChild;
-  BlockNode rightChild;
+  Block leftChild;
+  Block rightChild;
 
-  public BlockNode(Set<Vertex> vertices, BlockEdge splitter, BlockNode leftChild, BlockNode rightChild) {
+  public Block(Set<CustomVertex> vertices, BlockEdge splitter, Block leftChild, Block rightChild) {
     this.vertices = vertices;
     this.splitter = splitter;
     this.leftChild = leftChild;
     this.rightChild = rightChild;
   }
 
-  public BlockNode(Set<Vertex> vertices) {
+  public Block(Set<CustomVertex> vertices) {
     this.vertices = vertices;
   }
 
+
   public void printTree(){
-    BlockNode rootBlockNode = this;
+    Block rootBlock = this;
     int currentLayer = 0;
-    ArrayList<Queue<BlockNode>> treeLayers = new ArrayList<>();
-    Queue<BlockNode> queue = new LinkedList<>();
+    ArrayList<Queue<Block>> treeLayers = new ArrayList<>();
+    Queue<Block> queue = new LinkedList<>();
     treeLayers.add(queue);
-    queue.add(rootBlockNode);
+    queue.add(rootBlock);
 
     while(true){
-      Queue<BlockNode> childQueue = new LinkedList<>();
-      for(BlockNode tBlockNode : treeLayers.get(currentLayer)){
-        if (tBlockNode.left()!=null) {
-          childQueue.add(tBlockNode.left());
+      Queue<Block> childQueue = new LinkedList<>();
+      for(Block tBlock : treeLayers.get(currentLayer)){
+        if (tBlock.left()!=null) {
+          childQueue.add(tBlock.left());
         }
-        if (tBlockNode.right()!=null) {
-          childQueue.add(tBlockNode.right());
+        if (tBlock.right()!=null) {
+          childQueue.add(tBlock.right());
         }
-        if(tBlockNode.getVertices().size()==1){
-          childQueue.add(tBlockNode);
+        if(tBlock.getVertices().size()==1){
+          childQueue.add(tBlock);
         }
       }
       if (childQueue.isEmpty()){
@@ -51,24 +52,24 @@ public class BlockNode implements Iterable<Vertex>{
       treeLayers.add(childQueue);
       currentLayer = treeLayers.indexOf(childQueue);
     }
-    for(Queue<BlockNode> layer : treeLayers){
+    for(Queue<Block> layer : treeLayers){
       System.out.println(layer);
-//      for(BlockNode blockNode : layer){
+//      for(Block blockNode : layer){
 //        if(blockNode.getVertices()!=null)
 //        System.out.println("splitter for " + blockNode + "is" + blockNode.getSplitter());
 //      }
     }
 //    treeLayers.add(queue);
-//    queue.add(rootBlockNode);
+//    queue.add(rootBlock);
 //    while(!queue.isEmpty()){
-//      rootBlockNode = queue.remove();
-//      System.out.print(rootBlockNode.vertices + " ");
+//      rootBlock = queue.remove();
+//      System.out.print(rootBlock.vertices + " ");
 //
-//      if(rootBlockNode.left()!=null){
-//        queue.add(rootBlockNode.left());
+//      if(rootBlock.left()!=null){
+//        queue.add(rootBlock.left());
 //      }
-//      if(rootBlockNode.right()!=null){
-//        queue.add(rootBlockNode.right());
+//      if(rootBlock.right()!=null){
+//        queue.add(rootBlock.right());
 //      }
 //    }
   }
@@ -78,7 +79,7 @@ public class BlockNode implements Iterable<Vertex>{
     return vertices.toString();
   }
 
-  public Set<Vertex> getVertices() {
+  public Set<CustomVertex> getVertices() {
     return vertices;
   }
 
@@ -90,23 +91,23 @@ public class BlockNode implements Iterable<Vertex>{
     this.splitter = splitter;
   }
 
-  public BlockNode left() {
+  public Block left() {
     return leftChild;
   }
 
-  public void setLeftChild(BlockNode leftChild) {
+  public void setLeftChild(Block leftChild) {
     this.leftChild = leftChild;
   }
 
-  public BlockNode right() {
+  public Block right() {
     return rightChild;
   }
 
-  public void setRightChild(BlockNode rightChild) {
+  public void setRightChild(Block rightChild) {
     this.rightChild = rightChild;
   }
 
-  public Stream<Vertex> stream(){
+  public Stream<CustomVertex> stream(){
     return vertices.stream();
   }
   @Override
@@ -114,9 +115,9 @@ public class BlockNode implements Iterable<Vertex>{
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    BlockNode blockNode = (BlockNode) o;
+    Block block = (Block) o;
 
-    return vertices.equals(blockNode.vertices);
+    return vertices.equals(block.vertices);
   }
 
   @Override
@@ -125,15 +126,15 @@ public class BlockNode implements Iterable<Vertex>{
   }
 
   @Override
-  public Iterator<Vertex> iterator() {
+  public Iterator<CustomVertex> iterator() {
     return vertices.iterator();
   }
 
-  public boolean contains(Vertex vertex) {
+  public boolean contains(CustomVertex vertex) {
     return vertices.contains(vertex);
   }
 
-  public boolean containsAll(Vertex... v) {
+  public boolean containsAll(CustomVertex... v) {
     return Arrays.stream(v).allMatch(vertices::contains);
 //    return this.vertices.containsAll(Arrays.stream(i).collect(Collectors.toList()));
   }
