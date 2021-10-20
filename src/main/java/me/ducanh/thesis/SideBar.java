@@ -75,11 +75,10 @@ public class SideBar {
     }
 
     @FXML
-    private void edges() throws Exception {
-//    TextInputDialog sourceDia = new TextInputDialog();
-        Optional<String> sourceOK = null;
-        Optional<String> labelOK = null;
-        Optional<String> targetOK = null;
+    private void edges() {
+        Optional<String> sourceOK;
+        Optional<String> labelOK;
+        Optional<String> targetOK = Optional.empty();
 
         String source = "";
         String label = "";
@@ -113,7 +112,7 @@ public class SideBar {
         }
 
 
-        if (targetOK != null && targetOK.isPresent()) {
+        if (targetOK.isPresent()) {
             model.addEdge(parseInt(source), label, parseInt(target));
         }
 
