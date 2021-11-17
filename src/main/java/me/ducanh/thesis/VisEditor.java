@@ -1,5 +1,6 @@
 package me.ducanh.thesis;
 
+import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel;
 import javafx.application.Platform;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
@@ -42,31 +43,33 @@ public class VisEditor {
 
 //TODO scroll pane when item dragged past boundaries
 //TODO When you add/remove an edge, the edgeVis doesn't have to be drawn again, just add / remove a label
+
   public void initialize(Model model) {
     anchorPane.setMinHeight(600);
     anchorPane.setMinWidth(900);
-
 
     anchorPane.setOnMousePressed(pressed -> {
       if (pressed.getButton().equals(MouseButton.PRIMARY) && (pressed.isControlDown())) {
          spawnPosX = pressed.getX() - radius;
          spawnPosY = pressed.getY() - radius - 20;
-         model.addVertex();
+         model.addNextIDVertex();
         pressed.consume();
       }
+
     });
 
-    model.getFlatEdges().addListener((SetChangeListener<? super CustomEdge>) change->{
+    model.getEdges().addListener((SetChangeListener<? super CustomEdge>) change->{
 
       if(change.wasAdded()){
+        System.out.println("Edge was added: "+change.getElementAdded() + "try to create visualization");
         try {
           CustomEdge edge = change.getElementAdded();
           FXMLLoader visEdgeLoader = new FXMLLoader(getClass().getResource(FXMLPATH.VISEDGE.getFileName()));
           Node visEdgeRoot = visEdgeLoader.load();
           VisEdge visEdge = visEdgeLoader.getController();
-          visEdge.init(edge);
-          drawnVertices.get(edge.getSource().getID()).bindToCenter(visEdge.startXProperty(),visEdge.startYProperty());
-          drawnVertices.get(edge.getTarget().getID()).bindToCenter(visEdge.endXProperty(),visEdge.endYProperty());
+          visEdge.init(edge, drawnVertices.get(edge.getSource().getID()),drawnVertices.get(edge.getTarget().getID()));
+//          drawnVertices.get(edge.getSource().getID()).bindToCenter(visEdge.startXProperty(),visEdge.startYProperty());
+//          drawnVertices.get(edge.getTarget().getID()).bindToCenter(visEdge.endXProperty(),visEdge.endYProperty());
           drawnEdges.put(edge,visEdge);
 
           Platform.runLater(()->{
@@ -78,21 +81,12 @@ public class VisEditor {
           ioException.printStackTrace();
         }
 
-
-
-
-
-
-//        edgeLine.startXProperty().bind(drawnVertices.get(change.getElementAdded().getSource()).centerX);
-//        edgeLine.startYProperty().bind(drawnVertices.get(change.getElementAdded().getSource()).centerY);
-//        edgeLine.endXProperty().bind(drawnVertices.get(change.getElementAdded().getTarget()).centerX);
-//        edgeLine.endYProperty().bind(drawnVertices.get(change.getElementAdded().getTarget()).centerY);
-
-
       } else {
         anchorPane.getChildren().remove(drawnEdges.get(change.getElementRemoved()).getRoot());
         drawnEdges.remove(change.getElementRemoved());
       }
+
+
     });
 
 
@@ -107,7 +101,10 @@ public class VisEditor {
         }
       } else {
         VisVertex deletedVisVertex = drawnVertices.remove(id);
-        Platform.runLater(()-> anchorPane.getChildren().remove(deletedVisVertex.getRootPane()));
+        Platform.runLater(()-> {
+          anchorPane.getChildren().remove(deletedVisVertex.getRootPane());
+
+        });
       }
     });
 
@@ -118,10 +115,10 @@ public class VisEditor {
           System.out.println("block added (colorListener" + change.getElementAdded().getVertices());
 
           for (CustomVertex vertex : change.getElementAdded()) {
-            drawnVertices.get(vertex.getID()).setFill(color);
+            drawnVertices.get(vertex.getID()).setCircleFill(color);
           }
         } else if (change.getElementAdded().getVertices().size() == 1){
-          drawnVertices.get(change.getElementAdded().iterator().next().getID()).setFill(Color.LIGHTGRAY);
+          drawnVertices.get(change.getElementAdded().iterator().next().getID()).setCircleFill(Color.LIGHTGRAY);
         }
       } else {
         if (change.getElementRemoved().getVertices().size() > 1) {

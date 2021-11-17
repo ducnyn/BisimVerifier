@@ -1,5 +1,7 @@
 package me.ducanh.thesis;
 
+import com.brunomnsilva.smartgraph.graph.Vertex;
+import com.brunomnsilva.smartgraph.graphview.SmartGraphVertexNode;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -17,6 +19,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import me.ducanh.thesis.model.CustomVertex;
 import me.ducanh.thesis.model.Model;
 
 public class VisVertex {
@@ -115,7 +118,7 @@ public class VisVertex {
     return id;
   }
 
-  public void setFill(Paint fill) {
+  public void setCircleFill(Paint fill) {
     this.vertexCircle.setFill(fill);
   }
 

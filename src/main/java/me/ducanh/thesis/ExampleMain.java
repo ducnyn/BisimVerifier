@@ -12,6 +12,9 @@ import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel;
 import com.brunomnsilva.smartgraph.graphview.SmartGraphProperties;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import me.ducanh.thesis.model.CustomDigraph;
@@ -45,6 +48,19 @@ public class ExampleMain extends Application {
         insertEdge(1,2,"a");
         insertEdge(2,3,"b");
         insertEdge(2,3,"d");
+        insertEdge(2,3,"e");
+
+        insertEdge(2,3,"f");
+
+        insertEdge(2,3,"g");
+
+
+
+
+
+
+
+
 
         insertEdge(2,3,"c");
         insertEdge(4,5,"a");
@@ -63,8 +79,14 @@ public class ExampleMain extends Application {
         SmartGraphProperties properties = new SmartGraphProperties(customProps);
         
         SmartGraphPanel<Integer, String> graphView = new SmartGraphPanel<>(customDigraph, properties, new SmartCircularSortedPlacementStrategy());
-        
-        Scene scene = new Scene(new SmartGraphDemoContainer(graphView), 1024, 768);
+        Button button = new Button("a");
+
+        SmartGraphDemoContainer container = new SmartGraphDemoContainer(graphView);
+        VBox vbox = new VBox();
+        vbox.getChildren().add(container);
+        vbox.getChildren().add(button);
+
+        Scene scene = new Scene(vbox, 1024, 768);
 
         Stage stage = new Stage(StageStyle.DECORATED);
         stage.setTitle("JavaFX SmartGraph City Distances");
@@ -87,6 +109,11 @@ public class ExampleMain extends Application {
             graphView.getStylableLabel(v).setStyle("-fx-stroke: red; -fx-fill: red;");
             pos += 100;
         }
+        final int[] i = {100};
+        scene.setOnMousePressed(e->{
+            customDigraph.insertVertex(i[0]++);
+            graphView.update();
+        });
 
 
     }

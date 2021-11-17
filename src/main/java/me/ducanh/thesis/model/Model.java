@@ -12,7 +12,6 @@ import me.ducanh.thesis.util.DotService;
 import java.util.*;
 
 public class Model {
-  private final ObservableMap<Integer, ObservableSet<CustomEdge>> obsGraph = FXCollections.observableMap(new TreeMap<>());
   private final ObservableMap<Integer, CustomVertex> obsVertices= FXCollections.observableMap(new TreeMap<>());
   private final ObservableSet<CustomEdge> obsEdgeSet = FXCollections.observableSet(new TreeSet<>());
 
@@ -27,16 +26,14 @@ public class Model {
 
 
   {//initiator
-
     obsVertices.addListener((MapChangeListener<Integer, CustomVertex>) mapEntry -> {
       int vertexID = mapEntry.getKey();
 
       if (mapEntry.wasAdded()) {
         mapEntry.getValueAdded().getEdges().addListener((SetChangeListener<CustomEdge>) edgeSetChange -> {
 
-          dotString.set(DotService.write(obsVertices.keySet(),getFlatEdges()));
+          dotString.set(DotService.write(obsVertices.keySet(), getEdges()));
           if(edgeSetChange.wasAdded()){
-
             obsEdgeSet.add(edgeSetChange.getElementAdded());
           } else {
             obsEdgeSet.remove(edgeSetChange.getElementRemoved());
@@ -51,7 +48,7 @@ public class Model {
         deletedIDs.add(vertexID);
         selectedVertices.remove(vertexID);
         //remove CustomEdge if source is removed  TODO :what about targets?
-        for (CustomEdge edge : getFlatEdges()) {
+        for (CustomEdge edge : getEdges()) {
           if (edge.getTarget().getID().equals(mapEntry.getKey())) {
             if (obsVertices.containsKey(edge.getSource().getID()))
               obsVertices.get(edge.getSource().getID()).getEdges().remove(edge);
@@ -60,7 +57,7 @@ public class Model {
 
       }
 
-      dotString.set(DotService.write(obsVertices.keySet(), getFlatEdges()));
+      dotString.set(DotService.write(obsVertices.keySet(), getEdges()));
 
     });
 
@@ -100,24 +97,12 @@ public class Model {
     obsVertices.get(source).getEdges().add(new CustomEdge(sourceVertex, label, targetVertex));
   }
 
-//public boolean removeEdge(int edgeID) {
-//    edges.get(edgeID);jh
-//}
-
-  public int addVertex() {
+  public int addNextIDVertex() {
 //    if(addedByVis) this.addedByVis = false;
     int id = Objects.requireNonNullElse(deletedIDs.pollFirst(), getMaxID() + 1);
     addVertex(new CustomVertex(id));
     return id;
   }
-
-//  public boolean isAddedByVis(){
-//    return this.addedByVis;
-//  }
-//  public void setAddedByVis(boolean addedByVis){
-//      this.addedByVis = addedByVis;
-//
-//  }
 
   public boolean addVertex(CustomVertex vertex) {
     if (obsVertices.containsKey(vertex.getID()))
@@ -131,14 +116,6 @@ public class Model {
     Optional<Integer> max = obsVertices.keySet().stream()
             .max(Integer::compare);
     return max.orElse(0);
-  }
-
-  public Set<CustomEdge> getEdges(Integer vertexID) {
-    return obsVertices.get(vertexID).getEdges();
-  }
-
-  public Set<CustomVertex> getTargets(Integer vertexID, String label) {
-    return obsVertices.get(vertexID).getTargets(label);
   }
 
   public TreeSet<Integer> getDeletedIDs() {
@@ -176,8 +153,8 @@ public class Model {
     return Set.copyOf(obsVertices.values());
   }
 
-  public ObservableSet<CustomEdge> getFlatEdges() {
-    return FXCollections.unmodifiableObservableSet(obsEdgeSet);
+  public ObservableSet<CustomEdge> getEdges() {
+    return obsEdgeSet;
   }
 
   public StringProperty getAlertString() {

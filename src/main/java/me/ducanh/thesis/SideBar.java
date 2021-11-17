@@ -39,7 +39,7 @@ public class SideBar {
             @Override
             public void run() {
                 for(int i = 0; i< finalNumber; i++){
-                    model.addVertex();
+                    model.addNextIDVertex();
                 }
             }
         });
@@ -147,7 +147,7 @@ public class SideBar {
                 model.setOutputString("\n Equivalence classes (Bisimulation): \n" + partition.toString());
                 model.updatePartition(partition);
                 System.out.println("Vertices: " + model.getVertices());
-                System.out.println("Edges: " + model.getFlatEdges());
+                System.out.println("Edges: " + model.getEdges());
                 System.out.println(Thread.currentThread() + " should be backGroundThread");
             }
         });

@@ -3,12 +3,15 @@
 
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Text?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             fx:controller="me.ducanh.thesis.VisEdge"
             fx:id="anchorPane">
     <Line fx:id="line">
     </Line>
+    <Text fx:id="labelNode">
+    </Text>
 </AnchorPane>
 
 
