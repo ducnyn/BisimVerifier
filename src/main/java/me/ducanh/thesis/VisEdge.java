@@ -1,11 +1,15 @@
 package me.ducanh.thesis;
 
+import com.brunomnsilva.smartgraph.graphview.SmartArrow;
+import com.brunomnsilva.smartgraph.graphview.UtilitiesBindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 import me.ducanh.thesis.model.CustomEdge;
 
 public class VisEdge {
@@ -15,7 +19,9 @@ public class VisEdge {
   @FXML
   public Line line = new Line();
   @FXML
-  public Text labelNode;
+  public Text visEdgeLabel;
+
+  public SmartArrow attachedArrow;
   private CustomEdge edge;
   private VisVertex source;
   private VisVertex target;
@@ -24,20 +30,45 @@ public class VisEdge {
     this.edge = edge;
     this.source = source;
     this.target = target;
-    this.labelNode = new Text(edge.getLabel());
+    this.visEdgeLabel.setText(edge.getLabel());
+    visEdgeLabel.toFront();
     bindLabelPosition();
     bindNodePositions();
+    attachArrow(new SmartArrow(8));
+    anchorPane.getChildren().add(attachedArrow);
     anchorPane.setPickOnBounds(false);
 
   }
   private void bindLabelPosition() {
-    labelNode.xProperty().bind(this.startXProperty().add(this.endXProperty()).divide(2).subtract(this.labelNode.getLayoutBounds().getWidth() / 2.0D));
-    labelNode.yProperty().bind(this.startYProperty().add(this.endYProperty()).divide(2).add(this.labelNode.getLayoutBounds().getHeight() / 1.5D));
+    visEdgeLabel.xProperty().bind(this.startXProperty().add(this.endXProperty()).divide(2).subtract(this.visEdgeLabel.getLayoutBounds().getWidth() / 2.0D));
+    visEdgeLabel.yProperty().bind(this.startYProperty().add(this.endYProperty()).divide(2).add(this.visEdgeLabel.getLayoutBounds().getHeight() / 1.5D));
   }
 
   private void bindNodePositions() {
     source.bindToCenter(startXProperty(),startYProperty());
     target.bindToCenter(endXProperty(),endYProperty());
+  }
+  public void attachArrow(SmartArrow arrow) {
+    this.attachedArrow = arrow;
+
+    /* attach arrow to line's endpoint */
+    arrow.translateXProperty().bind(endXProperty());
+    arrow.translateYProperty().bind(endYProperty());
+
+    /* rotate arrow around itself based on this line's angle */
+    Rotate rotation = new Rotate();
+    rotation.pivotXProperty().bind(line.translateXProperty());
+    rotation.pivotYProperty().bind(line.translateYProperty());
+    rotation.angleProperty().bind(UtilitiesBindings.toDegrees(
+            UtilitiesBindings.atan2(endYProperty().subtract(startYProperty()),
+                    endXProperty().subtract(startXProperty()))
+    ));
+
+    arrow.getTransforms().add(rotation);
+
+    /* add translation transform to put the arrow touching the circle's bounds */
+    Translate t = new Translate(-target.getRadius(), 0);
+    arrow.getTransforms().add(t);
   }
   public Node getRoot(){
     return anchorPane;

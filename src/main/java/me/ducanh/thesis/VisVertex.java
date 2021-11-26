@@ -32,11 +32,10 @@ public class VisVertex {
   Text vertexLabel = new Text();
   @FXML
   int id;
-  Paint dragFill = Paint.valueOf("lightcoral");
 
   DoubleProperty centerX = new SimpleDoubleProperty();
   DoubleProperty centerY = new SimpleDoubleProperty();
-
+  Paint defaultFill = Paint.valueOf("lightgray");
 
   public void init(Model model, int id) {
     init(model, id, 1, 1);
@@ -56,7 +55,7 @@ public class VisVertex {
     rootPane.setPickOnBounds(false);
     this.id = id;
     this.vertexLabel.setText(String.valueOf(id));
-    this.vertexCircle.setFill(Paint.valueOf("lightgray"));
+    this.vertexCircle.setFill(getDefaultFill());
 
     final double[] mouseOrigin = {0, 0};
 
@@ -110,6 +109,13 @@ public class VisVertex {
     rootPane.addEventHandler(MouseEvent.ANY, Event::consume);
   }
 
+  public Paint getDefaultFill() {
+    return defaultFill;
+  }
+
+  public double getRadius(){
+    return vertexCircle.getRadius();
+  }
   public StackPane getRootPane() {
     return rootPane;
   }

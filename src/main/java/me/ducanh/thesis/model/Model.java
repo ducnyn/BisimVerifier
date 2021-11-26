@@ -12,58 +12,71 @@ import me.ducanh.thesis.util.DotService;
 import java.util.*;
 
 public class Model {
-  private final ObservableMap<Integer, CustomVertex> obsVertices= FXCollections.observableMap(new TreeMap<>());
-  private final ObservableSet<CustomEdge> obsEdgeSet = FXCollections.observableSet(new TreeSet<>());
+  private final ObservableMap<Integer, CustomVertex> vertices = FXCollections.observableMap(new TreeMap<>());
+  private final ObservableSet<CustomEdge> edges = FXCollections.observableSet(new TreeSet<>());
 
   private final ObservableSet<Block> partition = FXCollections.observableSet(new HashSet<>());
   private final ObservableSet<Integer> selectedVertices = FXCollections.observableSet();
   private final TreeSet<Integer> deletedIDs = new TreeSet<>();
   private final StringProperty dotString = new SimpleStringProperty("digraph {\n\n}");
   private final StringProperty alertString = new SimpleStringProperty("");
-  private final BooleanProperty newAlert = new SimpleBooleanProperty(false);
+  private final BooleanProperty updated = new SimpleBooleanProperty(false);
   private final StringProperty outputString = new SimpleStringProperty();
+  private final BooleanProperty bisimToggle = new SimpleBooleanProperty(false);
 //  private boolean addedByVis = false;
 
 
   {//initiator
-    obsVertices.addListener((MapChangeListener<Integer, CustomVertex>) mapEntry -> {
+    vertices.addListener((MapChangeListener<Integer, CustomVertex>) mapEntry -> {
       int vertexID = mapEntry.getKey();
 
-      if (mapEntry.wasAdded()) {
+      if (mapEntry.wasAdded()) { //mapentry added
         mapEntry.getValueAdded().getEdges().addListener((SetChangeListener<CustomEdge>) edgeSetChange -> {
 
-          dotString.set(DotService.write(obsVertices.keySet(), getEdges()));
+          dotString.set(DotService.write(vertices.keySet(), getEdges()));
           if(edgeSetChange.wasAdded()){
-            obsEdgeSet.add(edgeSetChange.getElementAdded());
+            edges.add(edgeSetChange.getElementAdded());
           } else {
-            obsEdgeSet.remove(edgeSetChange.getElementRemoved());
+            edges.remove(edgeSetChange.getElementRemoved());
           }
         });
 
-        obsEdgeSet.addAll(mapEntry.getValueAdded().getEdges());
+        edges.addAll(mapEntry.getValueAdded().getEdges());
 
       } else { //mapEntry removed
-        obsEdgeSet.removeAll(mapEntry.getValueRemoved().getEdges());
+        edges.removeAll(mapEntry.getValueRemoved().getEdges());
         System.out.println(mapEntry.getValueRemoved());
         deletedIDs.add(vertexID);
         selectedVertices.remove(vertexID);
         //remove CustomEdge if source is removed  TODO :what about targets?
         for (CustomEdge edge : getEdges()) {
           if (edge.getTarget().getID().equals(mapEntry.getKey())) {
-            if (obsVertices.containsKey(edge.getSource().getID()))
-              obsVertices.get(edge.getSource().getID()).getEdges().remove(edge);
+            if (vertices.containsKey(edge.getSource().getID()))
+              vertices.get(edge.getSource().getID()).getEdges().remove(edge);
           }
         }
 
       }
+      Set<Block> partition = Algorithms.bisim(getVertices()).getValue();
+      setOutputString("\n Equivalence classes (Bisimulation): \n" + partition.toString());
 
-      dotString.set(DotService.write(obsVertices.keySet(), getEdges()));
+
+
+
+      dotString.set(DotService.write(vertices.keySet(), getEdges()));
+      broadcastUpdate();
 
     });
 
 
-    obsEdgeSet.addListener((SetChangeListener<? super CustomEdge>) change -> {
-      System.out.println(obsEdgeSet + " in obsEdgeSet now");
+    edges.addListener((SetChangeListener<? super CustomEdge>) change -> {
+      System.out.println(edges + " in obsEdgeSet now");
+      dotString.set(DotService.write(vertices.keySet(), getEdges()));
+      Set<Block> partition = Algorithms.bisim(getVertices()).getValue();
+      setOutputString("\n Equivalence classes (Bisimulation): \n" + partition.toString());
+
+
+      broadcastUpdate();
     });
 
 
@@ -76,25 +89,25 @@ public class Model {
     CustomVertex sourceVertex;
     CustomVertex targetVertex;
 
-    if (obsVertices.containsKey(target)) {
-      targetVertex = obsVertices.get(target);
+    if (vertices.containsKey(target)) {
+      targetVertex = vertices.get(target);
     }  else {
       targetVertex = new CustomVertex(target);
       addVertex(targetVertex);
     }
 
-    if (obsVertices.containsKey(source)) {
-      sourceVertex = obsVertices.get(source);
+    if (vertices.containsKey(source)) {
+      sourceVertex = vertices.get(source);
     }else {
       sourceVertex = new CustomVertex(source);
       addVertex(sourceVertex);
     }
-    System.out.println("sourceV = " +obsVertices.get(source));
+    System.out.println("sourceV = " + vertices.get(source));
     System.out.println("targetV = " +targetVertex);
     System.out.println("label = " +label);
     System.out.println("source = " +source);
     System.out.println("target = " +target);
-    obsVertices.get(source).getEdges().add(new CustomEdge(sourceVertex, label, targetVertex));
+    vertices.get(source).getEdges().add(new CustomEdge(sourceVertex, label, targetVertex));
   }
 
   public int addNextIDVertex() {
@@ -105,15 +118,15 @@ public class Model {
   }
 
   public boolean addVertex(CustomVertex vertex) {
-    if (obsVertices.containsKey(vertex.getID()))
+    if (vertices.containsKey(vertex.getID()))
       return false;
     else
-      obsVertices.put(vertex.getID(), vertex);
+      vertices.put(vertex.getID(), vertex);
     return true;
   }
 
   public Integer getMaxID() {
-    Optional<Integer> max = obsVertices.keySet().stream()
+    Optional<Integer> max = vertices.keySet().stream()
             .max(Integer::compare);
     return max.orElse(0);
   }
@@ -123,19 +136,19 @@ public class Model {
   }
 
   public void removeAllEdges() {
-    for(CustomVertex vertex: obsVertices.values()){
+    for(CustomVertex vertex: vertices.values()){
       vertex.getEdges().clear();
     }
   }
 
   public void removeVertex(int vertexID) {
-    obsVertices.remove(vertexID);
+    vertices.remove(vertexID);
 
 
   }
 
   public void addGraphListener(MapChangeListener<Integer, CustomVertex> mapChangeListener) {
-    obsVertices.addListener(mapChangeListener);
+    vertices.addListener(mapChangeListener);
   }
 
   public void addDotListener(ChangeListener<String> stringListener) {
@@ -147,14 +160,14 @@ public class Model {
   }
 
   public CustomVertex getVertex(int id){
-    return obsVertices.getOrDefault(id,null);
+    return vertices.getOrDefault(id,null);
   }
   public Set<CustomVertex> getVertices() {
-    return Set.copyOf(obsVertices.values());
+    return Set.copyOf(vertices.values());
   }
 
   public ObservableSet<CustomEdge> getEdges() {
-    return obsEdgeSet;
+    return edges;
   }
 
   public StringProperty getAlertString() {
@@ -162,13 +175,15 @@ public class Model {
   }
 
 
-  public BooleanProperty getNewAlert() {
-    return newAlert;
+  public BooleanProperty updatedProperty() {
+    return updated;
   }
-
-  public void alert() {
-    newAlert.set(true);
-    newAlert.set(false);
+  public BooleanProperty getBisimToggle(){
+    return bisimToggle;
+  }
+  public void broadcastUpdate() {
+    updated.set(true);
+    updated.set(false);
   }
 
   public ObservableSet<Block> getPartition() {
@@ -190,7 +205,7 @@ public class Model {
   public void setOutputString(String s){
     this.outputString.setValue(s);
   }
-  public void appendOutputString(String s){this.outputString.setValue(this.outputString.getValue() +"\n"+ s);}
+//  public void appendOutputString(String s){this.outputString.setValue(this.outputString.getValue() +"\n"+ s);}
 
   public void bindOutputString(StringProperty sp){
     sp.bind(this.outputString);

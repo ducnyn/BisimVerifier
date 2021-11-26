@@ -139,20 +139,20 @@ public class SideBar {
     @FXML
     private void bisimulation() throws InterruptedException {
 
-
-        Thread taskThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Set<Block> partition = Algorithms.bisim(model.getVertices()).getValue();
-                model.setOutputString("\n Equivalence classes (Bisimulation): \n" + partition.toString());
-                model.updatePartition(partition);
-                System.out.println("Vertices: " + model.getVertices());
-                System.out.println("Edges: " + model.getEdges());
-                System.out.println(Thread.currentThread() + " should be backGroundThread");
-            }
-        });
-        taskThread.setDaemon(true);
-        taskThread.start();
+        model.getBisimToggle().set(!model.getBisimToggle().get());
+//        Thread taskThread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Set<Block> partition = Algorithms.bisim(model.getVertices()).getValue();
+//                model.setOutputString("\n Equivalence classes (Bisimulation): \n" + partition.toString());
+//                model.updatePartition(partition);
+//                System.out.println("Vertices: " + model.getVertices());
+//                System.out.println("Edges: " + model.getEdges());
+//                System.out.println(Thread.currentThread() + " should be backGroundThread");
+//            }
+//        });
+//        taskThread.setDaemon(true);
+//        taskThread.start();
 
     }
 
@@ -185,7 +185,8 @@ public class SideBar {
                 Thread taskThread = new Thread(() -> {
                     try {
                         model.setOutputString( "\n Distinguishing Formula: " +
-                                Algorithms.getDeltaFormula(firstVertex, secondVertex, model.getVertices())
+                                Algorithms.getDeltaFormula(firstVertex, secondVertex, model.getVertices()) +
+                                " is satisfied by " + firstVertex + " but not by " + secondVertex
                         );
                     } catch (NoDistinguishingFormulaException e) {
                         model.setOutputString(e.getMessage());
@@ -208,7 +209,7 @@ public class SideBar {
 
         do {
             TextInputDialog firstPrompt = new TextInputDialog();
-            firstPrompt.setHeaderText("Which CustomVertex should be checked on formula satisfaction?");
+            firstPrompt.setHeaderText("Please define a start vertex:");
             firstOK = firstPrompt.showAndWait();
             first = firstPrompt.getEditor().getText();
         } while (firstOK.isPresent() && (!StringUtils.notInteger(first) && model.getVertex(parseInt(first)) == null || StringUtils.notInteger(first) || first.isBlank() || first.isEmpty()));
@@ -217,7 +218,7 @@ public class SideBar {
             TreeNode formulaTree = null;
             do {
                 TextInputDialog secondPrompt = new TextInputDialog();
-                secondPrompt.setHeaderText("Which Formula should be evaluated?");
+                secondPrompt.setHeaderText("Please enter the formula to be checked:");
                 secondOK = secondPrompt.showAndWait();
                 second = secondPrompt.getEditor().getText();
                 try {

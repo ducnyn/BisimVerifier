@@ -8,20 +8,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import me.ducanh.thesis.model.Block;
-import me.ducanh.thesis.model.CustomEdge;
-import me.ducanh.thesis.model.Model;
-import me.ducanh.thesis.model.CustomVertex;
+import me.ducanh.thesis.model.*;
 import me.ducanh.thesis.util.Colors;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Set;
 
 public class VisEditor {
   private final HashMap<Integer, VisVertex> drawnVertices = new HashMap<>();
@@ -34,6 +33,8 @@ public class VisEditor {
   StackPane centerBox;
   @FXML
   Group group;
+  @FXML
+  Label bisimToggleLabel;
 
   private final int radius = 40;
   private int colorID = 0;
@@ -56,6 +57,13 @@ public class VisEditor {
         pressed.consume();
       }
 
+    });
+    model.getBisimToggle().addListener((observable, changeToFalse, changeToTrue) ->{
+      if (changeToTrue){
+        bisimToggleLabel.setText("Bisimulation Indicators: On");
+      } else {
+        bisimToggleLabel.setText("Bisimulation Indicators: Off");
+      }
     });
 
     model.getEdges().addListener((SetChangeListener<? super CustomEdge>) change->{
@@ -85,6 +93,9 @@ public class VisEditor {
         anchorPane.getChildren().remove(drawnEdges.get(change.getElementRemoved()).getRoot());
         drawnEdges.remove(change.getElementRemoved());
       }
+      if(model.getBisimToggle().get()){
+        model.updatePartition(Algorithms.bisim(model.getVertices()).getValue());
+      }
 
 
     });
@@ -106,7 +117,59 @@ public class VisEditor {
 
         });
       }
+      if(model.getBisimToggle().get()){
+        model.updatePartition(Algorithms.bisim(model.getVertices()).getValue());
+      }
+
     });
+
+    model.getBisimToggle().addListener((observable, changeToFalse, changeToTrue) ->{
+      if (changeToTrue){
+        Platform.runLater(()->{
+          Thread taskThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Set<Block> partition = Algorithms.bisim(model.getVertices()).getValue();
+                model.setOutputString("\n Equivalence classes (Bisimulation): \n" + partition.toString());
+                model.updatePartition(partition);
+                System.out.println("Vertices: " + model.getVertices());
+                System.out.println("Edges: " + model.getEdges());
+                System.out.println(Thread.currentThread() + " should be backGroundThread");
+            }
+        });
+        taskThread.setDaemon(true);
+        taskThread.start();
+        });
+
+      } else {
+        Platform.runLater(()->{
+          Thread taskThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+              for (VisVertex visVertex : drawnVertices.values()) {
+                visVertex.setCircleFill(visVertex.getDefaultFill());
+              }
+            }
+          });
+          taskThread.setDaemon(true);
+          taskThread.start();
+        });
+      }
+    });
+
+    //        Thread taskThread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Set<Block> partition = Algorithms.bisim(model.getVertices()).getValue();
+//                model.setOutputString("\n Equivalence classes (Bisimulation): \n" + partition.toString());
+//                model.updatePartition(partition);
+//                System.out.println("Vertices: " + model.getVertices());
+//                System.out.println("Edges: " + model.getEdges());
+//                System.out.println(Thread.currentThread() + " should be backGroundThread");
+//            }
+//        });
+//        taskThread.setDaemon(true);
+//        taskThread.start();
 
     model.getPartition().addListener((SetChangeListener<Block>) change -> {
       if (change.wasAdded()) {

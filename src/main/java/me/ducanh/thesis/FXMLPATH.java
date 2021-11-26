@@ -8,7 +8,7 @@ public enum FXMLPATH {
     ABOUT("About.fxml"),
     VISEDGE("VisEdge.fxml"),
     VISVERTEX("VisVertex.fxml"),
-    OUTPUT("Output.fxml");
+    OUTPUT("OutputPanel.fxml");
 
   private final String fileName;
 

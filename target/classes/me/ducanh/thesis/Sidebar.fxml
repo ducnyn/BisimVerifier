@@ -14,9 +14,9 @@
         <Button styleClass="sideBarButton" fx:id="aButton" mnemonicParsing="false" onAction="#vertices" text="Vertex"/>
         <Button styleClass="sideBarButton" fx:id="bButton" mnemonicParsing="false" onAction="#edges" text="Edge"/>
         <Button styleClass="sideBarButton" fx:id="cButton" mnemonicParsing="false" onAction="#randomEdges" text="Random Edges"/>
-        <Button styleClass="sideBarButton" fx:id="dButton" mnemonicParsing="false" onAction="#bisimulation" text="Bisimulation"/>
+        <Button styleClass="sideBarButton" fx:id="dButton" mnemonicParsing="false" onAction="#bisimulation" text="Bisim Indicator"/>
         <Button styleClass="sideBarButton" fx:id="eButton" mnemonicParsing="false" onAction="#deltaFormula" text="Delta Formula"/>
-        <Button styleClass="sideBarButton" fx:id="fButton" mnemonicParsing="false" onAction="#formulaSat" text="FormulaSat"/>
+        <Button styleClass="sideBarButton" fx:id="fButton" mnemonicParsing="false" onAction="#formulaSat" text="Check Formula"/>
 
     </VBox>
 </AnchorPane>

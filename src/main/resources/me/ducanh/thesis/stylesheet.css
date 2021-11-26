@@ -37,6 +37,15 @@
     -fx-font-size: 20;
 }
 
-.vertexCircle {
-    -fx-fill: lightgray;
+
+.visEdgeLabel{
+
+    -fx-font-size: 20;
+    -fx-fill: coral;
+    -fx-font-weight: bold;
+}
+.stausLabel{
+    -fx-font-size: 20;
+    -fx-fill: coral;
+    -fx-font-weight: bold;
 }

@@ -11,9 +11,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 import me.ducanh.thesis.model.Model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 
 public class TextEditor {
 
@@ -38,7 +35,7 @@ public void intialize(Model model) {
     pressedKeys.addListener((SetChangeListener<? super KeyCode>) c  -> {
         System.out.print( pressedKeys);
     });
-    model.getNewAlert().addListener( (observable, changeToFalse, changeToTrue) ->{
+    model.updatedProperty().addListener( (observable, changeToFalse, changeToTrue) ->{
         if (changeToTrue){
             Platform.runLater(()->{
                 editorTextArea.setText(model.getDot());

@@ -73,12 +73,12 @@ public class App extends Application {
     SideBar sideBar = sidebarLoader.getController();
     TextEditor textEditor = textEditorLoader.getController();
     VisEditor visEditor = visEditorLoader.getController();
-    Output output = outputLoader.getController();
+    OutputPanel output = outputLoader.getController();
 
     scene = new Scene(rootVBox, 1600, 900);
     scene.getStylesheets().add(cssPath);
     stage.setScene(scene);
-    stage.setTitle("Graph Theory Tools");
+    stage.setTitle("Graph Verifier");
     stage.setMinWidth(440);
     stage.show();
     textEditor.intialize(model);
