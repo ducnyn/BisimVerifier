@@ -192,15 +192,24 @@ public class VisEditor {
       } //TODO doesn't remove color when clearing the partition list
     });
 
+    centerBox.setOnScrollStarted(scrollStart->{
 
+    });
     centerBox.setOnScroll(scroll->{
-        double zoom = (scroll.getDeltaY()>0)? 1.05 : 0.95;
 
-        //calculate pixel offsets from [0,1] range
+        double zoom;
+
+        if (scroll.getDeltaY()==0) zoom = 1;
+        else if (scroll.getDeltaY()>0) zoom = 1.05;
+        else zoom = 0.95;
+      System.out.println("delta " + scroll.getDeltaY());
+
+
+      //calculate pixel offsets from [0,1] range
         double offsetX = scrollPane.getHvalue() * (group.getLayoutBounds().getWidth() - scrollPane.getViewportBounds().getWidth());
         double offsetY = scrollPane.getVvalue() * (group.getLayoutBounds().getHeight() - scrollPane.getViewportBounds().getHeight());
 
-        anchorPane.setScaleX(anchorPane.getScaleX()*zoom); // might cause problems because you didnt use scakeValue = scaleValue(0.7)*zoomFactor
+        anchorPane.setScaleX(anchorPane.getScaleX()*zoom); // might cause problems because you didnt use scaleValue = scaleValue(0.7)*zoomFactor
         anchorPane.setScaleY(anchorPane.getScaleY()*zoom);
         scrollPane.layout(); //refresh ScrollPane scroll positions @ target bounds
 

@@ -41,6 +41,7 @@ public class VisVertex {
     init(model, id, 1, 1);
   }
 
+
   public void init(Model model, int id, double initX, double initY) {
     rootPane.layoutXProperty().addListener((ChangeListener<? super Number>) (change, oldV, newV) -> {
       centerX.setValue((Double) newV + 40.0);
@@ -48,7 +49,6 @@ public class VisVertex {
     rootPane.layoutYProperty().addListener((ChangeListener<? super Number>) (change, oldV, newV) -> {
       centerY.setValue((Double) newV + 40.0);
     });
-
 
     rootPane.setLayoutX(initX);
     rootPane.setLayoutY(initY);
@@ -84,11 +84,11 @@ public class VisVertex {
         mouseOrigin[0] = drag.getScreenX();
         mouseOrigin[1] = drag.getScreenY();
 
-        System.out.print("\r" + "nodeID: " + id);
-        System.out.print(" absMousePosX: " + drag.getSceneX());
-        System.out.print(" absMousePosY:" + drag.getSceneY());
-        System.out.print(" relNodePosX: " + rootPane.getLayoutX());
-        System.out.print(" relNodePosY: " + rootPane.getLayoutY());
+//        System.out.print("\r" + "nodeID: " + id);
+//        System.out.print(" absMousePosX: " + drag.getSceneX());
+//        System.out.print(" absMousePosY:" + drag.getSceneY());
+//        System.out.print(" relNodePosX: " + rootPane.getLayoutX());
+//        System.out.print(" relNodePosY: " + rootPane.getLayoutY());
       }
     });
 
@@ -98,10 +98,8 @@ public class VisVertex {
       if (released.isDragDetect()) {
         if (model.getSelectedVertices().contains(id)) {
           model.getSelectedVertices().remove(id);
-          vertexCircle.setStroke(Paint.valueOf("gray"));
         } else {
           model.getSelectedVertices().add(id);
-          vertexCircle.setStroke(Paint.valueOf("black"));
         }
       }
     });
@@ -136,5 +134,12 @@ public class VisVertex {
   public void bindToCenter(DoubleProperty xVal, DoubleProperty yVal){
     xVal.bind(centerX);
     yVal.bind(centerY);
+  }
+
+  public DoubleProperty getCenterXProperty(){
+    return centerX;
+  }
+  public DoubleProperty getCenterYProperty(){
+    return centerY;
   }
 }

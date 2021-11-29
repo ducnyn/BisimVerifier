@@ -5,12 +5,13 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.shape.Path?>
+<?import javafx.scene.shape.Arc?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             fx:controller="me.ducanh.thesis.VisEdge"
             fx:id="anchorPane">
-    <Line fx:id="line">
-    </Line>
+    <Path fx:id="path">
+    </Path>
     <Text fx:id="visEdgeLabel" styleClass = "visEdgeLabel">
     </Text>
 <!--    <Path fx:id="attachedArrow">-->
