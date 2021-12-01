@@ -6,12 +6,13 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.shape.Path?>
 <?import javafx.scene.shape.Arc?>
+<?import javafx.scene.shape.CubicCurve?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             fx:controller="me.ducanh.thesis.VisEdge"
             fx:id="anchorPane">
-    <Path fx:id="path">
-    </Path>
+    <CubicCurve fx:id="cubicCurve">
+    </CubicCurve>
     <Text fx:id="visEdgeLabel" styleClass = "visEdgeLabel">
     </Text>
 <!--    <Path fx:id="attachedArrow">-->

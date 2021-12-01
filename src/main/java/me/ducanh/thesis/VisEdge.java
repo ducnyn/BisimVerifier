@@ -19,8 +19,8 @@ public class VisEdge {
   @FXML
   private AnchorPane anchorPane = new AnchorPane();
   @FXML
-//  public Line line = new Line();
-  public Path path;
+//  public Path path;
+  public CubicCurve cubicCurve;
   @FXML
   public Text visEdgeLabel;
 
@@ -28,10 +28,10 @@ public class VisEdge {
   private CustomEdge edge;
   private VisVertex source;
   private VisVertex target;
-  public DoubleProperty startXProp = new SimpleDoubleProperty();
-  public DoubleProperty startYProp= new SimpleDoubleProperty();
-  public DoubleProperty endXProp= new SimpleDoubleProperty();
-  public DoubleProperty endYProp= new SimpleDoubleProperty();
+  public DoubleProperty sourceXProperty = new SimpleDoubleProperty();
+  public DoubleProperty sourceYProperty = new SimpleDoubleProperty();
+  public DoubleProperty targetXProperty = new SimpleDoubleProperty();
+  public DoubleProperty targetYProperty = new SimpleDoubleProperty();
   private DoubleProperty distance = new SimpleDoubleProperty();
 
   public void init(CustomEdge edge, VisVertex source, VisVertex target){
@@ -45,11 +45,11 @@ public class VisEdge {
     bindNodePositions();
 
     distance.bind(Bindings.createDoubleBinding(
-            ()-> Math.sqrt(Math.pow((endXProp.get()-startXProp.get()),2) + Math.pow((endYProp.get()-startYProp.get()),2)),
-            endXProp,
-            endYProp,
-            startXProp,
-            startYProp));
+            ()-> Math.sqrt(Math.pow((targetXProperty.get()- sourceXProperty.get()),2) + Math.pow((targetYProperty.get()- sourceYProperty.get()),2)),
+            targetXProperty,
+            targetYProperty,
+            sourceXProperty,
+            sourceYProperty));
     distance.addListener((oldV,newV,event)->{
       System.out.println("Distance of " + this.edge + " is : "+ newV);
     });
@@ -63,43 +63,47 @@ public class VisEdge {
 
 
   private void drawEdge(){
-    path.getElements().clear();
-    MoveTo moveTo = new MoveTo();
-    moveTo.xProperty().bind(startXProp);
-    moveTo.yProperty().bind(startYProp);
-
-    ArcTo arcTo = new ArcTo();
-    arcTo.xProperty().bind(endXProp);
-    arcTo.yProperty().bind(endYProp);
-
-
-
-    arcTo.radiusXProperty().bind(Bindings.createDoubleBinding(
-            ()-> distance.get()*distance.get()/200,
-            distance
-    ));
-    arcTo.radiusYProperty().bind(Bindings.createDoubleBinding(
-            ()-> distance.get()*distance.get()/200,
-            distance
-    ));
-
-    path.getElements().add(moveTo);
-    path.getElements().add(arcTo);
+    cubicCurve.startXProperty().bind(source.getCenterXProperty());
+    cubicCurve.startYProperty().bind(source.getCenterYProperty());
+    cubicCurve.endXProperty().bind(target.getCenterXProperty());
+    cubicCurve.endYProperty().bind(target.getCenterYProperty());
+//    path.getElements().clear();
+//    MoveTo moveTo = new MoveTo();
+//    moveTo.xProperty().bind(sourceXProperty);
+//    moveTo.yProperty().bind(sourceYProperty);
+//
+//    ArcTo arcTo = new ArcTo();
+//    arcTo.xProperty().bind(targetXProperty);
+//    arcTo.yProperty().bind(targetYProperty);
+//
+//
+//
+//    arcTo.radiusXProperty().bind(Bindings.createDoubleBinding(
+//            ()-> distance.get()*distance.get()/200,
+//            distance
+//    ));
+//    arcTo.radiusYProperty().bind(Bindings.createDoubleBinding(
+//            ()-> distance.get()*distance.get()/200,
+//            distance
+//    ));
+//
+//    path.getElements().add(moveTo);
+//    path.getElements().add(arcTo);
 
 
   }
 
 
   private void bindLabelPosition() {
-    visEdgeLabel.xProperty().bind(startXProp.add(endXProp).divide(2).subtract(visEdgeLabel.getLayoutBounds().getWidth() / 2.0D));
-    visEdgeLabel.yProperty().bind(startYProp.add(endYProp).divide(2).add(visEdgeLabel.getLayoutBounds().getHeight() / 1.5D));
+    visEdgeLabel.xProperty().bind(sourceXProperty.add(targetXProperty).divide(2).subtract(visEdgeLabel.getLayoutBounds().getWidth() / 2.0D));
+    visEdgeLabel.yProperty().bind(sourceYProperty.add(targetYProperty).divide(2).add(visEdgeLabel.getLayoutBounds().getHeight() / 1.5D));
   }
 
   private void bindNodePositions() {
-    startXProp.bind(source.getCenterXProperty());
-    startYProp.bind(source.getCenterYProperty());
-    endXProp.bind(target.getCenterXProperty());
-    endYProp.bind(target.getCenterYProperty());
+    sourceXProperty.bind(source.getCenterXProperty());
+    sourceYProperty.bind(source.getCenterYProperty());
+    targetXProperty.bind(target.getCenterXProperty());
+    targetYProperty.bind(target.getCenterYProperty());
   }
 
 
@@ -117,16 +121,16 @@ public class VisEdge {
 //    arrow.getTransforms().add(t);
 
     /* attach arrow to line's endpoint */
-    arrow.translateXProperty().bind(endXProp);
-    arrow.translateYProperty().bind(endYProp);
+    arrow.translateXProperty().bind(targetXProperty);
+    arrow.translateYProperty().bind(targetYProperty);
 
     /* rotate arrow around itself based on this line's angle */
     Rotate rotation = new Rotate();
-    rotation.pivotXProperty().bind(path.translateXProperty());
-    rotation.pivotYProperty().bind(path.translateYProperty());
+    rotation.pivotXProperty().bind(cubicCurve.translateXProperty());
+    rotation.pivotYProperty().bind(cubicCurve.translateYProperty());
     rotation.angleProperty().bind(UtilitiesBindings.toDegrees(
-            UtilitiesBindings.atan2(endYProp.subtract(startYProp),
-                    endXProp.subtract(startXProp))
+            UtilitiesBindings.atan2(targetYProperty.subtract(sourceYProperty),
+                    targetXProperty.subtract(sourceXProperty))
     ));
 
     arrow.getTransforms().add(rotation);
