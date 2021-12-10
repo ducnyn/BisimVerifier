@@ -38,8 +38,8 @@ public class VisEditor {
 
   private final int radius = 40;
   private int colorID = 0;
-  double spawnPosX = 1;
-  double spawnPosY = 1;
+  double spawnPosX = VisVertex.DEFAULT_RADIUS;
+  double spawnPosY = VisVertex.DEFAULT_RADIUS;
 
 
 //TODO scroll pane when item dragged past boundaries
@@ -51,8 +51,8 @@ public class VisEditor {
 
     anchorPane.setOnMousePressed(pressed -> {
       if (pressed.getButton().equals(MouseButton.PRIMARY) && (pressed.isControlDown())) {
-         spawnPosX = pressed.getX() - radius;
-         spawnPosY = pressed.getY() - radius - 20;
+         spawnPosX = pressed.getX();
+         spawnPosY = pressed.getY();
          model.addNextIDVertex();
         pressed.consume();
       }
@@ -107,13 +107,13 @@ public class VisEditor {
       if (vertex.wasAdded()) {
         if (!drawnVertices.containsKey(id)){
             drawnVertices.put(id, drawVertex(model,id, spawnPosX, spawnPosY));
-            this.spawnPosX = 1;
-            this.spawnPosY = 1;
+            this.spawnPosX = VisVertex.DEFAULT_RADIUS;
+            this.spawnPosY = VisVertex.DEFAULT_RADIUS;
         }
       } else {
         VisVertex deletedVisVertex = drawnVertices.remove(id);
         Platform.runLater(()-> {
-          anchorPane.getChildren().remove(deletedVisVertex.getRootPane());
+          anchorPane.getChildren().remove(deletedVisVertex);
 
         });
       }
@@ -147,7 +147,7 @@ public class VisEditor {
             @Override
             public void run() {
               for (VisVertex visVertex : drawnVertices.values()) {
-                visVertex.setCircleFill(visVertex.getDefaultFill());
+                visVertex.setFill(visVertex.getDefaultFill());
               }
             }
           });
@@ -178,10 +178,10 @@ public class VisEditor {
           System.out.println("block added (colorListener" + change.getElementAdded().getVertices());
 
           for (CustomVertex vertex : change.getElementAdded()) {
-            drawnVertices.get(vertex.getID()).setCircleFill(color);
+            drawnVertices.get(vertex.getID()).setFill(color);
           }
         } else if (change.getElementAdded().getVertices().size() == 1){
-          drawnVertices.get(change.getElementAdded().iterator().next().getID()).setCircleFill(Color.LIGHTGRAY);
+          drawnVertices.get(change.getElementAdded().iterator().next().getID()).resetFill();
         }
       } else {
         if (change.getElementRemoved().getVertices().size() > 1) {
@@ -227,15 +227,10 @@ public class VisEditor {
 
   private VisVertex drawVertex(Model model, int id, double mouseX, double mouseY) {
 
-    FXMLLoader visVertexLoader = new FXMLLoader(getClass().getResource(FXMLPATH.VISVERTEX.getFileName()));
-    try {
-      StackPane rootPane = visVertexLoader.load();
-      Platform.runLater(()-> anchorPane.getChildren().add(rootPane));
-    } catch (IOException ioException) {
-      ioException.printStackTrace();
-    }
-    VisVertex visVertex = visVertexLoader.getController();
-    visVertex.init(model, id, mouseX, mouseY);
+    VisVertex visVertex = new VisVertex(model,id,mouseX,mouseY);
+
+    Platform.runLater(()-> anchorPane.getChildren().add(visVertex));
+
 
     return visVertex;
 

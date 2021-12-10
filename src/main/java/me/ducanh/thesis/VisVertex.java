@@ -1,88 +1,90 @@
 package me.ducanh.thesis;
 
-import com.brunomnsilva.smartgraph.graph.Vertex;
-import com.brunomnsilva.smartgraph.graphview.SmartGraphVertexNode;
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.scene.Cursor;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
-import me.ducanh.thesis.model.CustomVertex;
 import me.ducanh.thesis.model.Model;
 
-public class VisVertex {
+import java.util.concurrent.atomic.AtomicReference;
 
-  @FXML
-  StackPane rootPane = new StackPane();
-  @FXML
-  Circle vertexCircle = new Circle(40);
-  @FXML
-  Text vertexLabel = new Text();
-  @FXML
+public class VisVertex extends StackPane{
+
+  public static int DEFAULT_RADIUS = 40;
+  public static Paint DEFAULT_FILL = Paint.valueOf("lightgray");
+  public static Paint DEFAULT_STROKE = Paint.valueOf("darkgray");
+
+
   int id;
+  public final Text label = new Text();
+  public final Circle circle = new Circle(DEFAULT_RADIUS);
 
-  DoubleProperty centerX = new SimpleDoubleProperty();
-  DoubleProperty centerY = new SimpleDoubleProperty();
-  Paint defaultFill = Paint.valueOf("lightgray");
+  DoubleProperty centerXProperty = new SimpleDoubleProperty();
+  DoubleProperty centerYProperty = new SimpleDoubleProperty();
 
-  public void init(Model model, int id) {
-    init(model, id, 1, 1);
-  }
+//  public void init(Model model, int id) {
+//    init(model, id, 1, 1);
+//  }
+
+  public VisVertex(Model model, int id, double initX, double initY) {
 
 
-  public void init(Model model, int id, double initX, double initY) {
-    rootPane.layoutXProperty().addListener((ChangeListener<? super Number>) (change, oldV, newV) -> {
-      centerX.setValue((Double) newV + 40.0);
-    });
-    rootPane.layoutYProperty().addListener((ChangeListener<? super Number>) (change, oldV, newV) -> {
-      centerY.setValue((Double) newV + 40.0);
-    });
+    addEventHandler(MouseEvent.ANY, Event::consume);
+    setPickOnBounds(false);
+    getChildren().add(circle);
+    getChildren().add(label);
+    circle.setRadius(DEFAULT_RADIUS);
+    circle.setFill(DEFAULT_FILL);
+    circle.setStroke(DEFAULT_STROKE);
+    label.setStyle("-fx-font-size: 20;");
 
-    rootPane.setLayoutX(initX);
-    rootPane.setLayoutY(initY);
-    rootPane.setPickOnBounds(false);
     this.id = id;
-    this.vertexLabel.setText(String.valueOf(id));
-    this.vertexCircle.setFill(getDefaultFill());
+    label.setText(String.valueOf(id));
+    setLayoutX(initX-getRadius());
+    setLayoutY(initY-getRadius());
 
-    final double[] mouseOrigin = {0, 0};
+    centerXProperty.bind(Bindings.createDoubleBinding(
+            ()-> layoutXProperty().get() + getRadius(),
+            layoutXProperty()
+    ));
+    centerYProperty.bind(Bindings.createDoubleBinding(
+            ()-> layoutYProperty().get() + getRadius(),
+            layoutYProperty()
+    ));
 
 
-    rootPane.setOnMousePressed(press -> {
+     AtomicReference<Double> onPressedX = new AtomicReference<>();
+     AtomicReference<Double> onPressedY = new AtomicReference<>();
+
+    setOnMousePressed(press -> {
       if (press.isAltDown()) {
         model.removeVertex(this.id);
       }
-      rootPane.toFront();
-      mouseOrigin[0] = press.getScreenX();
-      mouseOrigin[1] = press.getScreenY();
+      toFront();
+      onPressedX.set(press.getScreenX());
+      onPressedY.set(press.getScreenY());
     });
 
-    rootPane.setOnMouseDragged((drag) -> {
+    setOnMouseDragged((drag) -> {
 
       if (drag.getButton().equals(MouseButton.PRIMARY) &&!drag.isAltDown()) {
         drag.consume();
-        double deltaX = rootPane.getTranslateX() + (drag.getScreenX() - mouseOrigin[0])/rootPane.getParent().getScaleX();
-        double deltaY = rootPane.getTranslateY() + (drag.getScreenY() - mouseOrigin[1])/rootPane.getParent().getScaleY();
-        rootPane.setTranslateX(deltaX);
-        rootPane.setTranslateY(deltaY);
-        rootPane.setLayoutX(rootPane.getLayoutX()+rootPane.getTranslateX());
-        rootPane.setLayoutY(rootPane.getLayoutY()+rootPane.getTranslateY());
-        rootPane.setTranslateX(0);
-        rootPane.setTranslateY(0);
-        mouseOrigin[0] = drag.getScreenX();
-        mouseOrigin[1] = drag.getScreenY();
+        double deltaX = getTranslateX() + (drag.getScreenX() - onPressedX.get())/getParent().getScaleX();
+        double deltaY = getTranslateY() + (drag.getScreenY() - onPressedY.get())/getParent().getScaleY();
+        setTranslateX(deltaX);
+        setTranslateY(deltaY);
+        setLayoutX(getLayoutX()+getTranslateX());
+        setLayoutY(getLayoutY()+getTranslateY());
+        setTranslateX(0);
+        setTranslateY(0);
+        onPressedX.set(drag.getScreenX());
+        onPressedY.set(drag.getScreenY());
 
 //        System.out.print("\r" + "nodeID: " + id);
 //        System.out.print(" absMousePosX: " + drag.getSceneX());
@@ -94,7 +96,7 @@ public class VisVertex {
 
 
 
-    rootPane.setOnMouseReleased(released -> {
+    setOnMouseReleased(released -> {
       if (released.isDragDetect()) {
         if (model.getSelectedVertices().contains(id)) {
           model.getSelectedVertices().remove(id);
@@ -104,42 +106,39 @@ public class VisVertex {
       }
     });
 
-    rootPane.addEventHandler(MouseEvent.ANY, Event::consume);
+  }
+  public double getCenterX(){
+    return centerXProperty.get();
   }
 
+  public double getCenterY(){
+    return centerYProperty.get();
+  }
+  public void setFill(Paint paint){
+    circle.setFill(paint);
+  }
+  public void setText(String string){
+    label.setText(string);
+  }
+  public double getRadius() {
+    return circle.getRadius();
+  }
+  public void setRadius(Double radius){
+    circle.setRadius(radius);
+  }
+  public void resetFill(){
+    circle.setFill(DEFAULT_FILL);
+  }
   public Paint getDefaultFill() {
-    return defaultFill;
-  }
-
-  public double getRadius(){
-    return vertexCircle.getRadius();
-  }
-  public StackPane getRootPane() {
-    return rootPane;
-  }
-
-  int getID() {
-    return id;
-  }
-
-  public void setCircleFill(Paint fill) {
-    this.vertexCircle.setFill(fill);
-  }
-
-  public void setLayout(double relPosX, double relPosY) {
-    rootPane.setLayoutX(relPosX);
-    rootPane.setLayoutY(relPosY);
-  }
-
-  public void bindToCenter(DoubleProperty xVal, DoubleProperty yVal){
-    xVal.bind(centerX);
-    yVal.bind(centerY);
+    return DEFAULT_FILL;
   }
 
   public DoubleProperty getCenterXProperty(){
-    return centerX;
+    return centerXProperty;
   }
   public DoubleProperty getCenterYProperty(){
-    return centerY;
+    return centerYProperty;
   }
+
+
 }

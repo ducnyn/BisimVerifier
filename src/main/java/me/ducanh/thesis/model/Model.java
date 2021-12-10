@@ -27,11 +27,11 @@ public class Model {
 
 
   {//initiator
-    vertices.addListener((MapChangeListener<Integer, CustomVertex>) mapEntry -> {
-      int vertexID = mapEntry.getKey();
+    vertices.addListener((MapChangeListener<Integer, CustomVertex>) vertexChange -> {
+      int vertexID = vertexChange.getKey();
 
-      if (mapEntry.wasAdded()) { //mapentry added
-        mapEntry.getValueAdded().getEdges().addListener((SetChangeListener<CustomEdge>) edgeSetChange -> {
+      if (vertexChange.wasAdded()) { //vertex added
+        vertexChange.getValueAdded().getEdges().addListener((SetChangeListener<CustomEdge>) edgeSetChange -> {
 
           dotString.set(DotService.write(vertices.keySet(), getEdges()));
           if(edgeSetChange.wasAdded()){
@@ -41,16 +41,18 @@ public class Model {
           }
         });
 
-        edges.addAll(mapEntry.getValueAdded().getEdges());
+        edges.addAll(vertexChange.getValueAdded().getEdges());
 
-      } else { //mapEntry removed
-        edges.removeAll(mapEntry.getValueRemoved().getEdges());
-        System.out.println(mapEntry.getValueRemoved());
+      }
+
+      else { //vertex removed
+        edges.removeAll(vertexChange.getValueRemoved().getEdges());
+        System.out.println(vertexChange.getValueRemoved());
         deletedIDs.add(vertexID);
         selectedVertices.remove(vertexID);
         //remove CustomEdge if source is removed  TODO :what about targets?
         for (CustomEdge edge : getEdges()) {
-          if (edge.getTarget().getID().equals(mapEntry.getKey())) {
+          if (edge.getTarget().getID().equals(vertexChange.getKey())) {
             if (vertices.containsKey(edge.getSource().getID()))
               vertices.get(edge.getSource().getID()).getEdges().remove(edge);
           }
