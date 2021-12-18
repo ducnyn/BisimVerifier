@@ -27,10 +27,11 @@ public class VisEdge {
   @FXML
   public Text visEdgeLabel;
 
-  public SmartArrow attachedArrow;
+  public SmartArrow arrow;
   private CustomEdge edge;
   private VisVertex source;
   private VisVertex target;
+  private Line line = new Line();
   public DoubleProperty sourceXProperty = new SimpleDoubleProperty();
   public DoubleProperty sourceYProperty = new SimpleDoubleProperty();
   public DoubleProperty targetXProperty = new SimpleDoubleProperty();
@@ -60,27 +61,27 @@ public class VisEdge {
     drawEdge();
     bindLabelPosition();
     bindArrow(new SmartArrow(8));
-    anchorPane.getChildren().add(attachedArrow);
+    anchorPane.getChildren().add(arrow);
     anchorPane.setPickOnBounds(false);
 
   }
 
   private void update() {
-    double midpointX1;
-    double midpointY1;
+    double controlX1;
+    double controlY1;
     if (this.source == this.target) {
-      midpointX1 = this.target.getCenterX() - this.source.getRadius() * 5.0D;
-      midpointY1 = this.target.getCenterY() - this.source.getRadius() * 2.0D;
-      double midpointX2 = this.target.getCenterX() + this.source.getRadius() * 5.0D;
-      double midpointY2 = this.target.getCenterY() - this.source.getRadius() * 2.0D;
-      cubicCurve.setControlX1(midpointX1);
-      cubicCurve.setControlY1(midpointY1);
-      cubicCurve.setControlX2(midpointX2);
-      cubicCurve.setControlY2(midpointY2);
+      controlX1 = this.target.getCenterX() - this.target.getRadius() * 2.0D;
+      controlY1 = this.target.getCenterY() - this.target.getRadius() * 2.0D;
+      double controlX2 = this.target.getCenterX() + this.target.getRadius() * 2.0D;
+      double controlY2 = this.target.getCenterY() - this.target.getRadius() * 2.0D;
+      cubicCurve.setControlX1(controlX1);
+      cubicCurve.setControlY1(controlY1);
+      cubicCurve.setControlX2(controlX2);
+      cubicCurve.setControlY2(controlY2);
     } else {
-      midpointX1 = (this.target.getCenterX() + this.source.getCenterX()) / 2.0D;
-      midpointY1 = (this.target.getCenterY() + this.source.getCenterY()) / 2.0D;
-      Point2D midpoint = new Point2D(midpointX1, midpointY1);
+      controlX1 = (this.target.getCenterX() + this.source.getCenterX()) / 2.0D;
+      controlY1 = (this.target.getCenterY() + this.source.getCenterY()) / 2.0D;
+      Point2D midpoint = new Point2D(controlX1, controlY1);
       Point2D startpoint = new Point2D(this.source.getCenterX(), this.source.getCenterY());
       Point2D endpoint = new Point2D(this.target.getCenterX(), this.target.getCenterY());
       double angle = 20.0D;
@@ -94,11 +95,7 @@ public class VisEdge {
     }
   }
   private void drawEdge(){
-    cubicCurve.startXProperty().bind(source.getCenterXProperty());
-    cubicCurve.startYProperty().bind(source.getCenterYProperty());
-    cubicCurve.endXProperty().bind(target.getCenterXProperty());
-    cubicCurve.endYProperty().bind(target.getCenterYProperty());
-    update();
+
 
 
       cubicCurve.startXProperty().addListener((oldV,newV,change)-> update());
@@ -106,44 +103,15 @@ public class VisEdge {
       cubicCurve.endXProperty().addListener((oldV,newV,change)-> update());
       cubicCurve.endYProperty().addListener((oldV,newV,change)-> update());
 
-
-//    path.getElements().clear();
-//    MoveTo moveTo = new MoveTo();
-//    moveTo.xProperty().bind(sourceXProperty);
-//    moveTo.yProperty().bind(sourceYProperty);
-//
-//    ArcTo arcTo = new ArcTo();
-//    arcTo.xProperty().bind(targetXProperty);
-//    arcTo.yProperty().bind(targetYProperty);
-//
-//
-//
-//    arcTo.radiusXProperty().bind(Bindings.createDoubleBinding(
-//            ()-> distance.get()*distance.get()/200,
-//            distance
-//    ));
-//    arcTo.radiusYProperty().bind(Bindings.createDoubleBinding(
-//            ()-> distance.get()*distance.get()/200,
-//            distance
-//    ));
-//
-//    path.getElements().add(moveTo);
-//    path.getElements().add(arcTo);
-
-
-
-//    double height = 20;
-//    arcTo.radiusYProperty().bind(arcTo.radiusXProperty());
-//    arcTo.radiusXProperty().bind(Bindings.createDoubleBinding(
-//                ()-> (height/2) + Math.pow(distance.get(),2)/(8*height),
-////            ()-> distance.get()*distance.get()/200,
-//            distance
-//    ));
-//
-//    path.getElements().add(moveTo);
-//    path.getElements().add(arcTo);
-
-
+    cubicCurve.startXProperty().bind(source.getCenterXProperty());
+    cubicCurve.startYProperty().bind(source.getCenterYProperty());
+    cubicCurve.endXProperty().bind(target.getCenterXProperty());
+    cubicCurve.endYProperty().bind(target.getCenterYProperty());
+    
+    line.startXProperty().bind(source.getCenterXProperty());
+    line.startYProperty().bind(source.getCenterYProperty());
+    line.endXProperty().bind(target.getCenterXProperty());
+    line.endYProperty().bind(target.getCenterYProperty());
   }
 
 
@@ -165,47 +133,22 @@ public class VisEdge {
 
 
   public void bindArrow(SmartArrow arrow) {
-    this.attachedArrow = arrow;
+    this.arrow = arrow;
     arrow.setStroke(Color.DARKGREY);
 
-//    arrow.translateXProperty().bind(this.endXProp);
-//    arrow.translateYProperty().bind(this.endYProp);
-//    Rotate rotation = new Rotate();
-//    rotation.pivotXProperty().bind(path.translateXProperty());
-//    rotation.pivotYProperty().bind(path.translateYProperty());
-//    rotation.angleProperty().bind(UtilitiesBindings.toDegrees(UtilitiesBindings.atan2(path.endYProperty().subtract(this.controlY2Property()), this.endXProperty().subtract(this.controlX2Property()))));
-//    arrow.getTransforms().add(rotation);
-//    Translate t = new Translate(-this.target.getRadius(), 0.0D);
-//    arrow.getTransforms().add(t);
 
-//    /* attach arrow to line's endpoint */
-//    arrow.translateXProperty().bind(targetXProperty);
-//    arrow.translateYProperty().bind(targetYProperty);
-//
-//    /* rotate arrow around itself based on this line's angle */
-//    Rotate rotation = new Rotate();
+    arrow.translateXProperty().bind(targetXProperty);
+    arrow.translateYProperty().bind(targetYProperty);
+    Rotate rotation = new Rotate();
 //    rotation.pivotXProperty().bind(cubicCurve.translateXProperty());
 //    rotation.pivotYProperty().bind(cubicCurve.translateYProperty());
-//    rotation.angleProperty().bind(UtilitiesBindings.toDegrees(
-//            UtilitiesBindings.atan2(targetYProperty.subtract(sourceYProperty),
-//                    targetXProperty.subtract(sourceXProperty))
-//    ));
-//
-//    arrow.getTransforms().add(rotation);
-//
-//    /* add translation transform to put the arrow touching the circle's bounds */
-//    Translate t = new Translate(-target.getRadius(), 0);
-//    arrow.getTransforms().add(t);
-
-    arrow.translateXProperty().bind(cubicCurve.endXProperty());
-    arrow.translateYProperty().bind(cubicCurve.endYProperty());
-    Rotate rotation = new Rotate();
-    rotation.pivotXProperty().bind(cubicCurve.translateXProperty());
-    rotation.pivotYProperty().bind(cubicCurve.translateYProperty());
     rotation.angleProperty().bind(UtilitiesBindings.toDegrees(UtilitiesBindings.atan2(cubicCurve.endYProperty().subtract(cubicCurve.controlY2Property()), cubicCurve.endXProperty().subtract(cubicCurve.controlX2Property()))));
+//      rotation.angleProperty().bind(UtilitiesBindings.toDegrees(UtilitiesBindings.atan2()))
+//    rotation.angleProperty().add(4.0D);
+    Translate translation = new Translate(-this.target.getRadius(), 0.0D);
+
     arrow.getTransforms().add(rotation);
-    Translate t = new Translate(-this.target.getRadius(), 0.0D);
-    arrow.getTransforms().add(t);
+    arrow.getTransforms().add(translation);
   }
   public Node getRoot(){
     return anchorPane;
