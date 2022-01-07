@@ -7,7 +7,6 @@ import me.ducanh.thesis.formula.FormulaParser;
 import me.ducanh.thesis.formula.Token;
 import me.ducanh.thesis.formula.tree.TreeNode;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.TreeSet;
@@ -16,33 +15,34 @@ public class TestApp {
     private static ObservableSet<Integer> intSet = FXCollections.observableSet(new TreeSet<>());
     private static ObservableSet<Integer> int2Set = FXCollections.unmodifiableObservableSet(intSet);
 
-public static void main(String[] args) {
-    while (true) {
-        System.out.println("enter some formula:");
-        Scanner scanner = new Scanner(System.in);
-        String formula = scanner.next();
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("enter some formula:");
+            Scanner scanner = new Scanner(System.in);
+            String formula = scanner.next();
 
-        try {
-            List<Token> tokenList = FormulaLexer.generateTokenList(formula);
-            System.out.println(tokenList);
-            TreeNode rootNode = FormulaParser.parse(formula);
-            System.out.println(rootNode);
+            try {
+                List<Token> tokenList = FormulaLexer.generateTokenList(formula);
+                System.out.println(tokenList);
+                TreeNode rootNode = FormulaParser.parse(formula);
+                System.out.println(rootNode);
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            continue;
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                continue;
+            }
+
+            if (!cont()) {
+                break;
+            }
         }
 
-        if (!cont()) {
-            break;
-        }
+
     }
 
-
-}
     private static Boolean cont() {
 
-        while(true) {
+        while (true) {
             System.out.println("want to enter new formula? y/n");
             String cont = new Scanner(System.in).next();
             if (cont.equals("y")) {

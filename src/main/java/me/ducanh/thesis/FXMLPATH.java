@@ -10,13 +10,13 @@ public enum FXMLPATH {
     VISVERTEX("VisVertex.fxml"),
     OUTPUT("OutputPanel.fxml");
 
-  private final String fileName;
+    private final String fileName;
 
-FXMLPATH(String fileName) {
-    this.fileName = fileName;
-}
+    FXMLPATH(String fileName) {
+        this.fileName = fileName;
+    }
 
-public String getFileName() {
-    return fileName;
-}
+    public String getFileName() {
+        return fileName;
+    }
 }

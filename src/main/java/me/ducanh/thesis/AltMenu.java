@@ -4,10 +4,10 @@ import javafx.scene.control.MenuItem;
 
 public class AltMenu {
 
-public MenuItem switchToAdditionalButton;
+    public MenuItem switchToAdditionalButton;
 
-@javafx.fxml.FXML
-private void switchToAdditional() throws Exception {
-    App.setRoot(FXMLPATH.ABOUT);
-}
+    @javafx.fxml.FXML
+    private void switchToAdditional() throws Exception {
+        App.setRoot(FXMLPATH.ABOUT);
+    }
 }

@@ -6,10 +6,15 @@ import me.ducanh.thesis.formula.FormulaParser;
 import me.ducanh.thesis.formula.NoMatchingTokenException;
 import me.ducanh.thesis.formula.SyntaxErrorException;
 import me.ducanh.thesis.formula.tree.TreeNode;
-import me.ducanh.thesis.model.*;
+import me.ducanh.thesis.model.Algorithms;
+import me.ducanh.thesis.model.CustomVertex;
+import me.ducanh.thesis.model.Model;
+import me.ducanh.thesis.model.NoDistinguishingFormulaException;
 import me.ducanh.thesis.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Random;
 
 import static java.lang.Integer.parseInt;
 
@@ -23,29 +28,29 @@ public class SideBar {
 
     @FXML
     private void vertices() {
-    Optional<String> numberOK = null;
-    String number = "";
+        Optional<String> numberOK = null;
+        String number = "";
 
-    do {
-        TextInputDialog sourceDia = new TextInputDialog();
-        sourceDia.setHeaderText("Number of vertices to spawn:");
-        numberOK = sourceDia.showAndWait();
-        number = sourceDia.getEditor().getText();
-    } while (numberOK.isPresent() && (StringUtils.notInteger(number) || number.isBlank() || number.isEmpty()));
+        do {
+            TextInputDialog sourceDia = new TextInputDialog();
+            sourceDia.setHeaderText("Number of vertices to spawn:");
+            numberOK = sourceDia.showAndWait();
+            number = sourceDia.getEditor().getText();
+        } while (numberOK.isPresent() && (StringUtils.notInteger(number) || number.isBlank() || number.isEmpty()));
 
-    if(numberOK.isPresent()){
-        int finalNumber = parseInt(number);
-        Thread taskThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for(int i = 0; i< finalNumber; i++){
-                    model.addNextIDVertex();
+        if (numberOK.isPresent()) {
+            int finalNumber = parseInt(number);
+            Thread taskThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < finalNumber; i++) {
+                        model.addNextIDVertex();
+                    }
                 }
-            }
-        });
-        taskThread.setDaemon(true);
-        taskThread.start();
-    }
+            });
+            taskThread.setDaemon(true);
+            taskThread.start();
+        }
 //        model.addEdge(1, "a", 2);
 //        model.addEdge(2, "b", 3);
 //        model.addEdge(2, "c", 3);
@@ -184,7 +189,7 @@ public class SideBar {
                 CustomVertex secondVertex = model.getVertex(parseInt(second));
                 Thread taskThread = new Thread(() -> {
                     try {
-                        model.setOutputString( "\n Distinguishing Formula: " +
+                        model.setOutputString("\n Distinguishing Formula: " +
                                 Algorithms.getDeltaFormula(firstVertex, secondVertex, model.getVertices()) +
                                 " is satisfied by " + firstVertex + " but not by " + secondVertex
                         );
@@ -227,7 +232,7 @@ public class SideBar {
                     System.out.println(e.getMessage());
                     formulaTree = null;
                 }
-            } while (secondOK.isPresent() && (formulaTree==null));
+            } while (secondOK.isPresent() && (formulaTree == null));
 
             if (secondOK.isPresent()) {
                 final TreeNode finalTree = formulaTree;
