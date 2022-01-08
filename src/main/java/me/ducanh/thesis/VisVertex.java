@@ -17,7 +17,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class VisVertex extends StackPane {
 
     public static int DEFAULT_RADIUS = 40;
+//    public static Paint DEFAULT_FILL = Paint.valueOf("lightgray");
     public static Paint DEFAULT_FILL = Paint.valueOf("lightgray");
+
     public static Paint DEFAULT_STROKE = Paint.valueOf("darkgray");
     private final Text label = new Text();
     private final Circle circle = new Circle(DEFAULT_RADIUS);
@@ -39,6 +41,7 @@ public class VisVertex extends StackPane {
         circle.setRadius(DEFAULT_RADIUS);
         circle.setFill(DEFAULT_FILL);
         circle.setStroke(DEFAULT_STROKE);
+        circle.setStyle("-fx-opacity: 0.5");
         label.setStyle("-fx-font-size: 20;");
 
         this.id = id;
