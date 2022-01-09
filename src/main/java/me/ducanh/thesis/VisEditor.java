@@ -67,26 +67,22 @@ public class VisEditor {
 
             if (change.wasAdded()) {
                 System.out.println("Edge was added: " + change.getElementAdded() + "try to create visualization");
-                try {
-                    CustomEdge edge = change.getElementAdded();
-                    FXMLLoader visEdgeLoader = new FXMLLoader(getClass().getResource(FXMLPATH.VISEDGE.getFileName()));
-                    Node visEdgeRoot = visEdgeLoader.load();
-                    VisEdge visEdge = visEdgeLoader.getController();
-                    visEdge.init(edge.getLabel(), drawnVertices.get(edge.getSource().getID()), drawnVertices.get(edge.getTarget().getID()));
+                CustomEdge edge = change.getElementAdded();
+//                    FXMLLoader visEdgeLoader = new FXMLLoader(getClass().getResource(FXMLPATH.VISEDGE.getFileName()));
+//                    Node visEdgeRoot = visEdgeLoader.load();
+//                    VisEdge visEdge = visEdgeLoader.getController();
+                VisEdge visEdge = new VisEdge(edge.getLabel(), drawnVertices.get(edge.getSource().getID()), drawnVertices.get(edge.getTarget().getID()));
 
-                    drawnEdges.put(edge, visEdge);
 
-                    Platform.runLater(() -> {
-                        anchorPane.getChildren().add(visEdgeRoot);
-                        visEdge.getRoot().toBack();
-                    });
+                drawnEdges.put(edge, visEdge);
 
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
+                Platform.runLater(() -> {
+                    anchorPane.getChildren().add(visEdge);
+                    visEdge.toBack();
+                });
 
             } else {
-                anchorPane.getChildren().remove(drawnEdges.get(change.getElementRemoved()).getRoot());
+                anchorPane.getChildren().remove(drawnEdges.get(change.getElementRemoved()));
                 drawnEdges.remove(change.getElementRemoved());
             }
             if (model.getBisimToggle().get()) {

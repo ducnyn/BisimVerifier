@@ -6,8 +6,6 @@ public enum FXMLPATH {
     VISEDITOR("VisEditor.fxml"),
     SIDEBAR("Sidebar.fxml"),
     ABOUT("About.fxml"),
-    VISEDGE("VisEdge.fxml"),
-    VISVERTEX("VisVertex.fxml"),
     OUTPUT("OutputPanel.fxml");
 
     private final String fileName;
