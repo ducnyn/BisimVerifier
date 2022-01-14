@@ -86,15 +86,13 @@ public class Model {
     if (vertices.containsKey(target)) {
       targetVertex = vertices.get(target);
     }  else {
-      targetVertex = new Vertex(target);
-      addVertex(targetVertex);
+      targetVertex = addVertex(target);
     }
 
     if (vertices.containsKey(source)) {
       sourceVertex = vertices.get(source);
     }else {
-      sourceVertex = new Vertex(source);
-      addVertex(sourceVertex);
+      sourceVertex = addVertex(source);
     }
     System.out.println("sourceV = " + vertices.get(source));
     System.out.println("targetV = " +targetVertex);
@@ -107,16 +105,13 @@ public class Model {
   public int addNextIDVertex() {
 //    if(addedByVis) this.addedByVis = false;
     int id = Objects.requireNonNullElse(deletedIDs.pollFirst(), getMaxID() + 1);
-    addVertex(new Vertex(id));
+    addVertex(id);
     return id;
   }
 
-  public boolean addVertex(Vertex vertex) {
-    if (vertices.containsKey(vertex.getID()))
-      return false;
-    else
-      vertices.put(vertex.getID(), vertex);
-    return true;
+  public  Vertex addVertex(int ID) {
+    if (!vertices.containsKey(ID)) vertices.put(ID, new Vertex(ID));
+    return vertices.get(ID);
   }
 
   public Integer getMaxID() {

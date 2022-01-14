@@ -13,7 +13,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
+import me.ducanh.thesis.command.CommandParser;
+import me.ducanh.thesis.command.Method;
+import me.ducanh.thesis.command.NoMatchingTokenException;
+import me.ducanh.thesis.command.SyntaxErrorException;
 import me.ducanh.thesis.model.Model;
+
+import java.util.ArrayList;
 
 
 public class InputOutput {
@@ -53,6 +59,25 @@ public class InputOutput {
             if(keyPress.getCode().equals(KeyCode.ENTER)){
                 Platform.runLater(() -> {
                     print(model.getUserName()+": "+inputArea.getText());
+                    try {
+                        ArrayList<Method> parsedMethods = CommandParser.parse(inputArea.getText());
+
+                        for (Method method: parsedMethods){
+                                switch(method.getName()) {
+                                    case "vertex":
+                                        System.out.println("It's a vertex method and the arguments are" + method.getArgumentList());
+                                        if (method.getArgumentList().size()==1){
+                                            model.addVertex(Integer.parseInt(method.getArgumentList().get(0)));
+                                        }
+                                        break;
+                                }
+
+                        }
+                    } catch (SyntaxErrorException e) {
+                        e.printStackTrace();
+                    } catch (NoMatchingTokenException e) {
+                        e.printStackTrace();
+                    }
                     inputArea.clear();
                 });
 //                parse(inputArea.getText());
