@@ -33,17 +33,6 @@
     -fx-pref-width: 100px;
 }
 
-.vertexLabel {
-    -fx-font-size: 20;
-}
-
-
-.visEdgeLabel{
-
-    -fx-font-size: 20;
-    -fx-fill: coral;
-    -fx-font-weight: bold;
-}
 .statusLabel{
     -fx-font-size: 20;
     -fx-fill: coral;

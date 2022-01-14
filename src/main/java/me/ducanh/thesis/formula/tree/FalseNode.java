@@ -1,10 +1,10 @@
 package me.ducanh.thesis.formula.tree;
 
-import me.ducanh.thesis.model.CustomVertex;
+import me.ducanh.thesis.model.Vertex;
 
 public class FalseNode implements TreeNode {
   @Override
-  public Boolean evaluate(CustomVertex vertex) {
+  public Boolean evaluate(Vertex vertex) {
     return false;
   }
 

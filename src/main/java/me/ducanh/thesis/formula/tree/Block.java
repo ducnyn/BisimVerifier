@@ -1,6 +1,6 @@
 package me.ducanh.thesis.formula.tree;
 
-import me.ducanh.thesis.model.CustomVertex;
+import me.ducanh.thesis.model.Vertex;
 
 public class Block implements TreeNode {
 
@@ -12,7 +12,7 @@ public class Block implements TreeNode {
     this.child = child;
   }
   @Override
-  public Boolean evaluate(CustomVertex vertex) { //yes allmatch does return true for empty streams
+  public Boolean evaluate(Vertex vertex) { //yes allmatch does return true for empty streams
     return vertex.getTargets(action).stream().allMatch(targetVertex -> child.evaluate(targetVertex));
   }
 

@@ -61,7 +61,6 @@ public class FormulaLexer {
           undefined.append(iter.next());
         }
         throw new NoMatchingTokenException("undefined character: "+undefined);
-//        tokenList.add(new Token(TokenType.ERROR,"undefined character \"" + iter.current() +"\""));
       }
       iter.next();
     } tokenList.add(new Token(TokenType.EOL,"End of Line"));

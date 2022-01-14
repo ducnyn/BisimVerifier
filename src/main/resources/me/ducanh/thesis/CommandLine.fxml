@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane fx:id="anchorPane"
+        xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx"
+            fx:controller="me.ducanh.thesis.InputOutput"
+            prefHeight="5000" prefWidth="400"
+            minWidth="400"
+>
+    <SplitPane fx:id="splitPane"
+            orientation="VERTICAL"
+            AnchorPane.bottomAnchor="0.0"
+            AnchorPane.leftAnchor="0.0"
+            AnchorPane.rightAnchor="0.0"
+            AnchorPane.topAnchor="0.0">
+        <TextArea fx:id="outputArea">
+
+            <ContextMenu fx:id="edtorOutputMenu">
+                <items>
+                    <MenuItem text="Add"/>
+                    <MenuItem text="Remove"/>
+                    <MenuItem text="Enhance"/>
+                </items>
+            </ContextMenu>
+        </TextArea>
+
+        <TextArea fx:id="inputArea">
+            <ContextMenu fx:id="editorInputMenu">
+                <items>
+                    <MenuItem text="Add"/>
+                    <MenuItem text="Remove"/>
+                    <MenuItem text="Enhance"/>
+                </items>
+            </ContextMenu>
+        </TextArea>
+    </SplitPane>
+
+</AnchorPane>

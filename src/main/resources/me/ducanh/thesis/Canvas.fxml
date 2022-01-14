@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Label?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="scrollPane"
+            xmlns="http://javafx.com/javafx/15.0.1"
+            fx:controller="me.ducanh.thesis.Canvas"
+            pannable="true"
+            fitToHeight="true"
+            fitToWidth="true">
+    <StackPane   fx:id = "centerBox"
+            id="visualBackground"
+            >
+
+        <Group fx:id = "group">
+            <AnchorPane id="anchorPane"
+                        fx:id="anchorPane"
+                        style="-fx-background-color: white;">
+                <Label fx:id = "bisimToggleLabel" styleClass = "statusLabels">Bisimulation Indicators: Off</Label>
+
+            </AnchorPane>
+        </Group>
+    </StackPane>
+</ScrollPane>

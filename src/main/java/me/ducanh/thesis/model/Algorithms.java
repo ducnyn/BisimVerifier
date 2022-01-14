@@ -24,7 +24,7 @@ public class Algorithms {
 
     //True = states that have an action a, leading to a state in B' (= leading to the same state based on current bisimulation refinement)
     //False = the rest.
-    public static Map<Boolean, Set<CustomVertex>> split(Block block, BlockEdge blockEdge) {
+    public static Map<Boolean, Set<Vertex>> split(Block block, BlockEdge blockEdge) {
 //    System.out.println("attempting to split " + block);
         return block.stream()
                 .collect(partitioningBy(
@@ -35,8 +35,8 @@ public class Algorithms {
 
     }
 
-    public static Pair<Block, Set<Block>> bisim(Set<CustomVertex> vertices) {
-        HashMap<CustomVertex, Block> containingBlock = new HashMap<>();
+    public static Pair<Block, Set<Block>> bisim(Set<Vertex> vertices) {
+        HashMap<Vertex, Block> containingBlock = new HashMap<>();
         Set<Block> newPartition = new HashSet<>();
         Set<Block> parentPartition = new HashSet<>();
         Block rootBlock = new Block(vertices);
@@ -49,7 +49,7 @@ public class Algorithms {
             newPartition = new HashSet<>();
 
             for (Block block : parentPartition) {
-                for (CustomVertex vertex : block) {
+                for (Vertex vertex : block) {
                     containingBlock.put(vertex, block);
                 }
             }
@@ -65,7 +65,7 @@ public class Algorithms {
 
                 if (possibleSplitter.isPresent()) {
                     BlockEdge splitter = possibleSplitter.get();
-                    Map<Boolean, Set<CustomVertex>> dividedBlock = split(block, splitter);
+                    Map<Boolean, Set<Vertex>> dividedBlock = split(block, splitter);
                     block.setSplitter(splitter);
                     block.setLeftChild(new Block(dividedBlock.get(true)));
                     block.setRightChild(new Block(dividedBlock.get(false)));
@@ -83,7 +83,7 @@ public class Algorithms {
     }
 
 
-    private static Block findLastBlock(CustomVertex state1, CustomVertex state2, Block root) throws NoDistinguishingFormulaException {
+    private static Block findLastBlock(Vertex state1, Vertex state2, Block root) throws NoDistinguishingFormulaException {
         Block block = root;
 
         while (true) {
@@ -101,7 +101,7 @@ public class Algorithms {
 
     }
 
-    public static TreeNode getDeltaFormula(CustomVertex state1, CustomVertex state2, Set<CustomVertex> vertexSet) throws NoDistinguishingFormulaException {
+    public static TreeNode getDeltaFormula(Vertex state1, Vertex state2, Set<Vertex> vertexSet) throws NoDistinguishingFormulaException {
 
         Block rootBlock = bisim(vertexSet).getKey();
 
@@ -110,7 +110,7 @@ public class Algorithms {
         return result;
     }
 
-    private static TreeNode clevelandAlgo(CustomVertex state1, CustomVertex state2, Block rootBlock) throws NoDistinguishingFormulaException {
+    private static TreeNode clevelandAlgo(Vertex state1, Vertex state2, Block rootBlock) throws NoDistinguishingFormulaException {
 
         Block lastBlock = findLastBlock(state1, state2, rootBlock);
         if (lastBlock.getSplitter() == null) {
@@ -123,10 +123,10 @@ public class Algorithms {
 
         BlockEdge splitter = lastBlock.getSplitter();
         String splitAction = splitter.getLabel();
-        Set<CustomVertex> splitBlock = splitter.getTargetBlock().getVertices();
+        Set<Vertex> splitBlock = splitter.getTargetBlock().getVertices();
 
-        CustomVertex leftState;
-        CustomVertex rightState;
+        Vertex leftState;
+        Vertex rightState;
         boolean reversed;
 
         if (lastBlock.left().contains(state1) & lastBlock.right().contains(state2)) {
@@ -142,16 +142,16 @@ public class Algorithms {
         }
 
 
-        Set<CustomVertex> SL = Sets.intersection(leftState.getTargets(splitAction), splitBlock);
-        Set<CustomVertex> SR = rightState.getTargets(splitAction);
+        Set<Vertex> SL = Sets.intersection(leftState.getTargets(splitAction), splitBlock);
+        Set<Vertex> SR = rightState.getTargets(splitAction);
         int minFormulaSize = Integer.MAX_VALUE;
         TreeNode nextNode = new TrueNode();
 //        TreeNode result = new DiamondNode(splitAction,nextNode);
 
-        for (CustomVertex LTarget : SL) {
+        for (Vertex LTarget : SL) {
             List<TreeNode> formulas = new ArrayList<>(); //GAMMA
 
-            for (CustomVertex RTarget : SR) {
+            for (Vertex RTarget : SR) {
                 formulas.add(clevelandAlgo(LTarget, RTarget, rootBlock));
             }
 
@@ -185,7 +185,7 @@ public class Algorithms {
 
 
     //computes a minimalistic formula satisfied by v1, but not v2. Both formulas satisfy the formula up until the second last vertex of the described path.
-//  public static String getDeltaFormula(CustomVertex s1, CustomVertex s2, Block rootBlock) throws NoDistinguishingFormulaException {
+//  public static String getDeltaFormula(Vertex s1, Vertex s2, Block rootBlock) throws NoDistinguishingFormulaException {
 //    Block currentBlock = rootBlock;
 //    StringBuilder deltaFormula = new StringBuilder();
 //
@@ -196,8 +196,8 @@ public class Algorithms {
 //      System.out.println("current left is " + currentBlock.left());
 //      System.out.println("current right is "+currentBlock.right());
 //      System.out.println("current Splitter is " + currentBlock.getSplitter());
-//      System.out.println("CustomVertex 1 = " +s1);
-//      System.out.println("CustomVertex 2 = " +s2);
+//      System.out.println("Vertex 1 = " +s1);
+//      System.out.println("Vertex 2 = " +s2);
 //
 //
 //      if (currentBlock.getSplitter() == null) {
@@ -214,10 +214,10 @@ public class Algorithms {
 //    }
 //
 //    String action = currentBlock.getSplitter().getLabel();
-//    Set<CustomVertex> B = currentBlock.getSplitter().getTargetBlock().getVertices();
+//    Set<Vertex> B = currentBlock.getSplitter().getTargetBlock().getVertices();
 //
-//    CustomVertex sL;
-//    CustomVertex sR;
+//    Vertex sL;
+//    Vertex sR;
 //
 //    if (currentBlock.left().contains(s1)) {
 //      sL = s1;
@@ -229,16 +229,16 @@ public class Algorithms {
 //      deltaFormula.append("!<").append(action).append(">");
 //    }
 //    int smallest = Integer.MAX_VALUE;
-//    Set<CustomVertex> SL; //SL
-//    Set<CustomVertex> SR; //SR
+//    Set<Vertex> SL; //SL
+//    Set<Vertex> SR; //SR
 //
 //    SL = Sets.intersection(sL.getTargets(action), B);
 //    SR = sR.getTargets(action);
 //
-//    for (CustomVertex LTarget : SL) {
+//    for (Vertex LTarget : SL) {
 //      List<String> Formulas = new ArrayList<>(); //GAMMA
 //
-//      for (CustomVertex RTarget : SR) {
+//      for (Vertex RTarget : SR) {
 //        Formulas.add(getDeltaFormula(LTarget, RTarget, rootBlock));
 //        System.out.println("deltaFormula of "+LTarget +" and "+RTarget+" in Block " +rootBlock);
 //      }

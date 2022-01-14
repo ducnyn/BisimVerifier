@@ -5,20 +5,20 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.partitioningBy;
 
-public class Block implements Iterable<CustomVertex>{
-  Set<CustomVertex> vertices;
+public class Block implements Iterable<Vertex>{
+  Set<Vertex> vertices;
   BlockEdge splitter;
   Block leftChild;
   Block rightChild;
 
-  public Block(Set<CustomVertex> vertices, BlockEdge splitter, Block leftChild, Block rightChild) {
+  public Block(Set<Vertex> vertices, BlockEdge splitter, Block leftChild, Block rightChild) {
     this.vertices = vertices;
     this.splitter = splitter;
     this.leftChild = leftChild;
     this.rightChild = rightChild;
   }
 
-  public Block(Set<CustomVertex> vertices) {
+  public Block(Set<Vertex> vertices) {
     this.vertices = vertices;
   }
 
@@ -79,7 +79,7 @@ public class Block implements Iterable<CustomVertex>{
     return vertices.toString();
   }
 
-  public Set<CustomVertex> getVertices() {
+  public Set<Vertex> getVertices() {
     return vertices;
   }
 
@@ -107,7 +107,7 @@ public class Block implements Iterable<CustomVertex>{
     this.rightChild = rightChild;
   }
 
-  public Stream<CustomVertex> stream(){
+  public Stream<Vertex> stream(){
     return vertices.stream();
   }
   @Override
@@ -126,15 +126,15 @@ public class Block implements Iterable<CustomVertex>{
   }
 
   @Override
-  public Iterator<CustomVertex> iterator() {
+  public Iterator<Vertex> iterator() {
     return vertices.iterator();
   }
 
-  public boolean contains(CustomVertex vertex) {
+  public boolean contains(Vertex vertex) {
     return vertices.contains(vertex);
   }
 
-  public boolean containsAll(CustomVertex... v) {
+  public boolean containsAll(Vertex... v) {
     return Arrays.stream(v).allMatch(vertices::contains);
 //    return this.vertices.containsAll(Arrays.stream(i).collect(Collectors.toList()));
   }

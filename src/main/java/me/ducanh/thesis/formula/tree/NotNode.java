@@ -1,6 +1,6 @@
 package me.ducanh.thesis.formula.tree;
 
-import me.ducanh.thesis.model.CustomVertex;
+import me.ducanh.thesis.model.Vertex;
 
 public class NotNode implements TreeNode
 {
@@ -10,7 +10,7 @@ public class NotNode implements TreeNode
   }
 
   @Override
-  public Boolean evaluate(CustomVertex vertex) {
+  public Boolean evaluate(Vertex vertex) {
     return !child.evaluate(vertex);
   }
 

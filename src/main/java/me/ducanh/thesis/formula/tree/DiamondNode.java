@@ -1,6 +1,6 @@
 package me.ducanh.thesis.formula.tree;
 
-import me.ducanh.thesis.model.CustomVertex;
+import me.ducanh.thesis.model.Vertex;
 
 public class DiamondNode implements TreeNode {
   String action;
@@ -12,7 +12,7 @@ public class DiamondNode implements TreeNode {
     }
 
     @Override
-  public Boolean evaluate(CustomVertex vertex) {
+  public Boolean evaluate(Vertex vertex) {
     return vertex.getTargets(action).stream().anyMatch(targetVertex->child.evaluate(targetVertex));
   }
 

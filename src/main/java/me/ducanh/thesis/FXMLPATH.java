@@ -1,12 +1,10 @@
 package me.ducanh.thesis;
 
 public enum FXMLPATH {
-    ALTMENU("AltMenu.fxml"),
-    TEXTEDITOR("TextEditor.fxml"),
-    VISEDITOR("VisEditor.fxml"),
+    COMMANDLINE("CommandLine.fxml"),
+    CANVAS("Canvas.fxml"),
     SIDEBAR("Sidebar.fxml"),
-    ABOUT("About.fxml"),
-    OUTPUT("OutputPanel.fxml");
+    ABOUT("About.fxml");
 
     private final String fileName;
 

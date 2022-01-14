@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class FormulaParser {
+public class  FormulaParser {
     private static Token currentToken;
     private static Iterator<Token> iter;
     private static final Set<TokenType> connectiveTokens = Set.of(TokenType.AND, TokenType.OR);

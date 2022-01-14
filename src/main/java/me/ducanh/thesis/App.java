@@ -45,35 +45,31 @@ public class App extends Application {
 
         VBox rootVBox = new VBox();
         HBox mainHBox = new HBox();
-        VBox editorOutputBox = new VBox();
         SplitPane splitPane = new SplitPane();
 
-        FXMLLoader menuLoader = new FXMLLoader(getClass().getResource(FXMLPATH.ALTMENU.getFileName()));
         FXMLLoader sidebarLoader = new FXMLLoader(getClass().getResource(FXMLPATH.SIDEBAR.getFileName()));
-        FXMLLoader textEditorLoader = new FXMLLoader(getClass().getResource(FXMLPATH.TEXTEDITOR.getFileName()));
-        FXMLLoader visEditorLoader = new FXMLLoader(getClass().getResource(FXMLPATH.VISEDITOR.getFileName()));
-        FXMLLoader outputLoader = new FXMLLoader(getClass().getResource(FXMLPATH.OUTPUT.getFileName()));
+        FXMLLoader textEditorLoader = new FXMLLoader(getClass().getResource(FXMLPATH.COMMANDLINE.getFileName()));
+        FXMLLoader visEditorLoader = new FXMLLoader(getClass().getResource(FXMLPATH.CANVAS.getFileName()));
         Region visEditorView = visEditorLoader.load();
 
 
 //    visEditorView.setPrefHeight(splitPane.getHeight());
 
-        rootVBox.getChildren().addAll(menuLoader.load(), mainHBox);
+        rootVBox.getChildren().addAll(mainHBox);
         mainHBox.getChildren().addAll(sidebarLoader.load(), splitPane);
         splitPane.getItems().add(textEditorLoader.load());
-        splitPane.getItems().add(editorOutputBox);
-        editorOutputBox.getChildren().add(visEditorView);
-        editorOutputBox.getChildren().add(outputLoader.load());
+        splitPane.getItems().add(visEditorView);
+
+
+//        editorOutputBox.getChildren().add(outputLoader.load());
 
         splitPane.prefWidthProperty().bind(mainHBox.widthProperty());
         visEditorView.prefHeightProperty().bind(splitPane.heightProperty());
         visEditorView.prefWidthProperty().bind(splitPane.widthProperty());
 
-        AltMenu altMenu = menuLoader.getController();
         SideBar sideBar = sidebarLoader.getController();
-        TextEditor textEditor = textEditorLoader.getController();
-        VisEditor visEditor = visEditorLoader.getController();
-        OutputPanel output = outputLoader.getController();
+        InputOutput textEditor = textEditorLoader.getController();
+        Canvas visEditor = visEditorLoader.getController();
 
         scene = new Scene(rootVBox, 1600, 900);
         scene.getStylesheets().add(cssPath);
@@ -81,10 +77,9 @@ public class App extends Application {
         stage.setTitle("Graph Verifier");
         stage.setMinWidth(440);
         stage.show();
-        textEditor.intialize(model);
+        textEditor.init(model);
         visEditor.initialize(model);
         sideBar.initialize(model);
-        output.initialize(model);
 
         // These are to maintain split ratio while resizing windows
 
