@@ -37,12 +37,12 @@ public class  CommandParser {
     }
 
     private static Method parseMethod() throws SyntaxErrorException{
+        System.out.println("prsenter parseMethod");
         ArrayList<String> argumentList;
         String methodName;
             if (currentToken.getType()==TokenType.WORD){
                 methodName = currentToken.getValue();
                 iterate();
-                System.out.println("parsemethod() : after methodName retrieval, the next tokenType is: "+ currentToken.getType());
                 if(currentToken.getType()==TokenType.LEFTPAR){
                     iterate();
                     argumentList = parseArgumentList();

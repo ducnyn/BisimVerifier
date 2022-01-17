@@ -73,10 +73,8 @@ public class InputOutput {
                                 }
 
                         }
-                    } catch (SyntaxErrorException e) {
-                        e.printStackTrace();
-                    } catch (NoMatchingTokenException e) {
-                        e.printStackTrace();
+                    } catch (SyntaxErrorException | NoMatchingTokenException e) {
+                        model.requestPrint(e.getMessage());
                     }
                     inputArea.clear();
                 });

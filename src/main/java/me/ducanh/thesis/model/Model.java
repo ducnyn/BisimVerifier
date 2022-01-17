@@ -19,9 +19,10 @@ public class Model {
   private final StringProperty dotString = new SimpleStringProperty("digraph {\n\n}");
   private final StringProperty alertString = new SimpleStringProperty("");
   private final BooleanProperty updated = new SimpleBooleanProperty(false);
-  private final StringProperty printRequest = new SimpleStringProperty();
+  private final StringProperty printString = new SimpleStringProperty();
   private final BooleanProperty bisimToggle = new SimpleBooleanProperty(false);
   private String username = "User";
+  private final BooleanProperty printRequest = new SimpleBooleanProperty();
 //  private boolean addedByVis = false;
 
 
@@ -163,7 +164,9 @@ public class Model {
   }
 
   public void requestPrint(String string){
-    this.printRequest.setValue(string);
+    this.printString.setValue(string);
+    this.printRequest.setValue(false);
+    this.printRequest.setValue(true);
   }
 
   public void setUsername(String name){
@@ -171,7 +174,7 @@ public class Model {
   }
 
   public void listenToPrintRequest(StringProperty stringproperty){
-    stringproperty.bind(printRequest);
+    stringproperty.bind(printString);
   }
 
   public String getUserName() {
