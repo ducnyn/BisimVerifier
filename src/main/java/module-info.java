@@ -8,4 +8,6 @@ module me.ducanh.thesis {
 
     opens me.ducanh.thesis to javafx.fxml;
     exports me.ducanh.thesis;
+    exports me.ducanh.thesis.model;
+    opens me.ducanh.thesis.model to javafx.fxml;
 }

@@ -10,25 +10,21 @@ import javafx.collections.*;
 import java.util.*;
 
 public class Model {
+  private String username = "User";
+
   private final ObservableMap<Integer, Vertex> vertices = FXCollections.observableMap(new TreeMap<>());
   private final ObservableSet<Edge> edges = FXCollections.observableSet(new TreeSet<>());
-
   private final ObservableSet<Block> partition = FXCollections.observableSet(new HashSet<>());
-  private final ObservableSet<Integer> selectedVertices = FXCollections.observableSet();
   private final TreeSet<Integer> deletedIDs = new TreeSet<>();
-  private final StringProperty dotString = new SimpleStringProperty("digraph {\n\n}");
-  private final StringProperty alertString = new SimpleStringProperty("");
-  private final BooleanProperty updated = new SimpleBooleanProperty(false);
-  private final StringProperty printString = new SimpleStringProperty();
   private final BooleanProperty bisimToggle = new SimpleBooleanProperty(false);
-  private String username = "User";
   private final BooleanProperty printRequest = new SimpleBooleanProperty();
+  private  String printString = "";
+
 //  private boolean addedByVis = false;
 
 
   {//initiator
-    vertices.addListener((MapChangeListener<Integer, Vertex>) vertexChange -> {
-      int vertexID = vertexChange.getKey();
+    vertices.addListener((MapChangeListener<Integer, Vertex>) vertexChange -> {;
 
       if (vertexChange.wasAdded()) { //vertex added
         vertexChange.getValueAdded().getEdges().addListener((SetChangeListener<Edge>) edgeSetChange -> {
@@ -39,40 +35,16 @@ public class Model {
             edges.remove(edgeSetChange.getElementRemoved());
           }
         });
-
         edges.addAll(vertexChange.getValueAdded().getEdges());
-
       }
-
-      else { //vertex removed
-        edges.removeAll(vertexChange.getValueRemoved().getEdges());
-        System.out.println(vertexChange.getValueRemoved());
-        deletedIDs.add(vertexID);
-        selectedVertices.remove(vertexID);
-        //remove Edge if source is removed  TODO :what about targets?
-        for (Edge edge : getEdges()) {
-          if (edge.getTarget().getID().equals(vertexChange.getKey())) {
-            if (vertices.containsKey(edge.getSource().getID()))
-              vertices.get(edge.getSource().getID()).getEdges().remove(edge);
-          }
-        }
-
-      }
-      Set<Block> partition = Algorithms.bisim(getVertices()).getValue();
-      requestPrint("\n Equivalence classes (Bisimulation): \n" + partition.toString());
-
     });
 
 
     edges.addListener((SetChangeListener<? super Edge>) change -> {
-      System.out.println(edges + " in obsEdgeSet now");
-      Set<Block> partition = Algorithms.bisim(getVertices()).getValue();
-      requestPrint("\n Equivalence classes (Bisimulation): \n" + partition.toString());
+      if(change.wasAdded())
+      requestPrint(change.getElementAdded() + " was added.");
+      else requestPrint(change.getElementRemoved() + " was removed.");
     });
-
-
-
-
 
   }
 
@@ -111,7 +83,20 @@ public class Model {
   }
 
   public  Vertex addVertex(int ID) {
-    if (!vertices.containsKey(ID)) vertices.put(ID, new Vertex(ID));
+    if (!vertices.containsKey(ID)) {
+      Vertex vertex = new Vertex(this,ID,0,0);
+      vertices.put(ID,vertex);
+
+      vertex.getEdges().addListener((SetChangeListener<Edge>) edgeSetChange -> {
+
+        if(edgeSetChange.wasAdded()){
+          edges.add(edgeSetChange.getElementAdded());
+        } else {
+          edges.remove(edgeSetChange.getElementRemoved());
+        }
+      });
+      edges.addAll(vertex.getEdges());
+    }
     return vertices.get(ID);
   }
 
@@ -132,7 +117,12 @@ public class Model {
   }
 
   public void removeVertex(int vertexID) {
+    for (Vertex vertex : getVertices()){
+      vertex.getEdges().removeIf(edge -> edge.getSource().getID().equals(vertexID) ||edge.getTarget().getID().equals(vertexID));
+    }
     vertices.remove(vertexID);
+    deletedIDs.add(vertexID);
+
   }
 
   public void addVertexListener(MapChangeListener<Integer, Vertex> mapChangeListener) {
@@ -164,17 +154,20 @@ public class Model {
   }
 
   public void requestPrint(String string){
-    this.printString.setValue(string);
+    this.printString = string;
     this.printRequest.setValue(false);
     this.printRequest.setValue(true);
+  }
+  public BooleanProperty printRequestedProperty(){
+    return printRequest;
+  }
+
+  public String getPrintString(){
+    return printString;
   }
 
   public void setUsername(String name){
     this.username = name;
-  }
-
-  public void listenToPrintRequest(StringProperty stringproperty){
-    stringproperty.bind(printString);
   }
 
   public String getUserName() {

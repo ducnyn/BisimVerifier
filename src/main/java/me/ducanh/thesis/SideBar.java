@@ -88,7 +88,7 @@ public class SideBar {
 
         do {
             TextInputDialog sourceDia = new TextInputDialog();
-            sourceDia.setHeaderText("source VertexView (int):");
+            sourceDia.setHeaderText("source Vertex (int):");
             sourceOK = sourceDia.showAndWait();
             source = sourceDia.getEditor().getText();
         } while (sourceOK.isPresent() && (StringUtils.notInteger(source) || source.isBlank() || source.isEmpty()));
@@ -107,7 +107,7 @@ public class SideBar {
         if (labelOK.isPresent()) {
             do {
                 TextInputDialog inputTarget = new TextInputDialog();
-                inputTarget.setHeaderText("target VertexView (int):");
+                inputTarget.setHeaderText("target Vertex (int):");
                 targetOK = inputTarget.showAndWait();
                 target = inputTarget.getEditor().getText();
             } while (targetOK.isPresent() && (StringUtils.notInteger(target) || target.isBlank() || target.isEmpty()));

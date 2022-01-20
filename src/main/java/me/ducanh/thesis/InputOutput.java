@@ -1,11 +1,11 @@
 package me.ducanh.thesis;
 
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
-import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SplitPane;
@@ -49,11 +49,17 @@ public class InputOutput {
         outputArea.setFont(font);
         inputArea.setText("");
         outputArea.setText("");
-        model.listenToPrintRequest(printRequest);
 
-        printRequest.addListener((obs, oldText, newText) ->
-                Platform.runLater(() -> print(newText))
+        BooleanProperty printRequestedProperty = model.printRequestedProperty();
+        printRequestedProperty.addListener((obs,oldV,newV)->{
+                if (newV) {
+                    String printString = model.getPrintString();
+
+                    Platform.runLater(() -> print(printString));
+                }
+            }
         );
+
 
         inputArea.setOnKeyPressed(keyPress->{
             if(keyPress.getCode().equals(KeyCode.ENTER)){
@@ -70,6 +76,14 @@ public class InputOutput {
                                             model.addVertex(Integer.parseInt(method.getArgumentList().get(0)));
                                         }
                                         break;
+                                    case "edge":
+                                        if (method.getArgumentList().size()==3){
+                                            model.addEdge(
+                                                    Integer.parseInt(method.getArgumentList().get(0)),
+                                                    method.getArgumentList().get(1),
+                                                    Integer.parseInt(method.getArgumentList().get(2))
+                                            );
+                                        }
                                 }
 
                         }
@@ -87,7 +101,7 @@ public class InputOutput {
 
     }
     private void print(String text){
-        outputArea.appendText(text);
+        outputArea.appendText("\n"+text);
     }
 }
 

@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class Canvas {
-    private final HashMap<Integer, VertexView> drawnVertices = new HashMap<>();
-    private final HashMap<Edge, EdgeView> drawnEdges = new HashMap<>();
+    private final HashMap<Integer, Vertex> drawnVertices = new HashMap<>();
+    private final HashMap<Edge, Edge> drawnEdges = new HashMap<>();
     private final int radius = 40;
     @FXML
     ScrollPane scrollPane;
@@ -31,8 +31,8 @@ public class Canvas {
     Group group;
     @FXML
     Label bisimToggleLabel;
-    double spawnPosX = VertexView.DEFAULT_RADIUS;
-    double spawnPosY = VertexView.DEFAULT_RADIUS;
+    double spawnPosX = Vertex.DEFAULT_RADIUS;
+    double spawnPosY = Vertex.DEFAULT_RADIUS;
     private int colorID = 0;
 
 
@@ -64,7 +64,7 @@ public class Canvas {
 
             if (change.wasAdded()) {
                 Edge edge = change.getElementAdded();
-                EdgeView visEdge = new EdgeView(edge.getLabel(), drawnVertices.get(edge.getSource().getID()), drawnVertices.get(edge.getTarget().getID()));
+                Edge visEdge = new Edge(drawnVertices.get(edge.getSource().getID()), edge.getLabel(), drawnVertices.get(edge.getTarget().getID()));
                 drawnEdges.put(edge, visEdge);
 
                 Platform.runLater(() -> {
@@ -90,11 +90,11 @@ public class Canvas {
             if (vertex.wasAdded()) {
                 if (!drawnVertices.containsKey(id)) {
                     drawnVertices.put(id, drawVertex(model, id, spawnPosX, spawnPosY));
-                    this.spawnPosX = VertexView.DEFAULT_RADIUS;
-                    this.spawnPosY = VertexView.DEFAULT_RADIUS;
+                    this.spawnPosX = Vertex.DEFAULT_RADIUS;
+                    this.spawnPosY = Vertex.DEFAULT_RADIUS;
                 }
             } else {
-                VertexView deletedVisVertex = drawnVertices.remove(id);
+                Vertex deletedVisVertex = drawnVertices.remove(id);
                 Platform.runLater(() -> {
                     anchorPane.getChildren().remove(deletedVisVertex);
 
@@ -129,7 +129,7 @@ public class Canvas {
                     Thread taskThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            for (VertexView visVertex : drawnVertices.values()) {
+                            for (Vertex visVertex : drawnVertices.values()) {
                                 visVertex.setFill(visVertex.getDefaultFill());
                             }
                         }
@@ -208,9 +208,9 @@ public class Canvas {
     }
 
 
-    private VertexView drawVertex(Model model, int id, double mouseX, double mouseY) {
+    private Vertex drawVertex(Model model, int id, double mouseX, double mouseY) {
 
-        VertexView visVertex = new VertexView(model, id, mouseX, mouseY);
+        Vertex visVertex = new Vertex(model, id, mouseX, mouseY);
 
         Platform.runLater(() -> anchorPane.getChildren().add(visVertex));
 
