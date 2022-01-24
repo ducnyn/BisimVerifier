@@ -69,7 +69,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.4</version>
                 <configuration>
-                    <mainClass>me.ducanh.thesis.App</mainClass>
+                    <mainClass>me.ducanh.thesis.ui.App</mainClass>
                 </configuration>
             </plugin>
         </plugins>

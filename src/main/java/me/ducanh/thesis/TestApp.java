@@ -2,10 +2,10 @@ package me.ducanh.thesis;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
-import me.ducanh.thesis.formula.FormulaLexer;
-import me.ducanh.thesis.formula.FormulaParser;
-import me.ducanh.thesis.formula.Token;
-import me.ducanh.thesis.formula.tree.TreeNode;
+import me.ducanh.thesis.formula.parser.FormulaLexer;
+import me.ducanh.thesis.formula.parser.FormulaParser;
+import me.ducanh.thesis.formula.parser.Token;
+import me.ducanh.thesis.formula.TreeNode;
 
 import java.util.List;
 import java.util.Scanner;

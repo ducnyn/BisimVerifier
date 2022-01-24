@@ -1,8 +1,8 @@
-//import me.ducanh.thesis.formula.tree.TreeNode;
+//import me.ducanh.thesis.formula.TreeNode;
 //import me.ducanh.thesis.model.Algorithms;
-//import me.ducanh.thesis.model.Block;
-//import me.ducanh.thesis.model.Model;
-//import me.ducanh.thesis.model.Vertex;
+//import me.ducanh.thesis.Block;
+//import me.ducanh.thesis.Model;
+//import me.ducanh.thesis.Vertex;
 //import org.junit.jupiter.api.Assertions;
 //import org.junit.jupiter.api.BeforeAll;
 //import org.junit.jupiter.api.BeforeEach;
