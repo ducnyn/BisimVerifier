@@ -19,6 +19,8 @@ import me.ducanh.thesis.command.parser.NoMatchingTokenException;
 import me.ducanh.thesis.command.parser.SyntaxErrorException;
 import me.ducanh.thesis.Model;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 
@@ -68,31 +70,34 @@ public class InputOutput {
                     try {
                         ArrayList<Command> parsedMethods = CommandParser.parse(inputArea.getText());
 
-                        for (Command method: parsedMethods){
-                                switch(method.getName()) {
+                        for (Command command: parsedMethods){
+                                switch(command.getName()) {
                                     case "vertex":
-                                        System.out.println("It's a vertex method and the arguments are" + method.getArgumentList());
-                                        if (method.getArgumentList().size()==1){
-                                            model.addVertex(Integer.parseInt(method.getArgumentList().get(0)));
+                                        if (command.getArgumentList().size()==1){
+                                            model.addVertex(Integer.parseInt(command.getArgumentList().get(0)));
                                         }
                                         break;
                                     case "edge":
-                                        if (method.getArgumentList().size()==3){
+                                        if (command.getArgumentList().size()==3){
                                             model.addEdge(
-                                                    Integer.parseInt(method.getArgumentList().get(0)),
-                                                    method.getArgumentList().get(1),
-                                                    Integer.parseInt(method.getArgumentList().get(2))
+                                                    Integer.parseInt(command.getArgumentList().get(0)),
+                                                    command.getArgumentList().get(1),
+                                                    Integer.parseInt(command.getArgumentList().get(2))
                                             );
+                                        }
+                                    case "clear":
+                                        if(command.getArgumentList().size()==0){
+                                            model.clear();
                                         }
                                 }
 
                         }
                     } catch (SyntaxErrorException | NoMatchingTokenException e) {
                         model.requestPrint(e.getMessage());
+                        e.printStackTrace();
                     }
                     inputArea.clear();
                 });
-//                parse(inputArea.getText());
             }
         });
 

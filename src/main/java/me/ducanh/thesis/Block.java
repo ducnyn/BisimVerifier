@@ -54,7 +54,7 @@ public class Block implements Iterable<Vertex>{
     }
     for(Queue<Block> layer : treeLayers){
       System.out.println(layer);
-//      for(Block blockNode : layer){
+//      for(BlockNode blockNode : layer){
 //        if(blockNode.getVertices()!=null)
 //        System.out.println("splitter for " + blockNode + "is" + blockNode.getSplitter());
 //      }

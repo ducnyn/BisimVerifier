@@ -34,6 +34,12 @@ public class Model {
           }
         });
         edges.addAll(vertexChange.getValueAdded().getEdges());
+      } else {
+        int removedID = vertexChange.getValueRemoved().getID();
+        for (Vertex vertex : getVertices()){
+          vertex.getEdges().removeIf(edge -> edge.getSource().getID().equals(removedID) ||edge.getTarget().getID().equals(removedID));
+        }
+        deletedIDs.add(removedID);
       }
     });
 
@@ -80,9 +86,13 @@ public class Model {
     return id;
   }
 
+  public void clear(){
+    vertices.clear();
+    requestPrint(TerminalMessage.CLEAR.getMessage());
+  }
   public  Vertex addVertex(int ID) {
     if (!vertices.containsKey(ID)) {
-      Vertex vertex = new Vertex(this,ID,0,0);
+      Vertex vertex = new Vertex(this,ID);
       vertices.put(ID,vertex);
 
       vertex.getEdges().addListener((SetChangeListener<Edge>) edgeSetChange -> {
@@ -115,11 +125,11 @@ public class Model {
   }
 
   public void removeVertex(int vertexID) {
-    for (Vertex vertex : getVertices()){
-      vertex.getEdges().removeIf(edge -> edge.getSource().getID().equals(vertexID) ||edge.getTarget().getID().equals(vertexID));
-    }
+//    for (Vertex vertex : getVertices()){
+//      vertex.getEdges().removeIf(edge -> edge.getSource().getID().equals(vertexID) ||edge.getTarget().getID().equals(vertexID));
+//    }
     vertices.remove(vertexID);
-    deletedIDs.add(vertexID);
+//    deletedIDs.add(vertexID);
 
   }
 

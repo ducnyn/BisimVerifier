@@ -63,7 +63,7 @@ public class CommandLexer {
                 while (iter.current() != CharacterIterator.DONE) {
                     undefined.append(iter.next());
                 }
-                throw new NoMatchingTokenException("undefined character: " + undefined);
+                throw new NoMatchingTokenException("undefined character sequence: " + undefined);
             }
             iter.next();
         }

@@ -2,22 +2,22 @@ package me.ducanh.thesis.command.parser;
 
 public enum TokenType {
 
-    WORD(0),
-    NUMBER(1),
-    COMMA(2),
-    LEFTPAR(3),
-    RIGHTPAR(4),
-    SEMICOLON(5),
-    EOL(6);
+    WORD("word"),
+    NUMBER("number"),
+    COMMA(","),
+    LEFTPAR("("),
+    RIGHTPAR(")"),
+    SEMICOLON(";"),
+    EOL("EOL");
 
 
-  private final int ID;
+  private final String ID;
 
-  TokenType(int fileName) {
+  TokenType(String fileName) {
     this.ID = fileName;
   }
 
-  public int getID() {
+  public String getID() {
     return ID;
   }
 }

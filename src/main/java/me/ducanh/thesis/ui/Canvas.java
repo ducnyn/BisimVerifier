@@ -147,7 +147,7 @@ public class Canvas {
         //        Thread taskThread = new Thread(new Runnable() {
 //            @Override
 //            public void run() {
-//                Set<Block> partition = Algorithms.bisim(model.getVertices()).getValue();
+//                Set<BlockNode> partition = Algorithms.bisim(model.getVertices()).getValue();
 //                model.setOutputString("\n Equivalence classes (Bisimulation): \n" + partition.toString());
 //                model.updatePartition(partition);
 //                System.out.println("Vertices: " + model.getVertices());

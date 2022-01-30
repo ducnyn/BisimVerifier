@@ -2,12 +2,12 @@ package me.ducanh.thesis.formula;
 
 import me.ducanh.thesis.Vertex;
 
-public class Block implements TreeNode {
+public class BlockNode implements TreeNode {
 
   private String action;
   private TreeNode child;
 
-  public Block(String action, TreeNode child){
+  public BlockNode(String action, TreeNode child){
     this.action = action;
     this.child = child;
   }

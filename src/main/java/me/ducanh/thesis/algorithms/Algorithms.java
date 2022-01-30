@@ -17,7 +17,7 @@ public class Algorithms {
 
     //  private static Map<Boolean, Set<Integer>> split(Model model, Set<Integer> block, BlockEdge splitter) {
 //    String label = splitter.getLabel();
-//    Block targetBlock = splitter.getTargetBlock();
+//    BlockNode targetBlock = splitter.getTargetBlock();
 //    return block.stream()
 //            .collect(partitioningBy(
 //                    vertex -> model.getTargets(vertex, label).stream()
@@ -188,14 +188,14 @@ public class Algorithms {
 
 
     //computes a minimalistic formula satisfied by v1, but not v2. Both formulas satisfy the formula up until the second last vertex of the described path.
-//  public static String getDeltaFormula(Vertex s1, Vertex s2, Block rootBlock) throws NoDistinguishingFormulaException {
-//    Block currentBlock = rootBlock;
+//  public static String getDeltaFormula(Vertex s1, Vertex s2, BlockNode rootBlock) throws NoDistinguishingFormulaException {
+//    BlockNode currentBlock = rootBlock;
 //    StringBuilder deltaFormula = new StringBuilder();
 //
 //    //base case
 //    System.out.println("\n\nComparing " + s1 + " with " + s2);
 //    while (true) {
-//      System.out.println("current Block is " + currentBlock);
+//      System.out.println("current BlockNode is " + currentBlock);
 //      System.out.println("current left is " + currentBlock.left());
 //      System.out.println("current right is "+currentBlock.right());
 //      System.out.println("current Splitter is " + currentBlock.getSplitter());
@@ -243,7 +243,7 @@ public class Algorithms {
 //
 //      for (Vertex RTarget : SR) {
 //        Formulas.add(getDeltaFormula(LTarget, RTarget, rootBlock));
-//        System.out.println("deltaFormula of "+LTarget +" and "+RTarget+" in Block " +rootBlock);
+//        System.out.println("deltaFormula of "+LTarget +" and "+RTarget+" in BlockNode " +rootBlock);
 //      }
 //      System.out.println("All SL SR deltaformulas: "+Formulas);
 //

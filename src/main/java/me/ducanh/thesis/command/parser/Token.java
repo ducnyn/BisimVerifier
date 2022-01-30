@@ -6,7 +6,7 @@ public class Token {
 
   public Token(TokenType type){
     this.type = type;
-    value = "";
+    this.value = type.getID();
   }
 
   public Token(TokenType type, String value){

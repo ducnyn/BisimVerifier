@@ -39,7 +39,7 @@ public class  CommandParser {
     }
 
     private static Command parseMethod() throws SyntaxErrorException{
-        System.out.println("prsenter parseMethod");
+        System.out.println("start CoommandParser.parseMethod()");
         ArrayList<String> argumentList;
         String methodName;
             if (currentToken.getType()==TokenType.WORD){
@@ -67,33 +67,34 @@ public class  CommandParser {
     }
 
     private static ArrayList<String> parseArgumentList() throws SyntaxErrorException {
+        System.out.println("start CommandParser.parseArgumentList()");
+
         ArrayList<String> argumentList = new ArrayList<>();
-        String argument = parseArgument();
 
-        if (argument.isBlank() || argument.isEmpty()) {
-            return argumentList;
-        }
-
-        argumentList.add(argument);
+        if (currentToken.getType()==TokenType.RIGHTPAR) return argumentList;
+        else argumentList.add(parseArgument());
 
         while(currentToken.getType()==TokenType.COMMA){
-            argument = parseArgument();
-            if (argument.isBlank() || argument.isEmpty()) {
-                throw new SyntaxErrorException("one or more arguments are empty");
-            }
-            argumentList.add(argument);
+            iterate();
+            argumentList.add(parseArgument());
         }
-
+        System.out.println("CommandParser.parseArgumentList output is: " + argumentList);
         return argumentList;
+
     }
 
-    private static String parseArgument() {
+    private static String parseArgument() throws SyntaxErrorException {
+        System.out.println("start CommandParser.parseArgument(), currentToken =" + currentToken.getType());
+        String argument = currentToken.getValue();
+
         if(currentToken.getType()==TokenType.NUMBER || currentToken.getType() == TokenType.WORD) {
-            String value = currentToken.getValue();
+
             iterate();
-            return value;
+            System.out.println("CommandParser.parseArgument output is: " + argument);
+
+            return argument;
         } else {
-            return "";
+            throw new SyntaxErrorException(argument+" is not a valid method parameter.");
         }
     }
 }

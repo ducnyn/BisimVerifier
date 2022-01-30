@@ -1,6 +1,6 @@
 //import me.ducanh.thesis.formula.TreeNode;
 //import me.ducanh.thesis.model.Algorithms;
-//import me.ducanh.thesis.Block;
+//import me.ducanh.thesis.BlockNode;
 //import me.ducanh.thesis.Model;
 //import me.ducanh.thesis.Vertex;
 //import org.junit.jupiter.api.Assertions;
@@ -27,7 +27,7 @@
 //
 //        state1.
 //
-//        Block rootBlock = new Block(vertexList.stream().collect(Collectors.toSet()),null,null,null);
+//        BlockNode rootBlock = new BlockNode(vertexList.stream().collect(Collectors.toSet()),null,null,null);
 //        Assertions.assertEquals(Algorithms.getDeltaFormula(state1,state2,rootBlock),);
 //    }
 //}

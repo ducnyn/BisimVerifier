@@ -60,7 +60,7 @@ public class SideBar {
 //        model.addEdge(6, "c", 7);
 //
 //
-//        Block rootBlock = Algorithms.bisim(model.getVertices()).getKey();
+//        BlockNode rootBlock = Algorithms.bisim(model.getVertices()).getKey();
 //        System.out.println("The deltaFormula is " + Algorithms.getDeltaFormula(model.getVertex(1), model.getVertex(4), rootBlock));
 //
 //        for (int i = 1; i < 7; i++) {
@@ -145,7 +145,7 @@ public class SideBar {
 //        Thread taskThread = new Thread(new Runnable() {
 //            @Override
 //            public void run() {
-//                Set<Block> partition = Algorithms.bisim(model.getVertices()).getValue();
+//                Set<BlockNode> partition = Algorithms.bisim(model.getVertices()).getValue();
 //                model.setOutputString("\n Equivalence classes (Bisimulation): \n" + partition.toString());
 //                model.updatePartition(partition);
 //                System.out.println("Vertices: " + model.getVertices());

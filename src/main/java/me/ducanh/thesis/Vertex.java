@@ -36,6 +36,9 @@ public class Vertex extends StackPane {
 //    init(model, id, 1, 1);
 //  }
 
+    public Vertex(Model model, int id){
+        this(model,id,0,0);
+    }
     public Vertex(Model model, int id, double initX, double initY) {
 
         addEventHandler(MouseEvent.ANY, Event::consume);
