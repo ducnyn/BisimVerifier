@@ -44,6 +44,7 @@ public class  CommandParser {
         String methodName;
             if (currentToken.getType()==TokenType.WORD){
                 methodName = currentToken.getValue();
+                String word = currentToken.getValue();
                 iterate();
                 if(currentToken.getType()==TokenType.LEFTPAR){
                     iterate();
@@ -57,7 +58,7 @@ public class  CommandParser {
                     } else throw new SyntaxErrorException("\")\" expected.");
                 }
                 else{
-                    throw new SyntaxErrorException(currentToken.getValue()+" is not a method call.");
+                    throw new SyntaxErrorException(word+" is n7ot a method call.");
                 }
 
 

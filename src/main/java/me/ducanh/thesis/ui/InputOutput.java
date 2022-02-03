@@ -64,7 +64,7 @@ public class InputOutput {
 
 
         inputArea.setOnKeyPressed(keyPress->{
-            if(keyPress.getCode().equals(KeyCode.ENTER)){
+            if(keyPress.getCode().equals(KeyCode.ENTER) && keyPress.isShiftDown()){
                 Platform.runLater(() -> {
                     print(model.getUserName()+": "+inputArea.getText());
                     try {
