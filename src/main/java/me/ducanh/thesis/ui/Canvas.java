@@ -64,28 +64,28 @@ public class Canvas {
             }
         });
 
-        model.getEdges().addListener((SetChangeListener<? super Edge>) change -> {
-
-            if (change.wasAdded()) {
-                Edge edge = change.getElementAdded();
-                Edge visEdge = new Edge(drawnVertices.get(edge.getSource().getID()), edge.getLabel(), drawnVertices.get(edge.getTarget().getID()));
-                drawnEdges.put(edge, visEdge);
-
-                Platform.runLater(() -> {
-                    anchorPane.getChildren().add(visEdge);
-                    visEdge.toBack();
-                });
-
-            } else {
-                anchorPane.getChildren().remove(drawnEdges.get(change.getElementRemoved()));
-                drawnEdges.remove(change.getElementRemoved());
-            }
-            if (model.getBisimToggle().get()) {
-                model.setPartition(Algorithms.bisim(model.getVertices()).getValue());
-            }
-
-
-        });
+//        model.getEdges().addListener((SetChangeListener<? super Edge>) change -> {
+//
+//            if (change.wasAdded()) {
+//                Edge edge = change.getElementAdded();
+//                Edge visEdge = new Edge(drawnVertices.get(edge.getSource().getID()), edge.getLabel(), drawnVertices.get(edge.getTarget().getID()));
+//                drawnEdges.put(edge, visEdge);
+//
+//                Platform.runLater(() -> {
+//                    anchorPane.getChildren().add(visEdge);
+//                    visEdge.toBack();
+//                });
+//
+//            } else {
+//                anchorPane.getChildren().remove(drawnEdges.get(change.getElementRemoved()));
+//                drawnEdges.remove(change.getElementRemoved());
+//            }
+//            if (model.getBisimToggle().get()) {
+//                model.setPartition(Algorithms.bisim(model.getVertices()).getValue());
+//            }
+//
+//
+//        });
 
 
         model.addVertexListener(vertex -> {
@@ -97,6 +97,28 @@ public class Canvas {
                     this.spawnPosX = Vertex.DEFAULT_RADIUS;
                     this.spawnPosY = Vertex.DEFAULT_RADIUS;
                 }
+                vertex.getValueAdded().getEdges().addListener((SetChangeListener<? super Edge>) change -> {
+
+                    if (change.wasAdded()) {
+                        Edge edge = change.getElementAdded();
+                        Edge visEdge = new Edge(drawnVertices.get(edge.getSource().getID()), edge.getLabel(), drawnVertices.get(edge.getTarget().getID()));
+                        drawnEdges.put(edge, visEdge);
+
+                        Platform.runLater(() -> {
+                            anchorPane.getChildren().add(visEdge);
+                            visEdge.toBack();
+                        });
+
+                    } else {
+                        anchorPane.getChildren().remove(drawnEdges.get(change.getElementRemoved()));
+                        drawnEdges.remove(change.getElementRemoved());
+                    }
+                    if (model.getBisimToggle().get()) {
+                        model.setPartition(Algorithms.bisim(model.getVertices()).getValue());
+                    }
+
+
+                });
             } else {
                 Vertex deletedVisVertex = drawnVertices.remove(id);
                 Platform.runLater(() -> {

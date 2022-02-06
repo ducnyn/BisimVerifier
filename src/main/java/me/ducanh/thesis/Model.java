@@ -22,7 +22,7 @@ public class Model {
 
 
   {//initiator
-    vertices.addListener((MapChangeListener<Integer, Vertex>) vertexChange -> {;
+    vertices.addListener((MapChangeListener<Integer, Vertex>) vertexChange -> {
 
       if (vertexChange.wasAdded()) { //vertex added
         vertexChange.getValueAdded().getEdges().addListener((SetChangeListener<Edge>) edgeSetChange -> {
@@ -140,6 +140,7 @@ public class Model {
   public Vertex getVertex(int id){
     return vertices.getOrDefault(id,null);
   }
+
   public Set<Vertex> getVertices() {
     return Set.copyOf(vertices.values());
   }

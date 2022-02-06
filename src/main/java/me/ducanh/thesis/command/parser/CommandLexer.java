@@ -40,22 +40,13 @@ public class CommandLexer {
             } else if (iter.current() == ',') {
                 tokenList.add(new Token(TokenType.COMMA));
 
-            } else if (Character.isLetter(iter.current())) {
+            }else if (Character.isLetterOrDigit(iter.current())|| iter.current() == '.') {
                 StringBuilder wordBuilder = new StringBuilder();
-                while (Character.isLetter(iter.current())) {
+                while (Character.isLetterOrDigit(iter.current()) || iter.current() == '.') {
                     wordBuilder.append(iter.current());
                     iter.next();
                 }
                 tokenList.add(new Token(TokenType.WORD,wordBuilder.toString()));
-                continue;
-
-            } else if (Character.isDigit(iter.current())) {
-                StringBuilder wordBuilder = new StringBuilder();
-                while (Character.isDigit(iter.current())) {
-                    wordBuilder.append(iter.current());
-                    iter.next();
-                }
-                tokenList.add(new Token(TokenType.NUMBER,wordBuilder.toString()));
                 continue;
 
             } else if (!whiteSpace.contains(iter.current())) {

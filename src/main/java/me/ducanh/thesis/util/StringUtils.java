@@ -1,5 +1,9 @@
 package me.ducanh.thesis.util;
 
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.Iterator;
+
 public class StringUtils {
 public static boolean notInteger(String input) {
     try {
@@ -8,8 +12,6 @@ public static boolean notInteger(String input) {
     } catch (Exception e) {
         return true;
     }
-
-
-
 }
+
 }

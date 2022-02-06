@@ -12,9 +12,6 @@ import java.util.List;
 public class  CommandParser {
     private static Token currentToken;
     private static Iterator<Token> iter;
-//    private static final Set<TokenType> connectiveTokens = Set.of(TokenType.AND, TokenType.OR);
-//    private static final Set<TokenType> formulaTokens = Set.of(TokenType.DIAMOND, TokenType.BLOCK, TokenType.FALSE, TokenType.TRUE, TokenType.LEFTPAR);
-
 
     private static Token iterate() {
         if (iter.hasNext()){
@@ -32,13 +29,13 @@ public class  CommandParser {
 
         if (iter.hasNext()) {
             iterate();
-            do{methodList.add(parseMethod());}
+            do{methodList.add(parseCommand());}
             while(currentToken.getType()!=TokenType.EOL);
         }
         return methodList;
     }
 
-    private static Command parseMethod() throws SyntaxErrorException{
+    private static Command parseCommand() throws SyntaxErrorException{
         System.out.println("start CoommandParser.parseMethod()");
         ArrayList<String> argumentList;
         String methodName;
@@ -58,7 +55,7 @@ public class  CommandParser {
                     } else throw new SyntaxErrorException("\")\" expected.");
                 }
                 else{
-                    throw new SyntaxErrorException(word+" is n7ot a method call.");
+                    throw new SyntaxErrorException(word+" is not a method call.");
                 }
 
 

@@ -18,9 +18,10 @@ import me.ducanh.thesis.command.Command;
 import me.ducanh.thesis.command.parser.NoMatchingTokenException;
 import me.ducanh.thesis.command.parser.SyntaxErrorException;
 import me.ducanh.thesis.Model;
+import me.ducanh.thesis.util.StringUtils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 
 
@@ -51,7 +52,7 @@ public class InputOutput {
         outputArea.setFont(font);
         inputArea.setText("");
         outputArea.setText("");
-
+        outputArea.setEditable(false);
         BooleanProperty printRequestedProperty = model.printRequestedProperty();
         printRequestedProperty.addListener((obs,oldV,newV)->{
                 if (newV) {
@@ -66,29 +67,39 @@ public class InputOutput {
         inputArea.setOnKeyPressed(keyPress->{
             if(keyPress.getCode().equals(KeyCode.ENTER) && keyPress.isShiftDown()){
                 Platform.runLater(() -> {
-                    print(model.getUserName()+": "+inputArea.getText());
+                    print("<"+model.getUserName()+">\n>> "+ multiLineIndent(inputArea.getText())+"\n"+"</"+model.getUserName()+">\n");
                     try {
                         ArrayList<Command> parsedMethods = CommandParser.parse(inputArea.getText());
 
                         for (Command command: parsedMethods){
                                 switch(command.getName()) {
                                     case "vertex":
-                                        if (command.getArgumentList().size()==1){
-                                            model.addVertex(Integer.parseInt(command.getArgumentList().get(0)));
+                                        for(String arg:command.getArgumentList()){
+                                            model.addVertex(Integer.parseInt(arg));
                                         }
                                         break;
                                     case "edge":
-                                        if (command.getArgumentList().size()==3){
-                                            model.addEdge(
-                                                    Integer.parseInt(command.getArgumentList().get(0)),
-                                                    command.getArgumentList().get(1),
-                                                    Integer.parseInt(command.getArgumentList().get(2))
-                                            );
+//                                        if (command.getArgumentList().size()==3){
+//                                            model.addEdge(
+//                                                    Integer.parseInt(command.getArgumentList().get(0)),
+//                                                    command.getArgumentList().get(1),
+//                                                    Integer.parseInt(command.getArgumentList().get(2))
+//                                            );
+//                                        }
+                                        if(command.getArgumentList().stream().allMatch(arg->arg.matches("[0-9]+\\.[a-zA-Z_0-9]+\\.[0-9]+"))){
+                                            for(String arg:command.getArgumentList()){
+                                                String[] edgeArgs = arg.split("\\.");
+                                                model.addEdge(Integer.parseInt(edgeArgs[0]),edgeArgs[1],Integer.parseInt(edgeArgs[2]));
+                                            }
                                         }
                                     case "clear":
                                         if(command.getArgumentList().size()==0){
                                             model.clear();
                                         }
+                                        break;
+                                    case "graph":
+                                        model.requestPrint(model.getVertices().toString());
+                                        model.requestPrint(model.getEdges().toString());
                                 }
 
                         }
@@ -107,6 +118,19 @@ public class InputOutput {
     }
     private void print(String text){
         outputArea.appendText("\n"+text);
+    }
+    public static String multiLineIndent(String string){
+        StringCharacterIterator stringIterator = new StringCharacterIterator(string);
+        StringBuilder newString = new StringBuilder();
+        while(stringIterator.current()!= CharacterIterator.DONE){
+            if(stringIterator.current()=='\n'){
+                newString.append("\n>> ");
+            } else {
+                newString.append(stringIterator.current());
+            }
+            stringIterator.next();
+        }
+        return newString.toString();
     }
 }
 
