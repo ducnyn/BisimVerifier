@@ -30,15 +30,19 @@ public class Edge extends AnchorPane implements Comparable<Edge>{
 
 
     public Edge(Vertex source, String label, Vertex target) {
+        this.source = source;
+        this.target = target;
+        this.label = label;
+    }
+
+    public void initView(){
         setFocusTraversable(true);
         getChildren().add(cubicCurve);
         getChildren().add(visEdgeLabel);
         getChildren().add(arrow);
 //        setPickOnBounds(false);
 
-        this.source = source;
-        this.target = target;
-        this.label = label;
+
         visEdgeLabel.setText(label);
         visEdgeLabel.toFront();
         visEdgeLabel.setFill(Color.CORAL);

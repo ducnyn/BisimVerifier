@@ -25,6 +25,7 @@ public class Vertex extends StackPane {
     public static Paint DEFAULT_FILL = Paint.valueOf("lightgray");
 
     public static Paint DEFAULT_STROKE = Paint.valueOf("darkgray");
+    private final Model model;
     private final Text label = new Text();
     private final Circle circle = new Circle(DEFAULT_RADIUS);
     private final DoubleProperty centerXProperty = new SimpleDoubleProperty(layoutXProperty().get() + getRadius());
@@ -36,10 +37,13 @@ public class Vertex extends StackPane {
 //    init(model, id, 1, 1);
 //  }
 
-    public Vertex(Model model, int id){
-        this(model,id,0,0);
+    public Vertex(Model model, int ID){
+        this.ID = ID;
+        this.model = model;
+        this.edgeSet = FXCollections.observableSet(new HashSet<>());
+
     }
-    public Vertex(Model model, int id, double initX, double initY) {
+    public void initView(double centerX, double centerY) {
 
         addEventHandler(MouseEvent.ANY, Event::consume);
         setPickOnBounds(false);
@@ -51,11 +55,9 @@ public class Vertex extends StackPane {
         circle.setStyle("-fx-opacity: 0.5");
         label.setStyle("-fx-font-size: 20;");
 
-        this.edgeSet = FXCollections.observableSet(new HashSet<>());
-        this.ID = id;
-        label.setText(String.valueOf(id));
-        setLayoutX(initX - getRadius());
-        setLayoutY(initY - getRadius());
+        label.setText(String.valueOf(ID));
+        setCenterX(centerX);
+        setCenterY(centerY);
 
         centerXProperty.bind(Bindings.createDoubleBinding(
                 () -> layoutXProperty().get() + getRadius(),
@@ -113,6 +115,9 @@ public class Vertex extends StackPane {
     public double getCenterY() {
         return centerYProperty.get();
     }
+
+    public void setCenterX(double x){setLayoutX(x-getRadius());}
+    public void setCenterY(double y){setLayoutY(y-getRadius());}
 
     public void setFill(Paint paint) {
         circle.setFill(paint);

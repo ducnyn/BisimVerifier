@@ -1,6 +1,8 @@
 package me.ducanh.thesis.ui;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -19,11 +21,12 @@ import me.ducanh.thesis.algorithms.*;
 import me.ducanh.thesis.util.Colors;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Canvas {
-    private final HashMap<Integer, Vertex> drawnVertices = new HashMap<>();
-    private final HashMap<Edge, Edge> drawnEdges = new HashMap<>();
+    private final ObservableSet<Vertex> drawnVertices = FXCollections.observableSet();
+    private final ObservableSet<Edge> drawnEdges = FXCollections.observableSet();
     private final int radius = 40;
     @FXML
     ScrollPane scrollPane;
@@ -49,9 +52,9 @@ public class Canvas {
 
         anchorPane.setOnMousePressed(pressed -> {
             if (pressed.getButton().equals(MouseButton.PRIMARY) && (pressed.isControlDown())) {
-                spawnPosX = pressed.getX();
-                spawnPosY = pressed.getY();
-                model.addNextIDVertex();
+//                spawnPosX = pressed.getX();
+//                spawnPosY = pressed.getY();
+                model.addNextIDVertex(pressed.getX(),pressed.getY());
                 pressed.consume();
             }
 
@@ -87,31 +90,38 @@ public class Canvas {
 //
 //        });
 
+        drawnVertices.addListener((SetChangeListener<Vertex>) vChange->{
+            if(vChange.wasAdded()) Platform.runLater(() -> anchorPane.getChildren().add(vChange.getElementAdded()));
+            else anchorPane.getChildren().remove(vChange.getElementRemoved());
+            });
+        drawnEdges.addListener((SetChangeListener<Edge>) eChange->{
+            if(eChange.wasAdded()) Platform.runLater(() -> anchorPane.getChildren().add(eChange.getElementAdded()));
+            else anchorPane.getChildren().remove(eChange.getElementRemoved());
+        });
+        model.addVertexListener(vListChange -> {
 
-        model.addVertexListener(vertex -> {
+            int id = vListChange.getKey();
+            if (vListChange.wasAdded()) {
+//                if (!drawnVertices.containsKey(id)) {
+//                    drawnVertices.put(id, drawVertex(model, id, spawnPosX, spawnPosY));
+//                    this.spawnPosX = Vertex.DEFAULT_RADIUS;
+//                    this.spawnPosY = Vertex.DEFAULT_RADIUS;
+//                }
+                drawnVertices.add(vListChange.getValueAdded());
+                Platform.runLater(() -> anchorPane.getChildren().add(vListChange.getValueAdded()));
+                vListChange.getValueAdded().getEdges().addListener((SetChangeListener<? super Edge>) eListChange -> {
 
-            int id = vertex.getKey();
-            if (vertex.wasAdded()) {
-                if (!drawnVertices.containsKey(id)) {
-                    drawnVertices.put(id, drawVertex(model, id, spawnPosX, spawnPosY));
-                    this.spawnPosX = Vertex.DEFAULT_RADIUS;
-                    this.spawnPosY = Vertex.DEFAULT_RADIUS;
-                }
-                vertex.getValueAdded().getEdges().addListener((SetChangeListener<? super Edge>) change -> {
-
-                    if (change.wasAdded()) {
-                        Edge edge = change.getElementAdded();
-                        Edge visEdge = new Edge(drawnVertices.get(edge.getSource().getID()), edge.getLabel(), drawnVertices.get(edge.getTarget().getID()));
-                        drawnEdges.put(edge, visEdge);
+                    if (eListChange.wasAdded()) {
+                        Edge edge = eListChange.getElementAdded();
+                        edge.initView();
 
                         Platform.runLater(() -> {
-                            anchorPane.getChildren().add(visEdge);
-                            visEdge.toBack();
+                            anchorPane.getChildren().add(edge);
+                            edge.toBack();
                         });
 
                     } else {
-                        anchorPane.getChildren().remove(drawnEdges.get(change.getElementRemoved()));
-                        drawnEdges.remove(change.getElementRemoved());
+                        anchorPane.getChildren().remove(eListChange.getElementRemoved());
                     }
                     if (model.getBisimToggle().get()) {
                         model.setPartition(Algorithms.bisim(model.getVertices()).getValue());
@@ -120,9 +130,8 @@ public class Canvas {
 
                 });
             } else {
-                Vertex deletedVisVertex = drawnVertices.remove(id);
                 Platform.runLater(() -> {
-                    anchorPane.getChildren().remove(deletedVisVertex);
+                    anchorPane.getChildren().remove(vListChange.getValueRemoved());
 
                 });
             }
@@ -155,7 +164,7 @@ public class Canvas {
                     Thread taskThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            for (Vertex visVertex : drawnVertices.values()) {
+                            for (Vertex visVertex : drawnVertices) {
                                 visVertex.setFill(visVertex.getDefaultFill());
                             }
                         }
@@ -231,18 +240,6 @@ public class Canvas {
             scrollPane.setVvalue((offsetY + delta.getY()) / (group.getBoundsInLocal().getHeight() - scrollPane.getViewportBounds().getHeight()));
             //inspired by this over-engineered version with no practical difference : https://stackoverflow.com/questions/39827911/javafx-8-scaling-zooming-scrollpane-relative-to-mouse-position
         });
-    }
-
-
-    private Vertex drawVertex(Model model, int id, double mouseX, double mouseY) {
-
-        Vertex visVertex = new Vertex(model, id, mouseX, mouseY);
-
-        Platform.runLater(() -> anchorPane.getChildren().add(visVertex));
-
-
-        return visVertex;
-
     }
 
 }

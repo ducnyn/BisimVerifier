@@ -24,7 +24,7 @@ public class Model {
   {//initiator
     vertices.addListener((MapChangeListener<Integer, Vertex>) vertexChange -> {
 
-      if (vertexChange.wasAdded()) { //vertex added
+      if (vertexChange.wasAdded()) {
         vertexChange.getValueAdded().getEdges().addListener((SetChangeListener<Edge>) edgeSetChange -> {
 
           if(edgeSetChange.wasAdded()){
@@ -34,8 +34,10 @@ public class Model {
           }
         });
         edges.addAll(vertexChange.getValueAdded().getEdges());
-      } else {
+
+      } else { //vertexChange.wasRemoved()
         int removedID = vertexChange.getValueRemoved().getID();
+        vertexChange.getValueRemoved().getEdges().clear();
         for (Vertex vertex : getVertices()){
           vertex.getEdges().removeIf(edge -> edge.getSource().getID().equals(removedID) ||edge.getTarget().getID().equals(removedID));
         }
@@ -79,16 +81,27 @@ public class Model {
     vertices.get(source).getEdges().add(new Edge(sourceVertex, label, targetVertex));
   }
 
+  public int addNextIDVertex(double xPos,double yPos) {
+//    if(addedByVis) this.addedByVis = false;
+    int id = Objects.requireNonNullElse(deletedIDs.pollFirst(), getMaxID() + 1);
+    addVertex(id,xPos,yPos);
+    return id;
+  }
   public int addNextIDVertex() {
 //    if(addedByVis) this.addedByVis = false;
     int id = Objects.requireNonNullElse(deletedIDs.pollFirst(), getMaxID() + 1);
     addVertex(id);
     return id;
   }
-
   public void clear(){
     vertices.clear();
     requestPrint(TerminalMessage.CLEAR.getMessage());
+  }
+  public Vertex addVertex(int ID, double xPos, double yPos){
+    Vertex newVertex = addVertex(ID);
+    newVertex.setCenterX(xPos);
+    newVertex.setCenterY(yPos);
+    return newVertex;
   }
   public  Vertex addVertex(int ID) {
     if (!vertices.containsKey(ID)) {
