@@ -2,12 +2,8 @@ package me.ducanh.thesis;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
-import me.ducanh.thesis.formula.parser.FormulaLexer;
-import me.ducanh.thesis.formula.parser.FormulaParser;
-import me.ducanh.thesis.formula.parser.Token;
-import me.ducanh.thesis.formula.TreeNode;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.TreeSet;
 
@@ -16,17 +12,39 @@ public class TestApp {
     private static ObservableSet<Integer> int2Set = FXCollections.unmodifiableObservableSet(intSet);
 
     public static void main(String[] args) {
+//        while (true) {
+//            System.out.println("enter some formula:");
+//            Scanner scanner = new Scanner(System.in);
+//            String formula = scanner.next();
+//
+//            try {
+//                List<CommandToken> tokenList = FormulaLexer.generateTokenList(formula);
+//                System.out.println(tokenList);
+//                TreeNode rootNode = FormulaParser.parse(formula);
+//                System.out.println(rootNode);
+//
+//            } catch (Exception e) {
+//                System.out.println(e.getMessage());
+//                continue;
+//            }
+//
+//            if (!cont()) {
+//                break;
+//            }
+//        }
         while (true) {
             System.out.println("enter some formula:");
             Scanner scanner = new Scanner(System.in);
-            String formula = scanner.next();
+            String sentence = scanner.next();
 
             try {
-                List<Token> tokenList = FormulaLexer.generateTokenList(formula);
-                System.out.println(tokenList);
-                TreeNode rootNode = FormulaParser.parse(formula);
-                System.out.println(rootNode);
-
+                HashSet<Character> alph = new HashSet<>();
+                char[] sentenceArray =  sentence.toCharArray();
+                for(Character c : sentenceArray){
+                    if(Character.isLetter(c)) alph.add(Character.toLowerCase(c));
+                }
+                if(alph.size() == 26) System.out.println("true");
+                else System.out.println("false");
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 continue;
@@ -36,6 +54,9 @@ public class TestApp {
                 break;
             }
         }
+
+
+
 
 
     }

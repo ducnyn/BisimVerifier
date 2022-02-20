@@ -10,10 +10,10 @@ import java.util.List;
 
 //Before calling a parsing method, iterate so that the method can assume the currentToken is of the return type.
 public class  CommandParser {
-    private static Token currentToken;
-    private static Iterator<Token> iter;
+    private static CommandToken currentToken;
+    private static Iterator<CommandToken> iter;
 
-    private static Token iterate() {
+    private static CommandToken iterate() {
         if (iter.hasNext()){
             return currentToken = iter.next();
         } else {
@@ -22,7 +22,7 @@ public class  CommandParser {
     }
 
     public static ArrayList<Command> parse(String formulaString) throws SyntaxErrorException, NoMatchingTokenException {
-        List<Token> tokenList = CommandLexer.generateTokenList(formulaString);
+        List<CommandToken> tokenList = CommandLexer.generateTokenList(formulaString);
         System.out.println("CommandParser.parse() : the generated Tokenlist is : " + tokenList);
         ArrayList<Command> methodList = new ArrayList<>();
         iter = tokenList.iterator();

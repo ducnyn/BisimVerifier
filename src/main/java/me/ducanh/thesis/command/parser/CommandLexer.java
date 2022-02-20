@@ -24,21 +24,21 @@ public class CommandLexer {
         return actionBuilder.toString();
     }
 
-    public static List<Token> generateTokenList(String commandString) throws NoMatchingTokenException {
-        List<Token> tokenList = new ArrayList<>();
+    public static List<CommandToken> generateTokenList(String commandString) throws NoMatchingTokenException {
+        List<CommandToken> tokenList = new ArrayList<>();
         StringCharacterIterator iter = new StringCharacterIterator(commandString);
         while (iter.current() != CharacterIterator.DONE) {
             if (iter.current() == '(') {
-                tokenList.add(new Token(TokenType.LEFTPAR));
+                tokenList.add(new CommandToken(TokenType.LEFTPAR));
 
             } else if (iter.current() == ')') {
-                tokenList.add(new Token(TokenType.RIGHTPAR));
+                tokenList.add(new CommandToken(TokenType.RIGHTPAR));
 
             } else if (iter.current() == ';') {
-                tokenList.add(new Token(TokenType.SEMICOLON));
+                tokenList.add(new CommandToken(TokenType.SEMICOLON));
 
             } else if (iter.current() == ',') {
-                tokenList.add(new Token(TokenType.COMMA));
+                tokenList.add(new CommandToken(TokenType.COMMA));
 
             }else if (Character.isLetterOrDigit(iter.current())|| iter.current() == '.') {
                 StringBuilder wordBuilder = new StringBuilder();
@@ -46,7 +46,7 @@ public class CommandLexer {
                     wordBuilder.append(iter.current());
                     iter.next();
                 }
-                tokenList.add(new Token(TokenType.WORD,wordBuilder.toString()));
+                tokenList.add(new CommandToken(TokenType.WORD,wordBuilder.toString()));
                 continue;
 
             } else if (!whiteSpace.contains(iter.current())) {
@@ -58,7 +58,7 @@ public class CommandLexer {
             }
             iter.next();
         }
-        tokenList.add(new Token(TokenType.EOL, "End of Line"));
+        tokenList.add(new CommandToken(TokenType.EOL, "End of Line"));
         return tokenList;
     }
 }

@@ -1,22 +1,21 @@
-package me.ducanh.thesis.command.parser;
+package me.ducanh.thesis.formula.parser;
 
-public class Token {
+public class FormulaToken {
   private final TokenType type;
   private final String value;
 
-  public Token(TokenType type){
+  public FormulaToken(TokenType type){
     this.type = type;
-    this.value = type.getID();
+    value = "";
   }
 
-  public Token(TokenType type, String value){
+  public FormulaToken(TokenType type, String value){
     this.type = type;
     this.value = value;
   }
 
   @Override
   public String toString() {
-    StringBuilder string = new StringBuilder();
     if (!value.equals("")){
       return "[" + type+"("+value+")" +"]";
     }

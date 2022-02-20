@@ -23,37 +23,37 @@ public class FormulaLexer {
     return actionBuilder.toString();
   }
 
-  public static List<Token> generateTokenList(String formulaString) throws NoMatchingTokenException {
-    List<Token> tokenList = new ArrayList<>();
+  public static List<FormulaToken> generateTokenList(String formulaString) throws NoMatchingTokenException {
+    List<FormulaToken> tokenList = new ArrayList<>();
     StringCharacterIterator iter = new StringCharacterIterator(formulaString);
     while(iter.current()!=CharacterIterator.DONE){
       if (iter.current() == '<') {
-        tokenList.add(new Token(TokenType.DIAMOND,getEnclosedSubString('>',iter)));
+        tokenList.add(new FormulaToken(TokenType.DIAMOND,getEnclosedSubString('>',iter)));
       } else if (iter.current() == '[') {
-        tokenList.add(new Token(TokenType.BLOCK,getEnclosedSubString(']',iter)));
+        tokenList.add(new FormulaToken(TokenType.BLOCK,getEnclosedSubString(']',iter)));
       } else if (iter.current() == '&'){
-        tokenList.add(new Token(TokenType.AND));
+        tokenList.add(new FormulaToken(TokenType.AND));
       } else if (iter.current() == '|') {
-        tokenList.add(new Token(TokenType.OR));
+        tokenList.add(new FormulaToken(TokenType.OR));
       } else if (iter.current() == '!') {
-        tokenList.add(new Token(TokenType.NOT));
+        tokenList.add(new FormulaToken(TokenType.NOT));
       } else if (iter.current() == '('){
-        tokenList.add(new Token(TokenType.LEFTPAR));
+        tokenList.add(new FormulaToken(TokenType.LEFTPAR));
       } else if (iter.current() == ')'){
-        tokenList.add(new Token(TokenType.RIGHTPAR));
+        tokenList.add(new FormulaToken(TokenType.RIGHTPAR));
       } else if (iter.current() == 't') {
         if (iter.next()=='t'){
-          tokenList.add(new Token(TokenType.TRUE));
+          tokenList.add(new FormulaToken(TokenType.TRUE));
         } else {
           throw new NoMatchingTokenException("undefined character sequence: t"+iter.current());
-//          tokenList.add(new Token(TokenType.ERROR,"undefined character seq t"+iter.current()));
+//          tokenList.add(new CommandToken(TokenType.ERROR,"undefined character seq t"+iter.current()));
         }
       } else if (iter.current() == 'f') {
         if (iter.next()=='f'){
-          tokenList.add(new Token(TokenType.FALSE));
+          tokenList.add(new FormulaToken(TokenType.FALSE));
         } else {
           throw new NoMatchingTokenException("undefined character sequence: f"+iter.current());
-//          tokenList.add(new Token(TokenType.ERROR,"undefined character seq f"+iter.current()));
+//          tokenList.add(new CommandToken(TokenType.ERROR,"undefined character seq f"+iter.current()));
         }
       } else if (!whiteSpace.contains(iter.current())){
         StringBuilder undefined = new StringBuilder(String.valueOf(iter.current()));
@@ -63,7 +63,7 @@ public class FormulaLexer {
         throw new NoMatchingTokenException("undefined character: "+undefined);
       }
       iter.next();
-    } tokenList.add(new Token(TokenType.EOL,"End of Line"));
+    } tokenList.add(new FormulaToken(TokenType.EOL,"End of Line"));
     return tokenList;
   }
 }

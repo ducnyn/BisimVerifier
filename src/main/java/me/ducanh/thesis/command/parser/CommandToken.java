@@ -1,28 +1,22 @@
-package me.ducanh.thesis.formula.parser;
+package me.ducanh.thesis.command.parser;
 
-public class Token {
+public class CommandToken {
   private final TokenType type;
   private final String value;
 
-  public Token(TokenType type){
+  public CommandToken(TokenType type){
     this.type = type;
-    value = "";
+    this.value = type.getID();
   }
 
-  public Token(TokenType type, String value){
+  public CommandToken(TokenType type, String value){
     this.type = type;
     this.value = value;
   }
 
   @Override
   public String toString() {
-    StringBuilder string = new StringBuilder();
-    if (!value.equals("")){
       return "[" + type+"("+value+")" +"]";
-    }
-    else {
-      return "[" + type + "]";
-    }
   }
 
   public TokenType getType(){

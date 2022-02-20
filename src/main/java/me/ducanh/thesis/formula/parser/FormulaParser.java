@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Set;
 
 public class  FormulaParser {
-    private static Token currentToken;
-    private static Iterator<Token> iter;
+    private static FormulaToken currentToken;
+    private static Iterator<FormulaToken> iter;
     private static final Set<TokenType> connectiveTokens = Set.of(TokenType.AND, TokenType.OR);
     private static final Set<TokenType> formulaTokens = Set.of(TokenType.DIAMOND, TokenType.BLOCK, TokenType.FALSE, TokenType.TRUE, TokenType.LEFTPAR);
 
 
-    private static Token iterate() {
+    private static FormulaToken iterate() {
         if (iter.hasNext()){
             return currentToken = iter.next();
         } else {
@@ -22,7 +22,7 @@ public class  FormulaParser {
     }
 
     public static TreeNode parse(String formulaString) throws SyntaxErrorException, NoMatchingTokenException {
-        List<Token> tokenList = FormulaLexer.generateTokenList(formulaString);
+        List<FormulaToken> tokenList = FormulaLexer.generateTokenList(formulaString);
         iter = tokenList.iterator();
         TreeNode result;
 
