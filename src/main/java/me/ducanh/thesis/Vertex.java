@@ -43,6 +43,9 @@ public class Vertex extends StackPane {
         this.edgeSet = FXCollections.observableSet(new HashSet<>());
 
     }
+    public void initView(){
+        initView(this.getCenterX(),this.getCenterY());
+    }
     public void initView(double centerX, double centerY) {
 
         addEventHandler(MouseEvent.ANY, Event::consume);

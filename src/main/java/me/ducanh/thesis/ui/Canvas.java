@@ -20,12 +20,12 @@ import me.ducanh.thesis.Vertex;
 import me.ducanh.thesis.algorithms.*;
 import me.ducanh.thesis.util.Colors;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class Canvas {
-    private final ObservableSet<Vertex> drawnVertices = FXCollections.observableSet();
+    private final HashSet<Vertex> drawnVertices = new HashSet<>();
     private final ObservableSet<Edge> drawnEdges = FXCollections.observableSet();
     private final int radius = 40;
     @FXML
@@ -44,7 +44,6 @@ public class Canvas {
 
 
 //TODO scroll pane when item dragged past boundaries
-//TODO When you add/remove an edge, the edgeVis doesn't have to be drawn again, just add / remove a label
 
     public void initialize(Model model) {
         anchorPane.setMinHeight(600);
@@ -52,8 +51,8 @@ public class Canvas {
 
         anchorPane.setOnMousePressed(pressed -> {
             if (pressed.getButton().equals(MouseButton.PRIMARY) && (pressed.isControlDown())) {
-//                spawnPosX = pressed.getX();
-//                spawnPosY = pressed.getY();
+                spawnPosX = pressed.getX();
+                spawnPosY = pressed.getY();
                 model.addNextIDVertex(pressed.getX(),pressed.getY());
                 pressed.consume();
             }
@@ -90,49 +89,76 @@ public class Canvas {
 //
 //        });
 
-        drawnVertices.addListener((SetChangeListener<Vertex>) vChange->{
-            if(vChange.wasAdded()) Platform.runLater(() -> anchorPane.getChildren().add(vChange.getElementAdded()));
-            else anchorPane.getChildren().remove(vChange.getElementRemoved());
-            });
-        drawnEdges.addListener((SetChangeListener<Edge>) eChange->{
-            if(eChange.wasAdded()) Platform.runLater(() -> anchorPane.getChildren().add(eChange.getElementAdded()));
-            else anchorPane.getChildren().remove(eChange.getElementRemoved());
-        });
         model.addVertexListener(vListChange -> {
 
             int id = vListChange.getKey();
+
             if (vListChange.wasAdded()) {
-//                if (!drawnVertices.containsKey(id)) {
-//                    drawnVertices.put(id, drawVertex(model, id, spawnPosX, spawnPosY));
+                Vertex vertex = vListChange.getValueAdded();
+
+//                if (!drawnVertices.contains(id)) {
+//                    drawnVertices.add(vertex);
 //                    this.spawnPosX = Vertex.DEFAULT_RADIUS;
 //                    this.spawnPosY = Vertex.DEFAULT_RADIUS;
 //                }
-                drawnVertices.add(vListChange.getValueAdded());
-                Platform.runLater(() -> anchorPane.getChildren().add(vListChange.getValueAdded()));
-                vListChange.getValueAdded().getEdges().addListener((SetChangeListener<? super Edge>) eListChange -> {
-
-                    if (eListChange.wasAdded()) {
-                        Edge edge = eListChange.getElementAdded();
-                        edge.initView();
-
-                        Platform.runLater(() -> {
-                            anchorPane.getChildren().add(edge);
-                            edge.toBack();
-                        });
+                drawnVertices.add(vertex);
+                Platform.runLater(() -> {
+                    anchorPane.getChildren().add(vListChange.getValueAdded());
+                    if(vertex.getCenterX()==Vertex.DEFAULT_RADIUS){
+                        vertex.initView(this.spawnPosX,this.spawnPosY);
+                        resetSpawnPos();
 
                     } else {
-                        anchorPane.getChildren().remove(eListChange.getElementRemoved());
+                        vertex.initView();
+                    }
+                    //TODO always spawns at 1,1 when it comes from model.
+                });
+
+                ObservableSet<Edge> edgeSet = vListChange.getValueAdded().getEdges();
+                edgeSet.addListener((SetChangeListener<? super Edge>) eListChange -> {
+
+                    if (eListChange.wasAdded()) {
+                        Edge edgeAdded = eListChange.getElementAdded();
+//TODO: check if parallel edge already exists and modify that edge if it doesn't include new edge yet
+//TODO why are random edges not following this rule
+                        if(!drawnEdges.contains(edgeAdded)){
+                            long parallelEdgeCount =
+                                    drawnEdges  .stream()
+                                                .filter(modeledE-> modeledE.getTarget().equals(edgeAdded.getTarget())
+                                                        &&  modeledE.getSource().equals(edgeAdded.getSource())
+                                                ).count();
+//TODO                            JUnit System.out.println("there are already " + parallelEdgeCount + "parallel Edges");
+//                            for(int i =0;i<parallelEdgeCount;i++){
+                                edgeAdded.changeDegree(10 + parallelEdgeCount*10);
+//                            }
+                            Platform.runLater(() -> {
+                                anchorPane.getChildren().add(edgeAdded);
+                                drawnEdges.add(edgeAdded);
+                                edgeAdded.toBack();
+                                edgeAdded.initView();
+
+                            });
+                        }
+
+//                            HashMap<Integer,HashMap<Integer,Edge>> adjMatrix = new HashMap<>(new HashMap<>());
+//                            if(adjMatrix.containsKey(1) && adjMatrix.get(1).containsKey(2)){
+//                                adjMatrix.get(1).get(2).
+//                            }
+
+
+                    } else {
+                        Edge edgeRemoved = eListChange.getElementRemoved();
+                        drawnEdges.remove(edgeRemoved);
+                        anchorPane.getChildren().remove(edgeRemoved);
                     }
                     if (model.getBisimToggle().get()) {
                         model.setPartition(Algorithms.bisim(model.getVertices()).getValue());
                     }
-
-
                 });
             } else {
+                Vertex vertex = vListChange.getValueRemoved();
                 Platform.runLater(() -> {
-                    anchorPane.getChildren().remove(vListChange.getValueRemoved());
-
+                    anchorPane.getChildren().remove(vertex);
                 });
             }
             if (model.getBisimToggle().get()) {
@@ -164,8 +190,8 @@ public class Canvas {
                     Thread taskThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            for (Vertex visVertex : drawnVertices) {
-                                visVertex.setFill(visVertex.getDefaultFill());
+                            for (Vertex vertex : drawnVertices) {
+                                vertex.setFill(vertex.getDefaultFill());
                             }
                         }
                     });
@@ -196,10 +222,10 @@ public class Canvas {
                     System.out.println("block added (colorListener" + change.getElementAdded().getVertices());
 
                     for (Vertex vertex : change.getElementAdded()) {
-                        drawnVertices.get(vertex.getID()).setFill(color);
+                        vertex.setFill(color);
                     }
                 } else if (change.getElementAdded().getVertices().size() == 1) {
-                    drawnVertices.get(change.getElementAdded().iterator().next().getID()).resetFill();
+                    change.getElementAdded().iterator().next().resetFill();
                 }
             } else {
                 if (change.getElementRemoved().getVertices().size() > 1) {
@@ -240,6 +266,10 @@ public class Canvas {
             scrollPane.setVvalue((offsetY + delta.getY()) / (group.getBoundsInLocal().getHeight() - scrollPane.getViewportBounds().getHeight()));
             //inspired by this over-engineered version with no practical difference : https://stackoverflow.com/questions/39827911/javafx-8-scaling-zooming-scrollpane-relative-to-mouse-position
         });
+    }
+    private void resetSpawnPos(){
+        spawnPosX=Vertex.DEFAULT_RADIUS;
+        spawnPosY=Vertex.DEFAULT_RADIUS;
     }
 
 }

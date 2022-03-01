@@ -40,9 +40,9 @@ public class CommandLexer {
             } else if (iter.current() == ',') {
                 tokenList.add(new CommandToken(TokenType.COMMA));
 
-            }else if (Character.isLetterOrDigit(iter.current())|| iter.current() == '.') {
+            }else if (Character.isLetterOrDigit(iter.current())|| iter.current() == ':'|| iter.current() == '.') {
                 StringBuilder wordBuilder = new StringBuilder();
-                while (Character.isLetterOrDigit(iter.current()) || iter.current() == '.') {
+                while (Character.isLetterOrDigit(iter.current()) || iter.current() == ':'|| iter.current() == '.')  {
                     wordBuilder.append(iter.current());
                     iter.next();
                 }

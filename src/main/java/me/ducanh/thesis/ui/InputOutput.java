@@ -13,6 +13,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
+import me.ducanh.thesis.Vertex;
 import me.ducanh.thesis.command.parser.CommandParser;
 import me.ducanh.thesis.command.Command;
 import me.ducanh.thesis.command.parser.NoMatchingTokenException;
@@ -74,10 +75,18 @@ public class InputOutput {
                         for (Command command: parsedMethods){
                                 switch(command.getName()) {
                                     case "vertex":
-                                        for(String arg:command.getArgumentList()){
-                                            model.addVertex(Integer.parseInt(arg));
+                                        for(String arg:command.getArgumentList()) {
+                                            String[] vArgs = arg.split(":");
+                                            if (vArgs.length > 1) {
+                                                double xPos = Double.parseDouble(vArgs[1]);
+                                                double yPos = Double.parseDouble(vArgs[2]);
+                                                model.addVertex(Integer.parseInt(vArgs[0]),xPos,yPos);//tested, should be okay..
+                                            } else {
+                                                model.addVertex(Integer.parseInt(vArgs[0]));
+                                            }
                                         }
                                         break;
+
                                     case "edge":
 //                                        if (command.getArgumentList().size()==3){
 //                                            model.addEdge(

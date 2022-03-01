@@ -4,7 +4,6 @@ module me.ducanh.thesis {
     requires javafx.graphics;
     requires com.google.common;
     requires java.desktop;
-    requires JavaFXSmartGraph;
 
     opens me.ducanh.thesis to javafx.fxml;
     exports me.ducanh.thesis;

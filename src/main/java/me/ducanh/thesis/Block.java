@@ -11,12 +11,12 @@ public class Block implements Iterable<Vertex>{
   Block leftChild;
   Block rightChild;
 
-  public Block(Set<Vertex> vertices, BlockEdge splitter, Block leftChild, Block rightChild) {
-    this.vertices = vertices;
-    this.splitter = splitter;
-    this.leftChild = leftChild;
-    this.rightChild = rightChild;
-  }
+//  public Block(Set<Vertex> vertices, BlockEdge splitter, Block leftChild, Block rightChild) {
+//    this.vertices = vertices;
+//    this.splitter = splitter;
+//    this.leftChild = leftChild;
+//    this.rightChild = rightChild;
+//  }
 
   public Block(Set<Vertex> vertices) {
     this.vertices = vertices;
