@@ -21,7 +21,7 @@
             <AnchorPane id="anchorPane"
                         fx:id="anchorPane"
                         style="-fx-background-color: white;">
-                <Label fx:id = "bisimToggleLabel" styleClass = "statusLabels">Bisimulation Indicators: Off</Label>
+                <Label fx:id = "bisimToggleLabel">Bisimulation Indicators: Off</Label>
 
             </AnchorPane>
         </Group>

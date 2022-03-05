@@ -6,15 +6,16 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Model {
   private String username = "User";
 
-  private final ObservableMap<Integer, Vertex> vertices = FXCollections.observableMap(new TreeMap<>());
-  private final ObservableSet<Edge> edges = FXCollections.observableSet(new TreeSet<>());
+//  private final ObservableMap<Integer, Vertex> vertices = FXCollections.observableMap(new HashMap<>());
+  private final ObservableMap<Vertex,ObservableSet<Edge>> adjacencyList = FXCollections.observableMap(new HashMap<>());
   private final ObservableSet<Block> partition = FXCollections.observableSet(new HashSet<>());
   private final TreeSet<Integer> deletedIDs = new TreeSet<>();
-  private final BooleanProperty bisimToggle = new SimpleBooleanProperty(false);
+  private final BooleanProperty colorToggle = new SimpleBooleanProperty(false);
   private final BooleanProperty printRequest = new SimpleBooleanProperty();
   private  String printString = "";
 
@@ -22,148 +23,97 @@ public class Model {
 
 
   {//initiator
-    vertices.addListener((MapChangeListener<Integer, Vertex>) vertexChange -> {
+    adjacencyList.addListener((MapChangeListener<Vertex, ObservableSet<Edge>>) mapChange -> {
 
-      if (vertexChange.wasAdded()) {
-        vertexChange.getValueAdded().getEdges().addListener((SetChangeListener<Edge>) edgeSetChange -> {
-
-          if(edgeSetChange.wasAdded()){
-            edges.add(edgeSetChange.getElementAdded());
-          } else {
-            edges.remove(edgeSetChange.getElementRemoved());
-          }
-        });
-        edges.addAll(vertexChange.getValueAdded().getEdges());
-
-      } else { //vertexChange.wasRemoved()
-        int removedID = vertexChange.getValueRemoved().getID();
-        vertexChange.getValueRemoved().getEdges().clear();
-        for (Vertex vertex : getVertices()){
-          vertex.getEdges().removeIf(edge -> edge.getSource().getID().equals(removedID) ||edge.getTarget().getID().equals(removedID));
+      if (mapChange.wasRemoved()){
+        Vertex removed = mapChange.getKey();
+        deletedIDs.add(removed.getLabel());
+        mapChange.getValueRemoved().clear();
+        for(ObservableSet<Edge> edgeSet : adjacencyList.values()){
+          edgeSet.removeIf(edge -> edge.getSource().equals(removed) ||edge.getTarget().equals(removed));
         }
-        deletedIDs.add(removedID);
       }
     });
 
 
-    edges.addListener((SetChangeListener<? super Edge>) change -> {
-      if(change.wasAdded())
-      requestPrint(change.getElementAdded() + " was added.");
-      else requestPrint(change.getElementRemoved() + " was removed.");
-    });
 
   }
 
-  private String getSystemName() {
-    return "System";
+  public void addEdge(Vertex source, String label, Vertex target) {
+    adjacencyList.get(source).add(new Edge(source, label, target));
   }
 
-  public void addEdge(int source, String label, int target) {
-    Vertex sourceVertex;
-    Vertex targetVertex;
+  public Boolean addVertex(Vertex vertex) {
+    if (adjacencyList.containsKey(vertex))
+      return false;
 
-    if (vertices.containsKey(target)) {
-      targetVertex = vertices.get(target);
-    }  else {
-      targetVertex = addVertex(target);
-    }
-
-    if (vertices.containsKey(source)) {
-      sourceVertex = vertices.get(source);
-    }else {
-      sourceVertex = addVertex(source);
-    }
-    System.out.println("sourceV = " + vertices.get(source));
-    System.out.println("targetV = " +targetVertex);
-    System.out.println("label = " +label);
-    System.out.println("source = " +source);
-    System.out.println("target = " +target);
-    vertices.get(source).getEdges().add(new Edge(sourceVertex, label, targetVertex));
+    adjacencyList.put(vertex,FXCollections.observableSet(new HashSet<>()));
+    return true;
   }
 
-  public int addNextIDVertex(double xPos,double yPos) {
-//    if(addedByVis) this.addedByVis = false;
-    int id = Objects.requireNonNullElse(deletedIDs.pollFirst(), getMaxID() + 1);
-    addVertex(id,xPos,yPos);
-    return id;
-  }
-  public int addNextIDVertex() {
-//    if(addedByVis) this.addedByVis = false;
-    int id = Objects.requireNonNullElse(deletedIDs.pollFirst(), getMaxID() + 1);
-    addVertex(id);
-    return id;
-  }
+ public Integer smallestFreeLabel(){
+    return Objects.requireNonNullElse(deletedIDs.pollFirst(), getMaxID() + 1);
+ }
+
   public void clear(){
-    vertices.clear();
-    requestPrint(TerminalMessage.CLEAR.getMessage());
-  }
-  public Vertex addVertex(int ID, double xPos, double yPos){
-    Vertex newVertex = addVertex(ID);
-    newVertex.setCenterX(xPos);
-    newVertex.setCenterY(yPos);
-    return newVertex;
-  }
-  public  Vertex addVertex(int ID) {
-    if (!vertices.containsKey(ID)) {
-      Vertex vertex = new Vertex(this,ID);
-      vertices.put(ID,vertex);
-
-      vertex.getEdges().addListener((SetChangeListener<Edge>) edgeSetChange -> {
-
-        if(edgeSetChange.wasAdded()){
-          edges.add(edgeSetChange.getElementAdded());
-        } else {
-          edges.remove(edgeSetChange.getElementRemoved());
-        }
-      });
-      edges.addAll(vertex.getEdges());
+    for(Vertex vertex : adjacencyList.keySet()){
+      removeVertex(vertex);
     }
-    return vertices.get(ID);
   }
+
+
 
   public Integer getMaxID() {
-    Optional<Integer> max = vertices.keySet().stream()
-            .max(Integer::compare);
-    return max.orElse(0);
-  }
-
-  public TreeSet<Integer> getDeletedIDs() {
-    return deletedIDs;
+    return adjacencyList.keySet().stream()
+            .max(Vertex::compareTo)
+            .map(Vertex::getLabel)
+            .orElse(0);
   }
 
   public void removeAllEdges() {
-    for(Vertex vertex: vertices.values()){
-      vertex.getEdges().clear();
+    for(Set<Edge> edgeSet: adjacencyList.values()){
+      for(Edge edge:edgeSet){
+        edgeSet.remove(edge);
+      }
     }
   }
 
-  public void removeVertex(int vertexID) {
-//    for (Vertex vertex : getVertices()){
-//      vertex.getEdges().removeIf(edge -> edge.getSource().getID().equals(vertexID) ||edge.getTarget().getID().equals(vertexID));
-//    }
-    vertices.remove(vertexID);
-//    deletedIDs.add(vertexID);
-
+  public Boolean removeVertex(Vertex vertex) {
+    if (adjacencyList.containsKey(vertex)){
+      adjacencyList.remove(vertex);
+      return true;
+    }
+    return false;
   }
 
-  public void addVertexListener(MapChangeListener<Integer, Vertex> mapChangeListener) {
-    vertices.addListener(mapChangeListener);
+  public void addVertexListener(MapChangeListener<Vertex, ObservableSet<Edge>> mapChangeListener) {
+    adjacencyList.addListener(mapChangeListener);
   }
 
-  public Vertex getVertex(int id){
-    return vertices.getOrDefault(id,null);
+  public void addEdgeListener(SetChangeListener<Edge> edgeSetListener){
+    for(ObservableSet<Edge> edgeSet : adjacencyList.values()){
+      edgeSet.addListener(edgeSetListener);
+    }
   }
+
 
   public Set<Vertex> getVertices() {
-    return Set.copyOf(vertices.values());
+    return Set.copyOf(adjacencyList.keySet());
   }
 
-  public ObservableSet<Edge> getEdges() {
-    return edges;
+  public Set<Edge> getEdges() {
+    return Set.copyOf(
+            adjacencyList.values().stream()
+            .flatMap(ObservableSet::stream)
+            .collect(Collectors.toSet())
+    );
+  }
+  public Set<Edge> getEdges(Vertex vertex){
+    return Set.copyOf(adjacencyList.get(vertex));
   }
 
-  public BooleanProperty getBisimToggle(){
-    return bisimToggle;
+  public BooleanProperty getColorToggleProperty(){
+    return colorToggle;
   }
 
   public ObservableSet<Block> getPartition() {

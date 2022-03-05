@@ -7,16 +7,15 @@ import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Paint;
-import me.ducanh.thesis.Block;
-import me.ducanh.thesis.Edge;
-import me.ducanh.thesis.Model;
-import me.ducanh.thesis.Vertex;
+import me.ducanh.thesis.*;
 import me.ducanh.thesis.algorithms.*;
 import me.ducanh.thesis.util.Colors;
 
@@ -24,10 +23,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class Canvas {
-    private final HashSet<Vertex> drawnVertices = new HashSet<>();
-    private final ObservableSet<Edge> drawnEdges = FXCollections.observableSet();
-    private final int radius = 40;
+public class Canvas{
+    private final HashSet<java.lang.Integer> drawnVertices = new HashSet<>();
+    private final ObservableSet<EdgeView> drawnEdgeViews = FXCollections.observableSet();
     @FXML
     ScrollPane scrollPane;
     @FXML
@@ -38,40 +36,44 @@ public class Canvas {
     Group group;
     @FXML
     Label bisimToggleLabel;
-    double spawnPosX = Vertex.DEFAULT_RADIUS;
-    double spawnPosY = Vertex.DEFAULT_RADIUS;
-    private int colorID = 0;
 
+    private int colorID = 0;
+    private Controller controller;
 
 //TODO scroll pane when item dragged past boundaries
 
-    public void initialize(Model model) {
+    public void inject(CanvasVM canvasVM, Controller controller) {
+        this.controller = controller;
         anchorPane.setMinHeight(600);
         anchorPane.setMinWidth(900);
 
-        anchorPane.setOnMousePressed(pressed -> {
-            if (pressed.getButton().equals(MouseButton.PRIMARY) && (pressed.isControlDown())) {
-                spawnPosX = pressed.getX();
-                spawnPosY = pressed.getY();
-                model.addNextIDVertex(pressed.getX(),pressed.getY());
-                pressed.consume();
+        canvasVM.addVertexViewListener(vertexView->{
+            if(vertexView.wasAdded()){
+                Platform.runLater(() -> addChild(vertexView.getValueAdded()));
+            } else {
+                Platform.runLater(() -> removeChild(vertexView.getValueRemoved()));
+            }
+        });
+
+        canvasVM.addEdgeViewListener(edgeView->{
+            if(edgeView.wasAdded()){
+                Platform.runLater(()->addChild(edgeView.getValueAdded()));
+            } else {
+                Platform.runLater(()->removeChild(edgeView.getValueRemoved()));
             }
 
+
+        anchorPane.setOnMousePressed(pressed -> {
+            checkCtrlClick(pressed);
         });
-        model.getBisimToggle().addListener((observable, changeToFalse, changeToTrue) -> {
-            if (changeToTrue) {
-                bisimToggleLabel.setText("Bisimulation Indicators: On");
-            } else {
-                bisimToggleLabel.setText("Bisimulation Indicators: Off");
-            }
-        });
+        canvasVM.addColorToggleListener((observable, changeToFalse, changeToTrue) -> colorToggleIndicator(changeToTrue));
 
 //        model.getEdges().addListener((SetChangeListener<? super Edge>) change -> {
 //
 //            if (change.wasAdded()) {
-//                Edge edge = change.getElementAdded();
-//                Edge visEdge = new Edge(drawnVertices.get(edge.getSource().getID()), edge.getLabel(), drawnVertices.get(edge.getTarget().getID()));
-//                drawnEdges.put(edge, visEdge);
+//                Edge edgeView = change.getElementAdded();
+//                Edge visEdge = new Edge(drawnVertices.get(edgeView.getSource().getID()), edgeView.getLabel(), drawnVertices.get(edgeView.getTarget().getID()));
+//                drawnEdges.put(edgeView, visEdge);
 //
 //                Platform.runLater(() -> {
 //                    anchorPane.getChildren().add(visEdge);
@@ -94,7 +96,7 @@ public class Canvas {
             int id = vListChange.getKey();
 
             if (vListChange.wasAdded()) {
-                Vertex vertex = vListChange.getValueAdded();
+                Integer vertex = vListChange.getValueAdded();
 
 //                if (!drawnVertices.contains(id)) {
 //                    drawnVertices.add(vertex);
@@ -102,40 +104,34 @@ public class Canvas {
 //                    this.spawnPosY = Vertex.DEFAULT_RADIUS;
 //                }
                 drawnVertices.add(vertex);
-                Platform.runLater(() -> {
-                    anchorPane.getChildren().add(vListChange.getValueAdded());
-                    if(vertex.getCenterX()==Vertex.DEFAULT_RADIUS){
-                        vertex.initView(this.spawnPosX,this.spawnPosY);
-                        resetSpawnPos();
+                double posX = this.spawnPosX;
+                double posY = this.spawnPosY;
 
-                    } else {
-                        vertex.initView();
-                    }
-                    //TODO always spawns at 1,1 when it comes from model.
+
                 });
 
                 ObservableSet<Edge> edgeSet = vListChange.getValueAdded().getEdges();
-                edgeSet.addListener((SetChangeListener<? super Edge>) eListChange -> {
+                edgeSet.addListener((SetChangeListener<? super EdgeView>) eListChange -> {
 
                     if (eListChange.wasAdded()) {
-                        Edge edgeAdded = eListChange.getElementAdded();
-//TODO: check if parallel edge already exists and modify that edge if it doesn't include new edge yet
+                        EdgeView edgeViewAdded = eListChange.getElementAdded();
+//TODO: check if parallel edgeView already exists and modify that edgeView if it doesn't include new edgeView yet
 //TODO why are random edges not following this rule
-                        if(!drawnEdges.contains(edgeAdded)){
+                        if(!drawnEdgeViews.contains(edgeViewAdded)){
                             long parallelEdgeCount =
-                                    drawnEdges  .stream()
-                                                .filter(modeledE-> modeledE.getTarget().equals(edgeAdded.getTarget())
-                                                        &&  modeledE.getSource().equals(edgeAdded.getSource())
+                                    drawnEdgeViews.stream()
+                                                .filter(modeledE-> modeledE.getTarget().equals(edgeViewAdded.getTarget())
+                                                        &&  modeledE.getSource().equals(edgeViewAdded.getSource())
                                                 ).count();
 //TODO                            JUnit System.out.println("there are already " + parallelEdgeCount + "parallel Edges");
 //                            for(int i =0;i<parallelEdgeCount;i++){
-                                edgeAdded.changeDegree(10 + parallelEdgeCount*10);
+                                edgeViewAdded.changeDegree(10 + parallelEdgeCount*10);
 //                            }
                             Platform.runLater(() -> {
-                                anchorPane.getChildren().add(edgeAdded);
-                                drawnEdges.add(edgeAdded);
-                                edgeAdded.toBack();
-                                edgeAdded.initView();
+                                anchorPane.getChildren().add(edgeViewAdded);
+                                drawnEdgeViews.add(edgeViewAdded);
+                                edgeViewAdded.toBack();
+                                edgeViewAdded.initView();
 
                             });
                         }
@@ -147,16 +143,16 @@ public class Canvas {
 
 
                     } else {
-                        Edge edgeRemoved = eListChange.getElementRemoved();
-                        drawnEdges.remove(edgeRemoved);
-                        anchorPane.getChildren().remove(edgeRemoved);
+                        EdgeView edgeViewRemoved = eListChange.getElementRemoved();
+                        drawnEdgeViews.remove(edgeViewRemoved);
+                        anchorPane.getChildren().remove(edgeViewRemoved);
                     }
                     if (model.getBisimToggle().get()) {
                         model.setPartition(Algorithms.bisim(model.getVertices()).getValue());
                     }
                 });
             } else {
-                Vertex vertex = vListChange.getValueRemoved();
+                Integer vertex = vListChange.getValueRemoved();
                 Platform.runLater(() -> {
                     anchorPane.getChildren().remove(vertex);
                 });
@@ -190,7 +186,7 @@ public class Canvas {
                     Thread taskThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            for (Vertex vertex : drawnVertices) {
+                            for (Integer vertex : drawnVertices) {
                                 vertex.setFill(vertex.getDefaultFill());
                             }
                         }
@@ -221,7 +217,7 @@ public class Canvas {
                     Paint color = Colors.array[colorID++ % 120];
                     System.out.println("block added (colorListener" + change.getElementAdded().getVertices());
 
-                    for (Vertex vertex : change.getElementAdded()) {
+                    for (Integer vertex : change.getElementAdded()) {
                         vertex.setFill(color);
                     }
                 } else if (change.getElementAdded().getVertices().size() == 1) {
@@ -268,8 +264,27 @@ public class Canvas {
         });
     }
     private void resetSpawnPos(){
-        spawnPosX=Vertex.DEFAULT_RADIUS;
-        spawnPosY=Vertex.DEFAULT_RADIUS;
+        spawnPosX= Integer.DEFAULT_RADIUS;
+        spawnPosY= Integer.DEFAULT_RADIUS;
     }
+    private void checkCtrlClick(MouseEvent pressed) {
+        if (pressed.getButton().equals(MouseButton.PRIMARY) && (pressed.isControlDown())) {
+            controller.addVertex(pressed.getX(),pressed.getY());
+            pressed.consume();
+        }
+    }
+    private void colorToggleIndicator(Boolean toggle) {
 
+        if (toggle) {
+            bisimToggleLabel.setText("Color bisimilar vertices: On");
+        } else {
+            bisimToggleLabel.setText("Color bisimilar vertices: Off");
+        }
+    }
+    private void addChild(Node node){
+        anchorPane.getChildren().add(node);
+    }
+    private void removeChild(Node node){
+        anchorPane.getChildren().remove(node);
+    }
 }

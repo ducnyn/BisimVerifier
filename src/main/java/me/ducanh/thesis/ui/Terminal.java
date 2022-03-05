@@ -13,20 +13,19 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
-import me.ducanh.thesis.Vertex;
+import me.ducanh.thesis.TerminalMessage;
 import me.ducanh.thesis.command.parser.CommandParser;
 import me.ducanh.thesis.command.Command;
 import me.ducanh.thesis.command.parser.NoMatchingTokenException;
 import me.ducanh.thesis.command.parser.SyntaxErrorException;
 import me.ducanh.thesis.Model;
-import me.ducanh.thesis.util.StringUtils;
 
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 
 
-public class InputOutput {
+public class Terminal {
 
     private final ObservableSet<KeyCode> pressedKeys = FXCollections.observableSet();
     @FXML
@@ -45,7 +44,7 @@ public class InputOutput {
     private final StringProperty printRequest = new SimpleStringProperty();
 
 
-    public void init(Model model) {
+    public void inject(Model model) {
         splitPane.setDividerPosition(0,0.7);
 
         Font font = Font.loadFont(getClass().getResourceAsStream("InputMono.ttf"), 14);
@@ -87,7 +86,7 @@ public class InputOutput {
                                         }
                                         break;
 
-                                    case "edge":
+                                    case "edgeView":
 //                                        if (command.getArgumentList().size()==3){
 //                                            model.addEdge(
 //                                                    Integer.parseInt(command.getArgumentList().get(0)),
@@ -104,6 +103,8 @@ public class InputOutput {
                                     case "clear":
                                         if(command.getArgumentList().size()==0){
                                             model.clear();
+                                            model.requestPrint(TerminalMessage.CLEAR.getMessage());
+
                                         }
                                         break;
                                     case "graph":

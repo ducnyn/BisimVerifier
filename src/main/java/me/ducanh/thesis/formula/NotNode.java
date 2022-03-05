@@ -1,7 +1,5 @@
 package me.ducanh.thesis.formula;
 
-import me.ducanh.thesis.Vertex;
-
 public class NotNode implements TreeNode
 {
   TreeNode child;
@@ -10,7 +8,7 @@ public class NotNode implements TreeNode
   }
 
   @Override
-  public Boolean evaluate(Vertex vertex) {
+  public Boolean evaluate(Integer vertex) {
     return !child.evaluate(vertex);
   }
 

@@ -1,7 +1,5 @@
 package me.ducanh.thesis.formula;
 
-import me.ducanh.thesis.Vertex;
-
 public class DiamondNode implements TreeNode {
   String action;
   TreeNode child;
@@ -12,7 +10,7 @@ public class DiamondNode implements TreeNode {
     }
 
     @Override
-  public Boolean evaluate(Vertex vertex) {
+  public Boolean evaluate(Integer vertex) {
     return vertex.getTargets(action).stream().anyMatch(targetVertex->child.evaluate(targetVertex));
   }
 

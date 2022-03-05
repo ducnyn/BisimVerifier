@@ -1,7 +1,5 @@
 package me.ducanh.thesis.formula;
 
-import me.ducanh.thesis.Vertex;
-
 public class BlockNode implements TreeNode {
 
   private String action;
@@ -12,7 +10,7 @@ public class BlockNode implements TreeNode {
     this.child = child;
   }
   @Override
-  public Boolean evaluate(Vertex vertex) { //yes allmatch does return true for empty streams
+  public Boolean evaluate(Integer vertex) { //yes allmatch does return true for empty streams
     return vertex.getTargets(action).stream().allMatch(targetVertex -> child.evaluate(targetVertex));
   }
 

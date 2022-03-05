@@ -2,12 +2,11 @@ package me.ducanh.thesis.algorithms;
 
 import com.google.common.collect.Sets;
 import javafx.util.Pair;
-import me.ducanh.thesis.Block;
-import me.ducanh.thesis.BlockEdge;
-import me.ducanh.thesis.Vertex;
+import me.ducanh.thesis.*;
 import me.ducanh.thesis.formula.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.partitioningBy;
 import static java.util.stream.Collectors.toSet;
@@ -27,22 +26,23 @@ public class Algorithms {
 
     //True = states that have an action a, leading to a state in B' (= leading to the same state based on current bisimulation refinement)
     //False = the rest.
-    public static Map<Boolean, Set<Vertex>> split(me.ducanh.thesis.Block block, BlockEdge blockEdge) {
+    public static Map<Boolean, Set<Integer>> split(Model graph, me.ducanh.thesis.Block block, BlockEdge blockEdge) {
 //    System.out.println("attempting to split " + block);
         return block.stream()
                 .collect(partitioningBy(
-                        vertex -> vertex.getTargets(blockEdge.getLabel())
-                                .stream()
+                        vertex -> graph.getEdges(vertex).stream()
+                                .filter(edgeView->edgeView.getLabel().equals(blockEdge.getLabel()))
+                                .map(Edge::getTarget)
                                 .anyMatch(blockEdge.getTargetBlock()::contains)
                         , toSet()));
 
     }
 
-    public static Pair<me.ducanh.thesis.Block, Set<Block>> bisim(Set<Vertex> vertices) {
-        HashMap<Vertex, me.ducanh.thesis.Block> containingBlock = new HashMap<>();
+    public static Pair<me.ducanh.thesis.Block, Set<Block>> bisim(Model graph) {
+        HashMap<Integer, me.ducanh.thesis.Block> containingBlock = new HashMap<>();
         Set<me.ducanh.thesis.Block> newPartition = new HashSet<>();
         Set<me.ducanh.thesis.Block> parentPartition = new HashSet<>();
-        me.ducanh.thesis.Block rootBlock = new me.ducanh.thesis.Block(vertices);
+        me.ducanh.thesis.Block rootBlock = new me.ducanh.thesis.Block(graph.getVertices());
         newPartition.add(rootBlock);
 
 
@@ -52,7 +52,7 @@ public class Algorithms {
             newPartition = new HashSet<>();
 
             for (me.ducanh.thesis.Block block : parentPartition) {
-                for (Vertex vertex : block) {
+                for (Integer vertex : block) {
                     containingBlock.put(vertex, block);
                 }
             }
@@ -62,13 +62,13 @@ public class Algorithms {
                 Optional<BlockEdge> possibleSplitter =
                         block.stream()
                                 .flatMap(vertex -> vertex.getEdges().stream())
-                                .map(edge -> new BlockEdge(edge.getLabel(), containingBlock.get(edge.getTarget())))
-                                .filter(bEdge -> !split(block, bEdge).containsValue(block.getVertices()))
+                                .map(edgeView -> new BlockEdge(edgeView.getLabel(), containingBlock.get(edgeView.getTarget())))
+                                .filter(bEdge -> !split(graph,block, bEdge).containsValue(block.getVertices()))
                                 .findFirst();
 
                 if (possibleSplitter.isPresent()) {
                     BlockEdge splitter = possibleSplitter.get();
-                    Map<Boolean, Set<Vertex>> dividedBlock = split(block, splitter);
+                    Map<Boolean, Set<Integer>> dividedBlock = split(graph,block, splitter);
                     block.setSplitter(splitter);
                     block.setLeftChild(new me.ducanh.thesis.Block(dividedBlock.get(true)));
                     block.setRightChild(new me.ducanh.thesis.Block(dividedBlock.get(false)));
@@ -86,7 +86,7 @@ public class Algorithms {
     }
 
 
-    private static me.ducanh.thesis.Block findLastBlock(Vertex state1, Vertex state2, me.ducanh.thesis.Block root) throws NoDistinguishingFormulaException {
+    private static me.ducanh.thesis.Block findLastBlock(Integer state1, Integer state2, me.ducanh.thesis.Block root) throws NoDistinguishingFormulaException {
         me.ducanh.thesis.Block block = root;
 
         while (true) {
@@ -104,7 +104,7 @@ public class Algorithms {
 
     }
 
-    public static TreeNode getDeltaFormula(Vertex state1, Vertex state2, Set<Vertex> vertexSet) throws NoDistinguishingFormulaException {
+    public static TreeNode getDeltaFormula(Integer state1, Integer state2, Set<Integer> vertexSet) throws NoDistinguishingFormulaException {
 
         me.ducanh.thesis.Block rootBlock = bisim(vertexSet).getKey();
 
@@ -113,7 +113,7 @@ public class Algorithms {
         return result;
     }
 
-    private static TreeNode clevelandAlgo(Vertex state1, Vertex state2, me.ducanh.thesis.Block rootBlock) throws NoDistinguishingFormulaException {
+    private static TreeNode clevelandAlgo(Integer state1, Integer state2, me.ducanh.thesis.Block rootBlock) throws NoDistinguishingFormulaException {
 
         me.ducanh.thesis.Block lastBlock = findLastBlock(state1, state2, rootBlock);
         if (lastBlock.getSplitter() == null) {
@@ -126,10 +126,10 @@ public class Algorithms {
 
         BlockEdge splitter = lastBlock.getSplitter();
         String splitAction = splitter.getLabel();
-        Set<Vertex> splitBlock = splitter.getTargetBlock().getVertices();
+        Set<Integer> splitBlock = splitter.getTargetBlock().getVertices();
 
-        Vertex leftState;
-        Vertex rightState;
+        Integer leftState;
+        Integer rightState;
         boolean reversed;
 
         if (lastBlock.left().contains(state1) & lastBlock.right().contains(state2)) {
@@ -145,16 +145,16 @@ public class Algorithms {
         }
 
 
-        Set<Vertex> SL = Sets.intersection(leftState.getTargets(splitAction), splitBlock);
-        Set<Vertex> SR = rightState.getTargets(splitAction);
-        int minFormulaSize = Integer.MAX_VALUE;
+        Set<Integer> SL = Sets.intersection(leftState.getTargets(splitAction), splitBlock);
+        Set<Integer> SR = rightState.getTargets(splitAction);
+        int minFormulaSize = java.lang.Integer.MAX_VALUE;
         TreeNode nextNode = new TrueNode();
 //        TreeNode result = new DiamondNode(splitAction,nextNode);
 
-        for (Vertex LTarget : SL) {
+        for (Integer LTarget : SL) {
             List<TreeNode> formulas = new ArrayList<>(); //GAMMA
 
-            for (Vertex RTarget : SR) {
+            for (Integer RTarget : SR) {
                 formulas.add(clevelandAlgo(LTarget, RTarget, rootBlock));
             }
 
@@ -185,7 +185,12 @@ public class Algorithms {
         TreeNode result = new DiamondNode(splitAction,nextNode);
         return reversed? new NotNode(result) : result;
     } //TEST IT AGAIN
-
+    public Set<Integer> getTargets(Collection<Edge>edges, String label){
+        return edges.stream()
+                .filter(edgeView->edgeView.getLabel().equals(label))
+                .map(Edge::getTarget)
+                .collect(Collectors.toSet());
+    }
 
     //computes a minimalistic formula satisfied by v1, but not v2. Both formulas satisfy the formula up until the second last vertex of the described path.
 //  public static String getDeltaFormula(Vertex s1, Vertex s2, BlockNode rootBlock) throws NoDistinguishingFormulaException {

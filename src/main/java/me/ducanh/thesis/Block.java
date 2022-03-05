@@ -5,8 +5,8 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.partitioningBy;
 
-public class Block implements Iterable<Vertex>{
-  Set<Vertex> vertices;
+public class Block implements Iterable<Integer>{
+  Set<Integer> vertices;
   BlockEdge splitter;
   Block leftChild;
   Block rightChild;
@@ -18,7 +18,7 @@ public class Block implements Iterable<Vertex>{
 //    this.rightChild = rightChild;
 //  }
 
-  public Block(Set<Vertex> vertices) {
+  public Block(Set<Integer> vertices) {
     this.vertices = vertices;
   }
 
@@ -79,7 +79,7 @@ public class Block implements Iterable<Vertex>{
     return vertices.toString();
   }
 
-  public Set<Vertex> getVertices() {
+  public Set<Integer> getVertices() {
     return vertices;
   }
 
@@ -107,7 +107,7 @@ public class Block implements Iterable<Vertex>{
     this.rightChild = rightChild;
   }
 
-  public Stream<Vertex> stream(){
+  public Stream<Integer> stream(){
     return vertices.stream();
   }
   @Override
@@ -126,15 +126,15 @@ public class Block implements Iterable<Vertex>{
   }
 
   @Override
-  public Iterator<Vertex> iterator() {
+  public Iterator<Integer> iterator() {
     return vertices.iterator();
   }
 
-  public boolean contains(Vertex vertex) {
+  public boolean contains(Integer vertex) {
     return vertices.contains(vertex);
   }
 
-  public boolean containsAll(Vertex... v) {
+  public boolean containsAll(Integer... v) {
     return Arrays.stream(v).allMatch(vertices::contains);
 //    return this.vertices.containsAll(Arrays.stream(i).collect(Collectors.toList()));
   }
