@@ -86,7 +86,7 @@ public class Algorithms extends Model{
     }
 
 
-    private static Block findLastBlock(Vertex state1, Vertex state2, Block root) throws NoDistinguishingFormulaException {
+    private  Block findLastBlock(Vertex state1, Vertex state2, Block root) throws NoDistinguishingFormulaException {
         Block block = root;
 
         while (true) {
@@ -113,7 +113,7 @@ public class Algorithms extends Model{
         return result;
     }
 
-    private static TreeNode clevelandAlgo(Vertex state1, Vertex state2, Block rootBlock) throws NoDistinguishingFormulaException {
+    private  TreeNode clevelandAlgo(Vertex state1, Vertex state2, Block rootBlock) throws NoDistinguishingFormulaException {
 
         Block lastBlock = findLastBlock(state1, state2, rootBlock);
         if (lastBlock.getSplitter() == null) {
@@ -145,7 +145,7 @@ public class Algorithms extends Model{
         }
 
 
-        Set<Vertex> SL = Sets.intersection(getTargets(model.getEdges(leftState),splitAction), splitBlock);
+        Set<Vertex> SL = Sets.intersection(getTargets(getEdges(leftState),splitAction), splitBlock);
         Set<Vertex> SR = rightState.getTargets(splitAction);
         int minFormulaSize = java.lang.Integer.MAX_VALUE;
         TreeNode nextNode = new TrueNode();
@@ -185,7 +185,7 @@ public class Algorithms extends Model{
         TreeNode result = new DiamondNode(splitAction,nextNode);
         return reversed? new NotNode(result) : result;
     } //TEST IT AGAIN
-    private static Set<Vertex> getTargets(Vertex vertex, String label){
+    private  Set<Vertex> getTargets(Vertex vertex, String label){
         return getEdges(vertex).stream()
                 .filter(edgeView->edgeView.getLabel().equals(label))
                 .map(Edge::getTarget)
