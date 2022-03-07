@@ -4,18 +4,19 @@ package me.ducanh.thesis;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.*;
+import me.ducanh.thesis.algorithms.Algorithms;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 public class Model {
   private String username = "User";
 
 //  private final ObservableMap<Integer, Vertex> vertices = FXCollections.observableMap(new HashMap<>());
   private final ObservableMap<Vertex,ObservableSet<Edge>> adjacencyList = FXCollections.observableMap(new HashMap<>());
-  private final ObservableSet<Block> partition = FXCollections.observableSet(new HashSet<>());
   private final TreeSet<Integer> deletedIDs = new TreeSet<>();
-  private final BooleanProperty colorToggle = new SimpleBooleanProperty(false);
+  private final BooleanProperty colorModeProperty = new SimpleBooleanProperty(false);
   private final BooleanProperty printRequest = new SimpleBooleanProperty();
   private  String printString = "";
 
@@ -23,15 +24,17 @@ public class Model {
 
 
   {//initiator
-    adjacencyList.addListener((MapChangeListener<Vertex, ObservableSet<Edge>>) mapChange -> {
+    adjacencyList.addListener((MapChangeListener<Vertex, ObservableSet<Edge>>) vertex -> {
 
-      if (mapChange.wasRemoved()){
-        Vertex removed = mapChange.getKey();
-        deletedIDs.add(removed.getLabel());
-        mapChange.getValueRemoved().clear();
-        for(ObservableSet<Edge> edgeSet : adjacencyList.values()){
-          edgeSet.removeIf(edge -> edge.getSource().equals(removed) ||edge.getTarget().equals(removed));
+      if (vertex.wasRemoved()){
+        Vertex removedVertex = vertex.getKey();
+        deletedIDs.add(removedVertex.getLabel());
+        vertex.getValueRemoved().clear();
+        for(ObservableSet<Edge> edgeSet : vertex.getMap().values()){
+          edgeSet.removeIf(edge -> edge.getSource().equals(removedVertex) ||edge.getTarget().equals(removedVertex));
         }
+      } else {
+
       }
     });
 
@@ -97,6 +100,7 @@ public class Model {
   }
 
 
+
   public Set<Vertex> getVertices() {
     return Set.copyOf(adjacencyList.keySet());
   }
@@ -112,18 +116,18 @@ public class Model {
     return Set.copyOf(adjacencyList.get(vertex));
   }
 
-  public BooleanProperty getColorToggleProperty(){
-    return colorToggle;
+  public BooleanProperty getColorModeListener(){
+    return colorModeProperty;
+  }
+  public Boolean getColorMode(){
+      return colorModeProperty.get();
   }
 
-  public ObservableSet<Block> getPartition() {
-    return partition;
+  public Set<Block> getBisimulation(){
+      return Algorithms.bisim(this).getValue();
   }
 
-  public void setPartition(Set<Block> newPartition) {
-    this.partition.clear();
-    this.partition.addAll(newPartition);
-  }
+
 
   public void requestPrint(String string){
     this.printString = string;

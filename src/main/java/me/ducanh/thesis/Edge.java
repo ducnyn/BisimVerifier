@@ -1,23 +1,10 @@
 package me.ducanh.thesis;
 
-import javafx.beans.binding.DoubleBinding;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.geometry.Point2D;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
-import javafx.scene.text.Text;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 
 import java.util.Objects;
 
-public class Edge extends AnchorPane implements Comparable<Edge> {
+public class Edge implements Comparable<Edge> {
 
     private final Vertex source;
     private final Vertex target;

@@ -140,7 +140,7 @@ public class Sidebar {
     @FXML
     private void bisimulation() throws InterruptedException {
 
-        model.getColorToggleProperty().set(!model.getColorToggleProperty().get());
+        model.getColorModeListener().set(!model.getColorModeListener().get());
 //        Thread taskThread = new Thread(new Runnable() {
 //            @Override
 //            public void run() {

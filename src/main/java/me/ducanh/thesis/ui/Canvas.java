@@ -66,7 +66,7 @@ public class Canvas{
         anchorPane.setOnMousePressed(pressed -> {
             checkCtrlClick(pressed);
         });
-        canvasVM.addColorToggleListener((observable, changeToFalse, changeToTrue) -> colorToggleIndicator(changeToTrue));
+        canvasVM.addColorModeListener((observable, changeToFalse, changeToTrue) -> colorToggleIndicator(changeToTrue));
 
 //        model.getEdges().addListener((SetChangeListener<? super Edge>) change -> {
 //
@@ -151,15 +151,8 @@ public class Canvas{
                         model.setPartition(Algorithms.bisim(model.getVertices()).getValue());
                     }
                 });
-            } else {
-                Integer vertex = vListChange.getValueRemoved();
-                Platform.runLater(() -> {
-                    anchorPane.getChildren().remove(vertex);
-                });
             }
-            if (model.getBisimToggle().get()) {
-                model.setPartition(Algorithms.bisim(model.getVertices()).getValue());
-            }
+
 
         });
 
