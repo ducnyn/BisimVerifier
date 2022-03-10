@@ -1,5 +1,11 @@
 package me.ducanh.thesis.formula;
 
+import me.ducanh.thesis.Model;
+import me.ducanh.thesis.Vertex;
+import me.ducanh.thesis.Edge;
+import java.util.Map;
+import java.util.Set;
+
 public class OrNode implements TreeNode {
 
 
@@ -12,8 +18,8 @@ public class OrNode implements TreeNode {
   }
 
   @Override
-  public Boolean evaluate(Integer vertex) {
-    return leftChild.evaluate(vertex) || rightChild.evaluate(vertex);
+  public Boolean evaluate(Vertex vertex, Model model) {
+    return leftChild.evaluate(vertex, model) || rightChild.evaluate(vertex, model);
   }
 
   @Override

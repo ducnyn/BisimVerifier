@@ -1,5 +1,12 @@
 package me.ducanh.thesis.formula;
 
+import me.ducanh.thesis.Edge;
+import me.ducanh.thesis.Model;
+import me.ducanh.thesis.Vertex;
+
+import java.util.Map;
+import java.util.Set;
+
 public class AndNode implements TreeNode {
 
   TreeNode leftChild;
@@ -11,8 +18,8 @@ public class AndNode implements TreeNode {
   }
 
   @Override
-  public Boolean evaluate(Integer vertex) {
-    return leftChild.evaluate(vertex) && rightChild.evaluate(vertex);
+  public Boolean evaluate(Vertex vertex, Model model) {
+    return leftChild.evaluate(vertex, model) && rightChild.evaluate(vertex, model);
   }
   @Override
   public String toString(){return "("+leftChild.toString() + " && " + rightChild.toString()+")";}

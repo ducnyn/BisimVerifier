@@ -4,7 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.*;
-import me.ducanh.thesis.Block;
+import me.ducanh.thesis.Partition;
 import me.ducanh.thesis.Edge;
 import me.ducanh.thesis.Model;
 import me.ducanh.thesis.Vertex;
@@ -17,7 +17,7 @@ public class CanvasVM {
     Model model;
     private final ObservableMap<Edge, EdgeView> edgeViews = FXCollections.observableMap(new HashMap<>());
     private final ObservableMap<Vertex, VertexView>vertexViews = FXCollections.observableMap(new HashMap<>());
-    private final ObservableSet<Block> partition = FXCollections.observableSet(new HashSet<>());
+    private final ObservableSet<Partition> partition = FXCollections.observableSet(new HashSet<>());
     private final BooleanProperty colorUpdate = new SimpleBooleanProperty();
     public CanvasVM(Model model){
         this.model = model;
@@ -67,12 +67,12 @@ public class CanvasVM {
     public void addColorModeListener(ChangeListener<? super Boolean> listener){
         model.getColorModeListener().addListener(listener);
     }
-    public void setPartition(Set<Block> newPartition) {
+    public void setPartition(Set<Partition> newPartition) {
         this.partition.clear();
         this.partition.addAll(newPartition);
     }
 
-    public ObservableSet<Block> getPartition() {
+    public ObservableSet<Partition> getPartition() {
         return partition;
     }
 }

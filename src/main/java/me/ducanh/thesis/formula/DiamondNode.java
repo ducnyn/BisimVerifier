@@ -1,5 +1,11 @@
 package me.ducanh.thesis.formula;
 
+import me.ducanh.thesis.Model;
+import me.ducanh.thesis.Vertex;
+import me.ducanh.thesis.Edge;
+import java.util.Map;
+import java.util.Set;
+
 public class DiamondNode implements TreeNode {
   String action;
   TreeNode child;
@@ -10,8 +16,8 @@ public class DiamondNode implements TreeNode {
     }
 
     @Override
-  public Boolean evaluate(Integer vertex) {
-    return vertex.getTargets(action).stream().anyMatch(targetVertex->child.evaluate(targetVertex));
+  public Boolean evaluate(Vertex vertex, Model model) {
+    return model.getTargets(vertex,action).stream().anyMatch(targetVertex->child.evaluate(targetVertex, model));
   }
 
   @Override

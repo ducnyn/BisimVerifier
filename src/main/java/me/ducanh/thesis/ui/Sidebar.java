@@ -235,7 +235,7 @@ public class Sidebar {
                 Integer vertex = model.getVertex(parseInt(first));
                 String formula = second;
                 Thread taskThread = new Thread(() -> {
-                    if (finalTree.evaluate(vertex)) {
+                    if (finalTree.evaluate(vertex, model)) {
                         model.requestPrint("Vertex " + vertex + " satisfies the formula: " + formula);
                     } else {
                         model.requestPrint("Vertex " + vertex + " doesn't satisfy the formula: " + formula);
