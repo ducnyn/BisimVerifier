@@ -162,7 +162,7 @@ public class Canvas{
                     Thread taskThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            Set<Partition> partition = Algorithms.bisim(model.getVertices()).getValue();
+                            Set<Block> partition = Algorithms.bisim(model.getVertices()).getValue();
                             model.requestPrint("\n Equivalence classes (Bisimulation): \n" + partition.toString());
                             model.setPartition(partition);
                             System.out.println("Vertices: " + model.getVertices());
@@ -204,7 +204,7 @@ public class Canvas{
 //        taskThread.setDaemon(true);
 //        taskThread.start();
 
-        model.getPartition().addListener((SetChangeListener<Partition>) change -> {
+        model.getPartition().addListener((SetChangeListener<Block>) change -> {
             if (change.wasAdded()) {
                 if (change.getElementAdded().getVertices().size() > 1) {
                     Paint color = Colors.array[colorID++ % 120];

@@ -1,15 +1,14 @@
 package me.ducanh.thesis;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.partitioningBy;
 
-public class Partition extends LinkedList<Vertex>{
+public class Block extends LinkedList<Vertex>{
 //  List<Vertex> vertices = new LinkedList<>();
-  PartitionEdge splitter;
-  Partition leftChild;
-  Partition rightChild;
+  BlockEdge splitter;
+  Block leftChild;
+  Block rightChild;
   {
   }
 //  public Block(Set<Vertex> vertices, BlockEdge splitter, Block leftChild, Block rightChild) {
@@ -22,10 +21,10 @@ public class Partition extends LinkedList<Vertex>{
 //  public Partition(){
 //    vertices = new LinkedList<>();
 //  }i
-  public Partition(){
+  public Block(){
 
   }
-  public Partition(Collection<Vertex> vertices) {
+  public Block(Collection<Vertex> vertices) {
    addAll(vertices);
 
   }
@@ -35,24 +34,24 @@ public class Partition extends LinkedList<Vertex>{
 //  }
 
   public void printTree(){
-    Partition rootPartition = this;
+    Block rootBlock = this;
     int currentLayer = 0;
-    ArrayList<Queue<Partition>> treeLayers = new ArrayList<>();
-    Queue<Partition> queue = new LinkedList<>();
+    ArrayList<Queue<Block>> treeLayers = new ArrayList<>();
+    Queue<Block> queue = new LinkedList<>();
     treeLayers.add(queue);
-    queue.add(rootPartition);
+    queue.add(rootBlock);
 
     while(true){
-      Queue<Partition> childQueue = new LinkedList<>();
-      for(Partition tPartition : treeLayers.get(currentLayer)){
-        if (tPartition.left()!=null) {
-          childQueue.add(tPartition.left());
+      Queue<Block> childQueue = new LinkedList<>();
+      for(Block tBlock : treeLayers.get(currentLayer)){
+        if (tBlock.left()!=null) {
+          childQueue.add(tBlock.left());
         }
-        if (tPartition.right()!=null) {
-          childQueue.add(tPartition.right());
+        if (tBlock.right()!=null) {
+          childQueue.add(tBlock.right());
         }
-        if(tPartition.size()==1){
-          childQueue.add(tPartition);
+        if(tBlock.size()==1){
+          childQueue.add(tBlock);
         }
       }
       if (childQueue.isEmpty()){
@@ -63,7 +62,7 @@ public class Partition extends LinkedList<Vertex>{
       treeLayers.add(childQueue);
       currentLayer = treeLayers.indexOf(childQueue);
     }
-    for(Queue<Partition> layer : treeLayers){
+    for(Queue<Block> layer : treeLayers){
       System.out.println(layer);
 //      for(BlockNode blockNode : layer){
 //        if(blockNode.getVertices()!=null)
@@ -94,29 +93,29 @@ public class Partition extends LinkedList<Vertex>{
 //    return vertices;
 //  }
 
-  public PartitionEdge getSplitter() {
+  public BlockEdge getSplitter() {
     return splitter;
   }
 
-  public Partition setSplitter(PartitionEdge splitter) {
+  public Block setSplitter(BlockEdge splitter) {
     this.splitter = splitter;
     return this;
   }
 
-  public Partition left() {
+  public Block left() {
     return leftChild;
   }
 
-  public Partition setLeftChild(Partition leftChild) {
+  public Block setLeftChild(Block leftChild) {
     this.leftChild = leftChild;
     return this;
   }
 
-  public Partition right() {
+  public Block right() {
     return rightChild;
   }
 
-  public Partition setRightChild(Partition rightChild) {
+  public Block setRightChild(Block rightChild) {
     this.rightChild = rightChild;
     return this;
   }
