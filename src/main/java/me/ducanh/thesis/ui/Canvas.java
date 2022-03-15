@@ -148,7 +148,7 @@ public class Canvas{
                         anchorPane.getChildren().remove(edgeViewRemoved);
                     }
                     if (model.getBisimToggle().get()) {
-                        model.setPartition(Algorithms.bisim(model.getVertices()).getValue());
+                        model.setPartition(model.getBisimulation);
                     }
                 });
             }
@@ -162,7 +162,7 @@ public class Canvas{
                     Thread taskThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            Set<Block> partition = Algorithms.bisim(model.getVertices()).getValue();
+                            Set<Block> partition = Algorithms.getBisimRootAndPartition(model.getVertices()).getValue();
                             model.requestPrint("\n Equivalence classes (Bisimulation): \n" + partition.toString());
                             model.setPartition(partition);
                             System.out.println("Vertices: " + model.getVertices());

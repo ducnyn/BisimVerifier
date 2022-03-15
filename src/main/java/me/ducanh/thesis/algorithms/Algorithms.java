@@ -15,7 +15,7 @@ public class Algorithms  {
 
     //True = states that have an action a, leading to a state in B' (= leading to the same state based on current bisimulation refinement)
     //False = the rest.
-    public Block split(Block block, BlockEdge blockEdge, Model graph) {
+    public static Block split(Block block, BlockEdge blockEdge, Model graph) {
 //    System.out.println("attempting to split " + block);
 
 //        Map<Boolean,Set<Vertex>> subBlocks =
@@ -46,7 +46,7 @@ public class Algorithms  {
                 .setLeftChild(hasEqualEdge)
                 .setRightChild(hasNoEqualEdge);
     }
-    private boolean hasEquivalentEdges(Set<Edge> edges, BlockEdge blockEdge) { //iterate through edges
+    private static boolean hasEquivalentEdges(Set<Edge> edges, BlockEdge blockEdge) { //iterate through edges
         for (Edge edge : edges) {
             if(blockEdge.getLabel().equals(edge.getLabel()) && blockEdge.getTargetBlock().contains(edge.getTarget()))
                 return true;
@@ -60,7 +60,7 @@ public class Algorithms  {
 //        }
 //        return null;
 //    }
-    private Pair<Block, List<Block>> bisim(Model graph) {
+    public static Pair<Block, List<Block>> getBisimRootAndPartition(Model graph) {
 
         HashMap<Vertex, Block> currentBlockOf = new HashMap<>();
         List<Block> newPartition = new ArrayList<>();
@@ -128,16 +128,16 @@ public class Algorithms  {
 
     }
 
-    public TreeNode getDeltaFormula(Vertex state1, Vertex state2, Set<Vertex> vertexSet, Map<Vertex,Set<Edge>>graph) throws NoDistinguishingFormulaException {
+    public TreeNode getDeltaFormula(Vertex state1, Vertex state2, Model model) throws NoDistinguishingFormulaException {
 
-        Block rootBlock = bisim(getAdjacencyList()).getKey();
+        Block rootBlock = getBisimRootAndPartition(model).getKey();
 
-        TreeNode result = clevelandAlgo(state1, state2, rootBlock, graph);
+        TreeNode result = clevelandAlgo(state1, state2, rootBlock, model);
         System.out.println(result);
         return result;
     }
 
-    private TreeNode clevelandAlgo(Vertex state1, Vertex state2, Block rootBlock, Map<Vertex,Set<Edge>>graph) throws NoDistinguishingFormulaException {
+    private TreeNode clevelandAlgo(Vertex state1, Vertex state2, Block rootBlock, Model model) throws NoDistinguishingFormulaException {
 
         Block lastBlock = getLastCommonBlock(state1, state2, rootBlock);
         if (lastBlock.getSplitter() == null) {
@@ -169,9 +169,9 @@ public class Algorithms  {
         }
 
 
-        Set<Vertex> SL = Sets.intersection(getTargets(leftState,graph, splitAction), splitBlock);
-        Set<Vertex> SR = getTargets(rightState,graph,splitAction);
-        int minFormulaSize = Integer.MAX_VALUE; //TODO long?
+        Set<Vertex> SL = Sets.intersection(model.getTargets(leftState, splitAction), splitBlock);
+        Set<Vertex> SR = model.getTargets(rightState,splitAction);
+        int minFormulaSize = Integer.MAX_VALUE;
         TreeNode nextNode = new TrueNode();
 //        TreeNode result = new DiamondNode(splitAction,nextNode);
 
@@ -179,7 +179,7 @@ public class Algorithms  {
             List<TreeNode> formulas = new ArrayList<>(); //GAMMA
 
             for (Vertex RTarget : SR) {
-                formulas.add(clevelandAlgo(LTarget, RTarget, rootBlock,graph));
+                formulas.add(clevelandAlgo(LTarget, RTarget, rootBlock,model));
             }
 
             for (TreeNode formula : formulas) {
@@ -187,8 +187,8 @@ public class Algorithms  {
                 otherFormulas.remove(formula);
                 System.out.println("All formulas for " + LTarget + formulas);
 
-                if (SR.stream().noneMatch(vertex -> (!formula.evaluate(vertex,this )
-                        && otherFormulas.stream().allMatch(otherFormula -> otherFormula.evaluate(vertex, this))))) {
+                if (SR.stream().noneMatch(vertex -> (!formula.evaluate(vertex,model )
+                        && otherFormulas.stream().allMatch(otherFormula -> otherFormula.evaluate(vertex, model))))) {
                     formulas.remove(formula);
                     System.out.println("Formula removed: " + formula);
                 }

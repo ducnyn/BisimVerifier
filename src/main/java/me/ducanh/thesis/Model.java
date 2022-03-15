@@ -126,7 +126,7 @@ public class Model {
   }
 
   public Set<Block> getBisimulation(){
-      return Algorithms.bisim(this).getValue();
+      return Algorithms.getBisimRootAndPartition(this).getValue();
   }
 
 

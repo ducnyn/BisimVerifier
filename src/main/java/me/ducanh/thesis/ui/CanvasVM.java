@@ -9,6 +9,7 @@ import me.ducanh.thesis.Edge;
 import me.ducanh.thesis.Model;
 import me.ducanh.thesis.Vertex;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -67,7 +68,7 @@ public class CanvasVM {
     public void addColorModeListener(ChangeListener<? super Boolean> listener){
         model.getColorModeListener().addListener(listener);
     }
-    public void setPartition(Set<Block> newPartition) {
+    public void setPartition(Collection<Block> newPartition) {
         this.partition.clear();
         this.partition.addAll(newPartition);
     }
