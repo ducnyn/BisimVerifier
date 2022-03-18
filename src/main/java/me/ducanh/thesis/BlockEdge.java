@@ -1,8 +1,8 @@
 package me.ducanh.thesis;
 
 public class BlockEdge {
-  private String label;
-  private Block targetBlock;
+  private final String label;
+  private final Block targetBlock;
 
 
 
@@ -14,17 +14,11 @@ public class BlockEdge {
     return label;
   }
 
-  public void setLabel(String label) {
-    this.label = label;
-  }
 
   public Block getTargetBlock() {
     return targetBlock;
   }
 
-  public void setTargetBlock(Block targetBlock) {
-    this.targetBlock = targetBlock;
-  }
   @Override
   public String toString() {
     return "-"+label+">"+ targetBlock.toString();

@@ -34,5 +34,14 @@ public class Controller {
     public Boolean removeVertex(Integer id) {
         return model.removeVertex(new Vertex(id));
     }
+    public void requestPrint(String string){
+        model.requestPrint(string);
+    }
 
+    public void addEdge(int source, String label, int target) {
+        model.addEdge(new Vertex(source), label, new Vertex(target));
+    }
+    public void clear(){
+        model.clear();
+    }
 }

@@ -14,16 +14,13 @@ import javafx.scene.shape.*;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
-import me.ducanh.thesis.Edge;
-
-import java.util.Objects;
 
 public class EdgeView extends AnchorPane {
 
 
     public CubicCurve cubicCurve = new CubicCurve();
     public final Text visEdgeLabel = new Text();
-    SmartArrow arrow = new SmartArrow(6);
+    Arrow arrow = new Arrow(6);
 
     private final DoubleProperty dfltDegree = new SimpleDoubleProperty(10);
     private final VertexView source;
@@ -31,7 +28,7 @@ public class EdgeView extends AnchorPane {
     private String label;
 
 
-    public EdgeView(Edge edge) {
+    public EdgeView(String label, VertexView source, VertexView target) {
         this.source = source;
         this.target = target;
         this.label = label;
@@ -122,6 +119,14 @@ public class EdgeView extends AnchorPane {
 
     }
 
+    public VertexView getTarget() {
+        return target;
+    }
+
+    public VertexView getSource() {
+        return source;
+    }
+
     public void changeDegree(double degree) {
         dfltDegree.set(degree);
     }
@@ -197,7 +202,7 @@ public class EdgeView extends AnchorPane {
 
     @Override
     public String toString() {
-        return source + " -" + label + "> " + target;
+        return source.getLabel() + " -" + label + "> " + target.getLabel();
     }
 
 
@@ -228,13 +233,12 @@ public class EdgeView extends AnchorPane {
 
 
 
-class SmartArrow extends Path {
+class Arrow extends Path {
 
-    public SmartArrow(double size) {
+    public Arrow(double size) {
         this.getElements().add(new MoveTo(0., 0.0));
         this.getElements().add(new LineTo(-size, size));
         this.getElements().add(new MoveTo(0., 0.));
         this.getElements().add(new LineTo(-size, -size));
-        this.getElements().add(new LineTo(2*size,0));
     }
 }

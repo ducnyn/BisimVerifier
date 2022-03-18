@@ -14,7 +14,7 @@ public class Model {
   private String username = "User";
 
 //  private final ObservableMap<Integer, Vertex> vertices = FXCollections.observableMap(new HashMap<>());
-  private final ObservableMap<Vertex,ObservableSet<Edge>> adjacencyList = FXCollections.observableMap(new HashMap<>());
+  private final ObservableMap<Vertex,ObservableSet<Edge>> edgesByVertex = FXCollections.observableMap(new HashMap<>());
   private final TreeSet<Integer> deletedIDs = new TreeSet<>();
   private final BooleanProperty colorModeProperty = new SimpleBooleanProperty(false);
   private final BooleanProperty printRequest = new SimpleBooleanProperty();
@@ -24,17 +24,15 @@ public class Model {
 
 
   {//initiator
-    adjacencyList.addListener((MapChangeListener<Vertex, ObservableSet<Edge>>) vertex -> {
+    edgesByVertex.addListener((MapChangeListener<Vertex, ObservableSet<Edge>>) vertex -> {
 
-      if (vertex.wasRemoved()){
-        Vertex removedVertex = vertex.getKey();
-        deletedIDs.add(removedVertex.getLabel());
-        vertex.getValueRemoved().clear();
-        for(ObservableSet<Edge> edgeSet : vertex.getMap().values()){
-          edgeSet.removeIf(edge -> edge.getSource().equals(removedVertex) ||edge.getTarget().equals(removedVertex));
-        }
-      } else {
-
+      if (vertex.wasRemoved()) {
+          Vertex removedVertex = vertex.getKey();
+          deletedIDs.add(removedVertex.getLabel());
+          vertex.getValueRemoved().clear();
+          for (ObservableSet<Edge> edgeSet : vertex.getMap().values()) {
+              edgeSet.removeIf(edge -> edge.getSource().equals(removedVertex) || edge.getTarget().equals(removedVertex));
+          }
       }
     });
 
@@ -43,14 +41,18 @@ public class Model {
   }
 
   public void addEdge(Vertex source, String label, Vertex target) {
-    adjacencyList.get(source).add(new Edge(source, label, target));
+      if(!edgesByVertex.containsKey(target))
+          addVertex(target);
+      if(!edgesByVertex.containsKey(source))
+          addVertex(source);
+    edgesByVertex.get(source).add(new Edge(source, label, target));
   }
 
   public Boolean addVertex(Vertex vertex) {
-    if (adjacencyList.containsKey(vertex))
+    if (edgesByVertex.containsKey(vertex))
       return false;
 
-    adjacencyList.put(vertex,FXCollections.observableSet(new HashSet<>()));
+    edgesByVertex.put(vertex,FXCollections.observableSet(new HashSet<>()));
     return true;
   }
 
@@ -59,73 +61,63 @@ public class Model {
  }
 
   public void clear(){
-    for(Vertex vertex : adjacencyList.keySet()){
-      removeVertex(vertex);
-    }
+      edgesByVertex.keySet().clear();
+
   }
 
 
 
   public Integer getMaxID() {
-    return adjacencyList.keySet().stream()
+    return edgesByVertex.keySet().stream()
             .max(Vertex::compareTo)
             .map(Vertex::getLabel)
             .orElse(0);
   }
 
   public void removeAllEdges() {
-    for(Set<Edge> edgeSet: adjacencyList.values()){
-      for(Edge edge:edgeSet){
-        edgeSet.remove(edge);
-      }
+    for(Set<Edge> edgeSet: edgesByVertex.values()){
+      edgeSet.clear();
     }
   }
 
   public Boolean removeVertex(Vertex vertex) {
-    if (adjacencyList.containsKey(vertex)){
-      adjacencyList.remove(vertex);
+    if (edgesByVertex.containsKey(vertex)){
+      edgesByVertex.remove(vertex);
       return true;
     }
     return false;
   }
 
-  public void addVertexListener(MapChangeListener<Vertex, ObservableSet<Edge>> mapChangeListener) {
-    adjacencyList.addListener(mapChangeListener);
+  public void addGraphListener(MapChangeListener<Vertex, ObservableSet<Edge>> mapChangeListener) {
+    edgesByVertex.addListener(mapChangeListener);
   }
 
-  public void addEdgeListener(SetChangeListener<Edge> edgeSetListener){
-    for(ObservableSet<Edge> edgeSet : adjacencyList.values()){
-      edgeSet.addListener(edgeSetListener);
-    }
-  }
-
-
- public ObservableMap<Vertex,ObservableSet<Edge>> getAdjacencyList(){
-      return adjacencyList;
+ public ObservableMap<Vertex,ObservableSet<Edge>> getEdgesByVertex(){
+      return edgesByVertex;
  }
   public Set<Vertex> getVertices() {
-    return Set.copyOf(adjacencyList.keySet());
+    return Set.copyOf(edgesByVertex.keySet());
   }
 
   public Set<Edge> getEdges() {
     return Set.copyOf(
-            adjacencyList.values().stream()
+            edgesByVertex.values().stream()
             .flatMap(ObservableSet::stream)
             .collect(Collectors.toSet())
     );
   }
   public Set<Edge> getEdges(Vertex vertex){
-    return Set.copyOf(adjacencyList.get(vertex));
+    return Set.copyOf(edgesByVertex.get(vertex));
   }
 
-  public BooleanProperty getColorModeListener(){
+  public BooleanProperty getColorModeProperty(){
     return colorModeProperty;
   }
   public Boolean getColorMode(){
       return colorModeProperty.get();
   }
 
-  public Set<Block> getBisimulation(){
+  public List<Block> getBisimulation(){
       return Algorithms.getBisimRootAndPartition(this).getValue();
   }
 
@@ -144,21 +136,16 @@ public class Model {
     return printString;
   }
 
-  public void setUsername(String name){
-    this.username = name;
-  }
-
-  public String getUserName() {
-    return username;
-  }
-
     public Set<Vertex> getTargets(Vertex vertex, String action) {
-      return adjacencyList.get(vertex).stream()
+      return edgesByVertex.get(vertex).stream()
               .filter(edge->edge.getLabel().equals(action))
               .map(Edge::getTarget)
               .collect(Collectors.toSet());
     }
 
+    public Vertex getVertex(int vertexInt){
+      return new Vertex(vertexInt);
+    }
 
 
 }

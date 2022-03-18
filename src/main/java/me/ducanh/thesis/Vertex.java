@@ -48,6 +48,10 @@ public class Vertex implements Comparable<Vertex>{
     public int hashCode() {
         return label.hashCode();
     }
+    @Override
+    public String toString(){
+        return this.label.toString();
+    }
 
     public static int compare(Vertex vertex1, Vertex vertex2) {
         return Integer.compare(vertex1.label,vertex2.label);

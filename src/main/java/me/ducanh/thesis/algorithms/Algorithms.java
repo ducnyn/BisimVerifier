@@ -110,7 +110,7 @@ public class Algorithms  {
     }
 
 
-    private Block getLastCommonBlock(Vertex state1, Vertex state2, Block root) {
+    private static Block getLastCommonBlock(Vertex state1, Vertex state2, Block root) {
         Block Block = root;
 
         while (true) {
@@ -128,7 +128,7 @@ public class Algorithms  {
 
     }
 
-    public TreeNode getDeltaFormula(Vertex state1, Vertex state2, Model model) throws NoDistinguishingFormulaException {
+    public static TreeNode getDeltaFormula(Vertex state1, Vertex state2, Model model) throws NoDistinguishingFormulaException {
 
         Block rootBlock = getBisimRootAndPartition(model).getKey();
 
@@ -137,7 +137,7 @@ public class Algorithms  {
         return result;
     }
 
-    private TreeNode clevelandAlgo(Vertex state1, Vertex state2, Block rootBlock, Model model) throws NoDistinguishingFormulaException {
+    private static TreeNode clevelandAlgo(Vertex state1, Vertex state2, Block rootBlock, Model model) throws NoDistinguishingFormulaException {
 
         Block lastBlock = getLastCommonBlock(state1, state2, rootBlock);
         if (lastBlock.getSplitter() == null) {

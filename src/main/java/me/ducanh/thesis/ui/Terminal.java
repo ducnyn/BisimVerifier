@@ -13,6 +13,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
+import me.ducanh.thesis.Controller;
 import me.ducanh.thesis.TerminalMessage;
 import me.ducanh.thesis.command.parser.CommandParser;
 import me.ducanh.thesis.command.Command;
@@ -44,7 +45,7 @@ public class Terminal {
     private final StringProperty printRequest = new SimpleStringProperty();
 
 
-    public void inject(Model model) {
+    public void inject(Model model, Controller controller) {
         splitPane.setDividerPosition(0,0.7);
 
         Font font = Font.loadFont(getClass().getResourceAsStream("InputMono.ttf"), 14);
@@ -67,7 +68,7 @@ public class Terminal {
         inputArea.setOnKeyPressed(keyPress->{
             if(keyPress.getCode().equals(KeyCode.ENTER) && keyPress.isShiftDown()){
                 Platform.runLater(() -> {
-                    print("<"+model.getUserName()+">\n>> "+ multiLineIndent(inputArea.getText())+"\n"+"</"+model.getUserName()+">\n");
+                    print("\n>> "+ multiLineIndent(inputArea.getText())+"\n");
                     try {
                         ArrayList<Command> parsedMethods = CommandParser.parse(inputArea.getText());
 
@@ -79,14 +80,14 @@ public class Terminal {
                                             if (vArgs.length > 1) {
                                                 double xPos = Double.parseDouble(vArgs[1]);
                                                 double yPos = Double.parseDouble(vArgs[2]);
-                                                model.addVertex(Integer.parseInt(vArgs[0]),xPos,yPos);//tested, should be okay..
+                                                controller.addVertex(Integer.parseInt(vArgs[0]),xPos,yPos);//tested, should be okay..
                                             } else {
-                                                model.addVertex(Integer.parseInt(vArgs[0]));
+                                                controller.addVertex(Integer.parseInt(vArgs[0]));
                                             }
                                         }
                                         break;
 
-                                    case "edgeView":
+                                    case "edge":
 //                                        if (command.getArgumentList().size()==3){
 //                                            model.addEdge(
 //                                                    Integer.parseInt(command.getArgumentList().get(0)),
@@ -97,24 +98,24 @@ public class Terminal {
                                         if(command.getArgumentList().stream().allMatch(arg->arg.matches("[0-9]+\\.[a-zA-Z_0-9]+\\.[0-9]+"))){
                                             for(String arg:command.getArgumentList()){
                                                 String[] edgeArgs = arg.split("\\.");
-                                                model.addEdge(Integer.parseInt(edgeArgs[0]),edgeArgs[1],Integer.parseInt(edgeArgs[2]));
+                                                controller.addEdge(Integer.parseInt(edgeArgs[0]),edgeArgs[1],Integer.parseInt(edgeArgs[2]));
                                             }
                                         }
                                     case "clear":
                                         if(command.getArgumentList().size()==0){
-                                            model.clear();
-                                            model.requestPrint(TerminalMessage.CLEAR.getMessage());
+                                            controller.clear();
+                                            controller.requestPrint(TerminalMessage.CLEAR.getMessage());
 
                                         }
                                         break;
                                     case "graph":
-                                        model.requestPrint(model.getVertices().toString());
-                                        model.requestPrint(model.getEdges().toString());
+                                        controller.requestPrint(model.getVertices().toString());
+                                        controller.requestPrint(model.getEdges().toString());
                                 }
 
                         }
                     } catch (SyntaxErrorException | NoMatchingTokenException e) {
-                        model.requestPrint(e.getMessage());
+                        controller.requestPrint(e.getMessage());
                         e.printStackTrace();
                     }
                     inputArea.clear();

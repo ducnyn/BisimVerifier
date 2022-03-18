@@ -10,6 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import me.ducanh.thesis.Controller;
 import me.ducanh.thesis.Vertex;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,14 +24,14 @@ public class VertexView extends StackPane {
     private final DoubleProperty centerXProperty = new SimpleDoubleProperty(layoutXProperty().get() + getRadius());
     private final DoubleProperty centerYProperty = new SimpleDoubleProperty(layoutYProperty().get() + getRadius());
     private final Vertex vertex;
-    private final Integer id;
 //  public void init(Model model, int id) {
 //    init(model, id, 1, 1);
 //  }
 
-    public VertexView(CanvasVM canvasVM, Vertex vertex){
+    public VertexView(Controller controller, Vertex vertex){
         this.vertex = vertex;
-        this.id = vertex.getLabel();
+        setText(String.valueOf(vertex.getLabel()));
+        System.out.println(vertex.getLabel());
         addEventHandler(MouseEvent.ANY, Event::consume);
         setPickOnBounds(false);
         getChildren().add(circle);
@@ -41,7 +42,6 @@ public class VertexView extends StackPane {
         circle.setStyle("-fx-opacity: 0.5");
         text.setStyle("-fx-font-size: 20;");
 
-        text.setText(String.valueOf(vertex));
         layoutXProperty().set(vertex.getLayoutXProperty().get());
         layoutYProperty().set(vertex.getLayoutYProperty().get());
         layoutXProperty().bindBidirectional(vertex.getLayoutXProperty());
@@ -62,9 +62,10 @@ public class VertexView extends StackPane {
         AtomicReference<Double> onPressedY = new AtomicReference<>();
 
         setOnMousePressed(press -> {
-                if (press.isAltDown()) {
-                    canvasVM.removeVertexRequest(getLabel());
-                }
+                    if (press.isAltDown()) {
+                        controller.removeVertex(getLabel());
+                    }
+
             toFront();
             onPressedX.set(press.getScreenX());
             onPressedY.set(press.getScreenY());
@@ -159,5 +160,8 @@ public class VertexView extends StackPane {
         return vertex.getLabel();
     }
 
-\
+
+
+
+
 }

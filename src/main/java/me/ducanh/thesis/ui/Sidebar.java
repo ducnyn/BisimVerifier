@@ -2,6 +2,8 @@ package me.ducanh.thesis.ui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextInputDialog;
+import me.ducanh.thesis.Controller;
+import me.ducanh.thesis.Vertex;
 import me.ducanh.thesis.formula.parser.FormulaParser;
 import me.ducanh.thesis.formula.parser.NoMatchingTokenException;
 import me.ducanh.thesis.formula.parser.SyntaxErrorException;
@@ -20,9 +22,11 @@ import static java.lang.Integer.parseInt;
 public class Sidebar {
 
     private Model model;
+    private Controller controller;
 
-    public void inject(Model model) {
+    public void inject(Model model, Controller controller) {
         this.model = model;
+        this.controller = controller;
     }
 
     @FXML
@@ -41,7 +45,7 @@ public class Sidebar {
             int finalNumber = parseInt(number);
             Thread taskThread = new Thread(() -> {
                 for (int i = 0; i < finalNumber; i++) {
-                    model.addVertex();
+                    controller.addVertex();
                 }
             });
             taskThread.setDaemon(true);
@@ -114,7 +118,7 @@ public class Sidebar {
 
 
         if (targetOK.isPresent()) {
-            model.addEdge(parseInt(source), label, parseInt(target));
+            controller.addEdge(parseInt(source), label, parseInt(target));
         }
 
     }
@@ -122,8 +126,8 @@ public class Sidebar {
     @FXML
     private void randomEdges() {
         model.removeAllEdges();
-        ArrayList<Integer> vertices = new ArrayList<>(model.getVertices());
-        for (Integer vertex : vertices) {
+        ArrayList<Vertex> vertices = new ArrayList<>(model.getVertices());
+        for (Vertex vertex : vertices) {
             String alphabet = "abc";
 
             Random random = new Random();
@@ -131,8 +135,8 @@ public class Sidebar {
 
             for (int j = 0; j < edgesOutDegree; j++) {
                 String randomLabel = String.valueOf(alphabet.charAt(random.nextInt(alphabet.length())));
-                Integer randomVertex = vertices.get(random.nextInt(vertices.size() - 1));
-                model.addEdge(vertex.getValue(), randomLabel, randomVertex.getValue());
+                Vertex randomVertex = vertices.get(random.nextInt(vertices.size() - 1));
+                controller.addEdge(vertex.getLabel(), randomLabel, randomVertex.getLabel());
             }
         }
     }
@@ -140,7 +144,7 @@ public class Sidebar {
     @FXML
     private void bisimulation() throws InterruptedException {
 
-        model.getColorModeListener().set(!model.getColorModeListener().get());
+        model.getColorModeProperty().set(!model.getColorModeProperty().get());
 //        Thread taskThread = new Thread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -181,12 +185,12 @@ public class Sidebar {
             } while (secondOK.isPresent() && (!StringUtils.notInteger(second) && model.getVertex(parseInt(second)) == null || StringUtils.notInteger(second) || second.isBlank() || second.isEmpty()));
 
             if (secondOK.isPresent()) {
-                Integer firstVertex = model.getVertex(parseInt(first));
-                Integer secondVertex = model.getVertex(parseInt(second));
+                Vertex firstVertex = model.getVertex(parseInt(first));
+                Vertex secondVertex = model.getVertex(parseInt(second));
                 Thread taskThread = new Thread(() -> {
                     try {
                         model.requestPrint("\n Distinguishing Formula: " +
-                                Algorithms.getDeltaFormula(firstVertex, secondVertex, model.getVertices()) +
+                                Algorithms.getDeltaFormula(firstVertex, secondVertex, model) +
                                 " is satisfied by " + firstVertex + " but not by " + secondVertex
                         );
                     } catch (NoDistinguishingFormulaException e) {
@@ -232,7 +236,7 @@ public class Sidebar {
 
             if (secondOK.isPresent()) {
                 final TreeNode finalTree = formulaTree;
-                Integer vertex = model.getVertex(parseInt(first));
+                Vertex vertex = model.getVertex(parseInt(first));
                 String formula = second;
                 Thread taskThread = new Thread(() -> {
                     if (finalTree.evaluate(vertex, model)) {
@@ -250,4 +254,5 @@ public class Sidebar {
             }
         }
     }
+
 }

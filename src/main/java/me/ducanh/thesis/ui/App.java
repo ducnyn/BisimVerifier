@@ -73,8 +73,8 @@ public class App extends Application {
         Canvas canvas = canvasLoader.getController();
 
         final Model model = new Model();
-        final CanvasVM canvasVM = new CanvasVM(model);
         final Controller controller = new Controller(model);
+        final CanvasVM canvasVM = new CanvasVM(model, controller);
 
         scene = new Scene(rootVBox, 1600, 900);
         scene.getStylesheets().add(cssPath);
@@ -82,9 +82,9 @@ public class App extends Application {
         stage.setTitle("Graph Verifier");
         stage.setMinWidth(440);
         stage.show();
-        terminal.inject(terminalVM,controller);
+        terminal.inject(model,controller);
         canvas.inject(canvasVM,controller);
-        sidebar.inject(sidebarVM,controller);
+        sidebar.inject(model,controller);
 
         // These are to maintain split ratio while resizing windows
 
