@@ -101,8 +101,8 @@ public class EdgeView extends AnchorPane {
             cubicCurve.setStartX(source.getCenterX() + source.getRadius() * Math.cos(sourceTargetAngle + rotationRadians));
             cubicCurve.setStartY(source.getCenterY() + source.getRadius() * Math.sin(sourceTargetAngle + rotationRadians));
             //imagine an arrow pointing from target center to its radius. Rotate towards source and add preferred rotation.
-            cubicCurve.setEndX(target.getCenterX() + target.getRadius() * Math.cos(targetSourceAngle - rotationRadians));
-            cubicCurve.setEndY(target.getCenterY() + target.getRadius() * Math.sin(targetSourceAngle - rotationRadians));
+            cubicCurve.setEndX(target.getCenterX() + (target.getRadius() + cubicCurve.getStrokeWidth()) * Math.cos(targetSourceAngle - rotationRadians));
+            cubicCurve.setEndY(target.getCenterY() + (target.getRadius() + cubicCurve.getStrokeWidth()) * Math.sin(targetSourceAngle - rotationRadians));
 
 //            TODO increase amplitude depending on rotation
             Point2D control1 = new Point2D(getMidX() + ((cubicCurve.getStartX() - getMidX()) / 4), getMidY() + ((cubicCurve.getStartY() - getMidY()) / 4));
@@ -157,13 +157,12 @@ public class EdgeView extends AnchorPane {
 
     public void bindArrow() {
         arrow.setStroke(Color.DARKGREY);
-
+        arrow.setFill(Color.DARKGREY);
 
         arrow.translateXProperty().bind(cubicCurve.endXProperty());
         arrow.translateYProperty().bind(cubicCurve.endYProperty());
         Rotate rotation = new Rotate();
         Translate translate = new Translate();
-        translate.setX(arrow.getStrokeWidth());
         DoubleBinding y = cubicCurve.endYProperty().subtract(cubicCurve.controlY2Property());
         DoubleBinding x = cubicCurve.endXProperty().subtract(cubicCurve.controlX2Property());
         DoubleBinding atan2Binding = Bindings.createDoubleBinding(() -> Math.atan2(y.get(), x.get()), y, x);
@@ -233,12 +232,13 @@ public class EdgeView extends AnchorPane {
 
 
 
-class Arrow extends Path {
+class Arrow extends Polygon {
 
     public Arrow(double size) {
-        this.getElements().add(new MoveTo(0., 0.0));
-        this.getElements().add(new LineTo(-size, size));
-        this.getElements().add(new MoveTo(0., 0.));
-        this.getElements().add(new LineTo(-size, -size));
+        super(0.0,0.0,-size,size,-size,-size,-0.0,0.0);
+//        this.getElements().add(new MoveTo(0.0, 0.0));
+//        this.getElements().add(new LineTo(-size, size));
+//        this.getElements().add(new LineTo(-size, -size));
+//        this.getElements().add(new LineTo(0.0,0.0));
     }
 }
