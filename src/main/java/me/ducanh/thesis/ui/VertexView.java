@@ -30,8 +30,8 @@ public class VertexView extends StackPane {
 
     public VertexView(Controller controller, Vertex vertex){
         this.vertex = vertex;
-        setText(String.valueOf(vertex.getLabel()));
-        System.out.println(vertex.getLabel());
+        setText(String.valueOf(vertex.label));
+        System.out.println(vertex.label);
         addEventHandler(MouseEvent.ANY, Event::consume);
         setPickOnBounds(false);
         getChildren().add(circle);
@@ -42,10 +42,10 @@ public class VertexView extends StackPane {
         circle.setStyle("-fx-opacity: 0.5");
         text.setStyle("-fx-font-size: 20;");
 
-        layoutXProperty().set(vertex.getLayoutXProperty().get());
-        layoutYProperty().set(vertex.getLayoutYProperty().get());
-        layoutXProperty().bindBidirectional(vertex.getLayoutXProperty());
-        layoutYProperty().bindBidirectional(vertex.getLayoutYProperty());
+        layoutXProperty().set(vertex.layoutXProperty.get());
+        layoutYProperty().set(vertex.layoutYProperty.get());
+        layoutXProperty().bindBidirectional(vertex.layoutXProperty);
+        layoutYProperty().bindBidirectional(vertex.layoutYProperty);
 
         centerXProperty.bind(Bindings.createDoubleBinding(
                 () -> layoutXProperty().get() + getRadius(),
@@ -157,7 +157,7 @@ public class VertexView extends StackPane {
         return vertex;
     }
     public Integer getLabel(){
-        return vertex.getLabel();
+        return vertex.label;
     }
 
 

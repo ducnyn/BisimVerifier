@@ -25,7 +25,7 @@ public class EdgeView extends AnchorPane {
     private final DoubleProperty dfltDegree = new SimpleDoubleProperty(10);
     private final VertexView source;
     private final VertexView target;
-    private String label;
+    private final String label;
 
 
     public EdgeView(String label, VertexView source, VertexView target) {
@@ -205,11 +205,8 @@ public class EdgeView extends AnchorPane {
     }
 
 
-
-
-    //TODO from javafxSmartgraph
     private static Point2D rotateAroundPivot(final Point2D point, final Point2D pivot, double angle_degrees) {
-        double angle = Math.toRadians(angle_degrees); //angle_degrees * (Math.PI/180); //to radians
+        double angle = Math.toRadians(angle_degrees);
 
         double sin = Math.sin(angle);
         double cos = Math.cos(angle);
@@ -236,9 +233,5 @@ class Arrow extends Polygon {
 
     public Arrow(double size) {
         super(0.0,0.0,-size,size,-size,-size,-0.0,0.0);
-//        this.getElements().add(new MoveTo(0.0, 0.0));
-//        this.getElements().add(new LineTo(-size, size));
-//        this.getElements().add(new LineTo(-size, -size));
-//        this.getElements().add(new LineTo(0.0,0.0));
     }
 }

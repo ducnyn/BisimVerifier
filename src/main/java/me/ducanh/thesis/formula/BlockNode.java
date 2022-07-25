@@ -1,10 +1,8 @@
 package me.ducanh.thesis.formula;
 
-import me.ducanh.thesis.Model;
+import me.ducanh.thesis.Graph;
 import me.ducanh.thesis.Vertex;
 import me.ducanh.thesis.Edge;
-import java.util.Map;
-import java.util.Set;
 
 public class BlockNode implements TreeNode {
 
@@ -16,8 +14,8 @@ public class BlockNode implements TreeNode {
     this.child = child;
   }
   @Override
-  public Boolean evaluate(Vertex vertex, Model model) { //yes allmatch does return true for empty streams
-    return model.getTargets(vertex,action).stream().allMatch(targetVertex -> child.evaluate(targetVertex, model));
+  public Boolean evaluate(Vertex vertex, Graph<Vertex, Edge> graph) { //yes allmatch does return true for empty streams
+    return graph.getTargets(vertex,action).stream().allMatch(targetVertex -> child.evaluate(targetVertex, graph));
   }
 
 

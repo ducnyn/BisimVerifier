@@ -4,9 +4,9 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
 public class Vertex implements Comparable<Vertex>{
-    private final Integer label;
-    private final DoubleProperty layoutXProperty;
-    private final DoubleProperty layoutYProperty;
+    public final Integer label;
+    public final DoubleProperty layoutXProperty;
+    public final DoubleProperty layoutYProperty;
 
     public Vertex(Integer label) {
         this(label, 0, 0);
@@ -15,18 +15,6 @@ public class Vertex implements Comparable<Vertex>{
         this.label = label;
         this.layoutXProperty = new SimpleDoubleProperty(x);
         this.layoutYProperty = new SimpleDoubleProperty(y);
-    }
-
-    public Integer getLabel() {
-        return label;
-    }
-
-    public DoubleProperty getLayoutXProperty() {
-        return layoutXProperty;
-    }
-
-    public DoubleProperty getLayoutYProperty() {
-        return layoutYProperty;
     }
 
     @Override

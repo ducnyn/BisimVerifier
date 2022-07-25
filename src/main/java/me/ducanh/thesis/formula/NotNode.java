@@ -1,10 +1,8 @@
 package me.ducanh.thesis.formula;
 
-import me.ducanh.thesis.Model;
+import me.ducanh.thesis.Graph;
 import me.ducanh.thesis.Vertex;
 import me.ducanh.thesis.Edge;
-import java.util.Map;
-import java.util.Set;
 
 public class NotNode implements TreeNode
 {
@@ -14,8 +12,8 @@ public class NotNode implements TreeNode
   }
 
   @Override
-  public Boolean evaluate(Vertex vertex, Model model) {
-    return !child.evaluate(vertex, model);
+  public Boolean evaluate(Vertex vertex, Graph<Vertex, Edge> graph) {
+    return !child.evaluate(vertex, graph);
   }
 
   @Override

@@ -5,8 +5,6 @@ import javafx.collections.ObservableSet;
 import me.ducanh.thesis.algorithms.Algorithms;
 import me.ducanh.thesis.algorithms.NoDistinguishingFormulaException;
 
-import java.util.HashSet;
-import java.util.Scanner;
 import java.util.TreeSet;
 
 public class TestApp {
@@ -16,6 +14,6 @@ public class TestApp {
     public static void main(String[] args) throws NoDistinguishingFormulaException {
 Model model = new Model();
 model.addEdge(new Vertex(2), "a", new Vertex(2));
-Algorithms.getDeltaFormula(new Vertex(1), new Vertex(2),model);
+Algorithms.getDistinguishingFormula(new Vertex(1), new Vertex(2),model);
 }}
 

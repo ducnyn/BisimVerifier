@@ -11,7 +11,7 @@ import me.ducanh.thesis.formula.TreeNode;
 import me.ducanh.thesis.algorithms.Algorithms;
 import me.ducanh.thesis.Model;
 import me.ducanh.thesis.algorithms.NoDistinguishingFormulaException;
-import me.ducanh.thesis.util.StringUtils;
+import me.ducanh.thesis.ui.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -69,9 +69,9 @@ public class Sidebar {
 //        for (int i = 1; i < 7; i++) {
 //            boolean a =
 //                    model.getEdges(i).stream()
-//                            .anyMatch(e -> e.getLabel().equals("a")
+//                            .anyMatch(e -> e.label.equals("a")
 //                                    && e.getTarget().getEdges().stream()
-//                                    .noneMatch(e2 -> e2.getLabel().equals("b")));
+//                                    .noneMatch(e2 -> e2.label.equals("b")));
 //
 //
 //            System.out.println("vertex " + i + " satisfies <a><~b>? -> " + a);
@@ -136,7 +136,7 @@ public class Sidebar {
             for (int j = 0; j < edgesOutDegree; j++) {
                 String randomLabel = String.valueOf(alphabet.charAt(random.nextInt(alphabet.length())));
                 Vertex randomVertex = vertices.get(random.nextInt(vertices.size() - 1));
-                controller.addEdge(vertex.getLabel(), randomLabel, randomVertex.getLabel());
+                controller.addEdge(vertex.label, randomLabel, randomVertex.label);
             }
         }
     }
@@ -144,7 +144,7 @@ public class Sidebar {
     @FXML
     private void bisimulation() throws InterruptedException {
 
-        model.getColorModeProperty().set(!model.getColorModeProperty().get());
+        model.coloringToggle().set(!model.coloringToggle().get());
 //        Thread taskThread = new Thread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -190,7 +190,7 @@ public class Sidebar {
                 Thread taskThread = new Thread(() -> {
                     try {
                         model.requestPrint("\n Distinguishing Formula: " +
-                                Algorithms.getDeltaFormula(firstVertex, secondVertex, model) +
+                                Algorithms.getDistinguishingFormula(firstVertex, secondVertex, model) +
                                 " is satisfied by " + firstVertex + " but not by " + secondVertex
                         );
                     } catch (NoDistinguishingFormulaException e) {

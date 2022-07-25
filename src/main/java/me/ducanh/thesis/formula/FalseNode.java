@@ -1,14 +1,12 @@
 package me.ducanh.thesis.formula;
 
-import me.ducanh.thesis.Model;
+import me.ducanh.thesis.Graph;
 import me.ducanh.thesis.Vertex;
 import me.ducanh.thesis.Edge;
-import java.util.Map;
-import java.util.Set;
 
 public class FalseNode implements TreeNode {
   @Override
-  public Boolean evaluate(Vertex vertex, Model model) {
+  public Boolean evaluate(Vertex vertex, Graph<Vertex, Edge> graph) {
     return false;
   }
 

@@ -5,18 +5,18 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.*;
 import me.ducanh.thesis.algorithms.Algorithms;
+import me.ducanh.thesis.algorithms.Block;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class Model {
+public class Model implements Graph<Vertex,Edge>{
   private String username = "User";
 
-//  private final ObservableMap<Integer, Vertex> vertices = FXCollections.observableMap(new HashMap<>());
-  private final ObservableMap<Vertex,ObservableSet<Edge>> edgesByVertex = FXCollections.observableMap(new HashMap<>());
+  private final ObservableMap<Vertex, ObservableSet<Edge>> edgesByVertex = FXCollections.observableMap(new HashMap<>());
   private final TreeSet<Integer> deletedIDs = new TreeSet<>();
-  private final BooleanProperty colorModeProperty = new SimpleBooleanProperty(false);
+  private final BooleanProperty coloringIsEnabled = new SimpleBooleanProperty(false);
   private final BooleanProperty printRequest = new SimpleBooleanProperty();
   private  String printString = "";
 
@@ -24,37 +24,33 @@ public class Model {
 
 
   {//initiator
-    edgesByVertex.addListener((MapChangeListener<Vertex, ObservableSet<Edge>>) vertex -> {
+    edgesByVertex.addListener((MapChangeListener<Vertex,ObservableSet<Edge>>) entry -> {
 
-      if (vertex.wasRemoved()) {
-          Vertex removedVertex = vertex.getKey();
-          deletedIDs.add(removedVertex.getLabel());
-          vertex.getValueRemoved().clear();
-          for (ObservableSet<Edge> edgeSet : vertex.getMap().values()) {
-              edgeSet.removeIf(edge -> edge.getSource().equals(removedVertex) || edge.getTarget().equals(removedVertex));
+      if (entry.wasRemoved()) {
+          deletedIDs.add(entry.getKey().label);
+          entry.getValueRemoved().clear();
+          for (ObservableSet<Edge> edgeSet : entry.getMap().values()) {
+              edgeSet.removeIf(edge -> edge.source.equals(entry.getKey()) || edge.target.equals(entry.getKey()));
           }
       }
     });
-
-
-
   }
 
-  public void addEdge(Vertex source, String label, Vertex target) {
-      if(!edgesByVertex.containsKey(target))
-          addVertex(target);
-      if(!edgesByVertex.containsKey(source))
-          addVertex(source);
+public void addEdge(Vertex source, String label, Vertex target) {
+    if(!edgesByVertex.containsKey(target))
+        addVertex(target);
+    if(!edgesByVertex.containsKey(source))
+        addVertex(source);
     edgesByVertex.get(source).add(new Edge(source, label, target));
-  }
+}
 
-  public Boolean addVertex(Vertex vertex) {
+public Boolean addVertex(Vertex vertex) {
     if (edgesByVertex.containsKey(vertex))
-      return false;
+        return false;
 
     edgesByVertex.put(vertex,FXCollections.observableSet(new HashSet<>()));
     return true;
-  }
+}
 
  public Integer smallestFreeLabel(){
     return Objects.requireNonNullElse(deletedIDs.pollFirst(), getMaxID() + 1);
@@ -62,16 +58,21 @@ public class Model {
 
   public void clear(){
       edgesByVertex.keySet().clear();
-
   }
 
 
 
   public Integer getMaxID() {
-    return edgesByVertex.keySet().stream()
-            .max(Vertex::compareTo)
-            .map(Vertex::getLabel)
-            .orElse(0);
+      try{
+          return Collections.max(edgesByVertex.keySet()).label;
+      } catch (NoSuchElementException e) {
+          return 0;
+      }
+
+//    return graph.getMap().keySet().stream()
+//            .max(Vertex::compareTo)
+//            .map(Vertex::getLabel)
+//            .orElse(0);
   }
 
   public void removeAllEdges() {
@@ -110,15 +111,15 @@ public class Model {
     return Set.copyOf(edgesByVertex.get(vertex));
   }
 
-  public BooleanProperty getColorModeProperty(){
-    return colorModeProperty;
+  public BooleanProperty coloringToggle(){
+    return coloringIsEnabled;
   }
-  public Boolean getColorMode(){
-      return colorModeProperty.get();
+  public Boolean coloringIsEnabled(){
+      return coloringIsEnabled.get();
   }
 
   public List<Block> getBisimulation(){
-      return Algorithms.getBisimRootAndPartition(this).getValue();
+      return Algorithms.partitionByBisimilarity(this).getValue();
   }
 
 
@@ -138,8 +139,8 @@ public class Model {
 
     public Set<Vertex> getTargets(Vertex vertex, String action) {
       return edgesByVertex.get(vertex).stream()
-              .filter(edge->edge.getLabel().equals(action))
-              .map(Edge::getTarget)
+              .filter(edge->edge.label.equals(action))
+              .map(edge->edge.target)
               .collect(Collectors.toSet());
     }
 

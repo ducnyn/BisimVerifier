@@ -6,9 +6,9 @@ import java.util.Objects;
 
 public class Edge implements Comparable<Edge> {
 
-    private final Vertex source;
-    private final Vertex target;
-    private final String label;
+    public final Vertex source;
+    public final Vertex target;
+    public final String label;
 
 
     public Edge(Vertex source, String label, Vertex target) {
@@ -16,18 +16,7 @@ public class Edge implements Comparable<Edge> {
         this.target = target;
         this.label = label;
     }
-    public Vertex getTarget() {
-        return target;
-    }
 
-    public Vertex getSource() {
-        return source;
-    }
-
-
-    public String getLabel() {
-        return label;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -50,14 +39,14 @@ public class Edge implements Comparable<Edge> {
     @Override
     public int compareTo(Edge o) { //sorting priority source > label > target
 
-        if (!this.getSource().equals(o.getSource())) {
-            return Vertex.compare(this.getSource(), o.getSource()); // better to do this in Verteex Class
+        if (!this.source.equals(o.source)) {
+            return Vertex.compare(this.source, o.source); // better to do this in Verteex Class
         }
-        if (!this.getLabel().equals(o.getLabel())) {
-            return this.getLabel().compareTo(o.getLabel());
+        if (!this.label.equals(o.label)) {
+            return this.label.compareTo(o.label);
         }
-        if (!this.getTarget().equals(o.getTarget())) {
-            return java.lang.Integer.compare(this.getTarget().hashCode(), o.getTarget().hashCode());
+        if (!this.target.equals(o.target)) {
+            return java.lang.Integer.compare(this.target.hashCode(), o.target.hashCode());
         }
         return 0;
     }

@@ -4,9 +4,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.*;
 import javafx.scene.paint.Paint;
 import me.ducanh.thesis.*;
-import me.ducanh.thesis.util.Colors;
+import me.ducanh.thesis.algorithms.Block;
+import me.ducanh.thesis.ui.util.Colors;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -23,44 +23,42 @@ public class CanvasVM {
         this.model = model;
         this.controller = controller;
 
-        model.getEdgesByVertex().addListener((MapChangeListener<Vertex,ObservableSet<Edge>>)edgeList->{
-            if(edgeList.wasAdded()) {
-                addVertexView(edgeList.getKey());
-                edgeList.getValueAdded().addListener((SetChangeListener<Edge>)edge->{
+        model.getEdgesByVertex().addListener((MapChangeListener<Vertex,ObservableSet<Edge>>)mapChange->{
+            Vertex vertex = mapChange.getKey();
+            if(mapChange.wasAdded()) {
+                ObservableSet<Edge> edgeList = mapChange.getValueAdded();
+                addVertexView(vertex);
+                edgeList.addListener((SetChangeListener<Edge>)edge->{
                     if(edge.wasAdded()) addEdgeView(edge.getElementAdded());
                     else removeEdgeView(edge.getElementRemoved());
-                    updateColorIfColorMode();
+                    updateColors();
                 });
             }
-            else removeVertexView(edgeList.getKey());
-            updateColorIfColorMode();
+            else removeVertexView(vertex);
+
+            updateColors();
 
         });
 
         partition.addListener((SetChangeListener<Block>) block->{
 
             if (block.wasAdded()) {
-                if (block.getElementAdded().size() > 1) {
+                if (block.getElementAdded().vertices.size() > 1) {
                     Paint color = Colors.array[colorID++ % 120];
-                    System.out.println("block added (colorListener" + block.getElementAdded());
-
-                    for (Vertex vertex : block.getElementAdded()) {
+                    for (Vertex vertex : block.getElementAdded().vertices) {
                         vertexViews.get(vertex).setFill(color);
                     }
-                } else if (block.getElementAdded().size() == 1) {
-                    vertexViews.get(block.getElementAdded().iterator().next()).resetFill();
+                } else if (block.getElementAdded().vertices.size() == 1) {
+                    vertexViews.get(block.getElementAdded().vertices.iterator().next()).resetFill();
                 }
             } else {
-                if (block.getElementRemoved().size() > 1) {
-                    System.out.println("block removed (colorListener" + block.getElementRemoved());
-
+                if (block.getElementRemoved().vertices.size() > 1) {
                     colorID--;
                 }
             } //TODO doesn't remove color when clearing the partition list
         });
         addColorModeListener((obs,falseV,trueV)->{
-            updateColorIfColorMode();
-
+            updateColors();
         });
     }
 
@@ -74,18 +72,15 @@ public class CanvasVM {
         vertexViews.remove(vertex);
     }
     private void addEdgeView(Edge edge){
-        edgeViews.put(edge,new EdgeView(edge.getLabel(),vertexViews.get(edge.getSource()),vertexViews.get(edge.getTarget())));
+        edgeViews.put(edge,new EdgeView(edge.label,vertexViews.get(edge.source),vertexViews.get(edge.target)));
     }
     private void removeEdgeView(Edge edge) {
         edgeViews.remove(edge);
     }
-    public void updateColorIfColorMode(){
-        if(model.getColorMode()){
+    public void updateColors(){
+        if(model.coloringIsEnabled()){
             this.partition.clear();
             this.partition.addAll(model.getBisimulation());
-            model.requestPrint("\n Equivalence classes (Bisimulation): \n" + partition);
-            //TODO not sure if this belongs here, maybe canvasVM should also be injected to Editor or EditorVM should have the same listeners
-
         }
     }
 
@@ -97,6 +92,6 @@ public class CanvasVM {
     }
 
     public void addColorModeListener(ChangeListener<? super Boolean> listener){
-        model.getColorModeProperty().addListener(listener);
+        model.coloringToggle().addListener(listener);
     }
 }

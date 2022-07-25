@@ -1,4 +1,4 @@
-package me.ducanh.thesis.util;
+package me.ducanh.thesis.ui.util;
 
 
 import javafx.scene.paint.Color;
