@@ -12,22 +12,19 @@ import java.util.stream.Collectors;
 
 
 public class Model implements Graph<Vertex,Edge>{
-  private String username = "User";
 
-  private final ObservableMap<Vertex, ObservableSet<Edge>> edgesByVertex = FXCollections.observableMap(new HashMap<>());
+  private final ObservableMap<Vertex, ObservableSet<Edge>> adjacencyMap = FXCollections.observableMap(new HashMap<>());
   private final TreeSet<Integer> deletedIDs = new TreeSet<>();
   private final BooleanProperty coloringIsEnabled = new SimpleBooleanProperty(false);
   private final BooleanProperty printRequest = new SimpleBooleanProperty();
   private  String printString = "";
 
-//  private boolean addedByVis = false;
-
 
   {//initiator
-    edgesByVertex.addListener((MapChangeListener<Vertex,ObservableSet<Edge>>) entry -> {
+    adjacencyMap.addListener((MapChangeListener<Vertex,ObservableSet<Edge>>) entry -> {
 
-      if (entry.wasRemoved()) {
-          deletedIDs.add(entry.getKey().label);
+      if (entry.wasRemoved()) { //vertex removed
+          deletedIDs.add(entry.getKey().id);
           entry.getValueRemoved().clear();
           for (ObservableSet<Edge> edgeSet : entry.getMap().values()) {
               edgeSet.removeIf(edge -> edge.source.equals(entry.getKey()) || edge.target.equals(entry.getKey()));
@@ -37,19 +34,15 @@ public class Model implements Graph<Vertex,Edge>{
   }
 
 public void addEdge(Vertex source, String label, Vertex target) {
-    if(!edgesByVertex.containsKey(target))
+    if(!adjacencyMap.containsKey(target))
         addVertex(target);
-    if(!edgesByVertex.containsKey(source))
+    if(!adjacencyMap.containsKey(source))
         addVertex(source);
-    edgesByVertex.get(source).add(new Edge(source, label, target));
+    adjacencyMap.get(source).add(new Edge(source, label, target));
 }
 
-public Boolean addVertex(Vertex vertex) {
-    if (edgesByVertex.containsKey(vertex))
-        return false;
-
-    edgesByVertex.put(vertex,FXCollections.observableSet(new HashSet<>()));
-    return true;
+public void addVertex(Vertex vertex) {
+        adjacencyMap.putIfAbsent(vertex,FXCollections.observableSet());
 }
 
  public Integer smallestFreeLabel(){
@@ -57,58 +50,51 @@ public Boolean addVertex(Vertex vertex) {
  }
 
   public void clear(){
-      edgesByVertex.keySet().clear();
+      adjacencyMap.keySet().clear();
   }
 
 
 
   public Integer getMaxID() {
       try{
-          return Collections.max(edgesByVertex.keySet()).label;
+          return Collections.max(adjacencyMap.keySet()).id;
       } catch (NoSuchElementException e) {
           return 0;
       }
-
-//    return graph.getMap().keySet().stream()
-//            .max(Vertex::compareTo)
-//            .map(Vertex::getLabel)
-//            .orElse(0);
-  }
+ }
 
   public void removeAllEdges() {
-    for(Set<Edge> edgeSet: edgesByVertex.values()){
+    for(Set<Edge> edgeSet: adjacencyMap.values()){
       edgeSet.clear();
     }
   }
 
-  public Boolean removeVertex(Vertex vertex) {
-    if (edgesByVertex.containsKey(vertex)){
-      edgesByVertex.remove(vertex);
-      return true;
+  public void removeVertex(Vertex vertex) {
+    if (adjacencyMap.containsKey(vertex)){
+      adjacencyMap.remove(vertex);
     }
-    return false;
   }
 
   public void addGraphListener(MapChangeListener<Vertex, ObservableSet<Edge>> mapChangeListener) {
-    edgesByVertex.addListener(mapChangeListener);
+    adjacencyMap.addListener(mapChangeListener);
   }
 
- public ObservableMap<Vertex,ObservableSet<Edge>> getEdgesByVertex(){
-      return edgesByVertex;
+ public ObservableMap<Vertex,ObservableSet<Edge>> getAdjacencyMap(){
+      return adjacencyMap;
  }
   public Set<Vertex> getVertices() {
-    return Set.copyOf(edgesByVertex.keySet());
+    return Set.copyOf(adjacencyMap.keySet());
   }
 
   public Set<Edge> getEdges() {
     return Set.copyOf(
-            edgesByVertex.values().stream()
+            adjacencyMap.values().stream()
             .flatMap(ObservableSet::stream)
             .collect(Collectors.toSet())
     );
   }
   public Set<Edge> getEdges(Vertex vertex){
-    return Set.copyOf(edgesByVertex.get(vertex));
+    return Set.copyOf(adjacencyMap.get(vertex));
   }
 
   public BooleanProperty coloringToggle(){
@@ -138,7 +124,7 @@ public Boolean addVertex(Vertex vertex) {
   }
 
     public Set<Vertex> getTargets(Vertex vertex, String action) {
-      return edgesByVertex.get(vertex).stream()
+      return adjacencyMap.get(vertex).stream()
               .filter(edge->edge.label.equals(action))
               .map(edge->edge.target)
               .collect(Collectors.toSet());

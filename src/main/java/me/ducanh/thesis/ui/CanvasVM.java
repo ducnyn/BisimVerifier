@@ -23,7 +23,7 @@ public class CanvasVM {
         this.model = model;
         this.controller = controller;
 
-        model.getEdgesByVertex().addListener((MapChangeListener<Vertex,ObservableSet<Edge>>)mapChange->{
+        model.getAdjacencyMap().addListener((MapChangeListener<Vertex,ObservableSet<Edge>>) mapChange->{
             Vertex vertex = mapChange.getKey();
             if(mapChange.wasAdded()) {
                 ObservableSet<Edge> edgeList = mapChange.getValueAdded();
@@ -75,16 +75,16 @@ public class CanvasVM {
         edgeViews.put(edge,new EdgeView(edge.label,vertexViews.get(edge.source),vertexViews.get(edge.target)));
     }
     private void removeEdgeView(Edge edge) {
-        edgeViews.remove(edge);
+        egeViews.remove(edge);
     }
-    public void updateColors(){
+    private void updateColors(){
         if(model.coloringIsEnabled()){
             this.partition.clear();
             this.partition.addAll(model.getBisimulation());
         }
     }
 
-    public void addVertexViewListener(MapChangeListener<Vertex, VertexView> listener){
+    public void addVertexViewListener(MapChangeListener  <Vertex, VertexView> listener){
         vertexViews.addListener(listener);
     }
     public void addEdgeViewListener(MapChangeListener<Edge,EdgeView> listener){

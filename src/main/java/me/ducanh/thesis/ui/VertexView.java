@@ -16,27 +16,28 @@ import me.ducanh.thesis.Vertex;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class VertexView extends StackPane {
-    public static int DEFAULT_RADIUS = 40;
-    public static Paint DEFAULT_FILL = Paint.valueOf("lightgray");
-    public static Paint DEFAULT_STROKE = Paint.valueOf("darkgray");
+    public static int DEFAULT_RADIUS = 15;
+    public static Paint DEFAULT_FILL = Paint.valueOf("darkgray");
+    public static Paint DEFAULT_STROKE = Paint.valueOf("black");
+
+
     private final Text text = new Text();
     private final Circle circle = new Circle(DEFAULT_RADIUS);
     private final DoubleProperty centerXProperty = new SimpleDoubleProperty(layoutXProperty().get() + getRadius());
     private final DoubleProperty centerYProperty = new SimpleDoubleProperty(layoutYProperty().get() + getRadius());
     private final Vertex vertex;
-//  public void init(Model model, int id) {
-//    init(model, id, 1, 1);
-//  }
+
+    private final DoubleProperty clickXProperty = new SimpleDoubleProperty(0);
+    private final DoubleProperty clickYProperty = new SimpleDoubleProperty(0);
 
     public VertexView(Controller controller, Vertex vertex){
         this.vertex = vertex;
-        setText(String.valueOf(vertex.label));
-        System.out.println(vertex.label);
+        setText(String.valueOf(vertex.id));
+        System.out.println(vertex.id);
         addEventHandler(MouseEvent.ANY, Event::consume);
         setPickOnBounds(false);
         getChildren().add(circle);
         getChildren().add(text);
-        circle.setRadius(DEFAULT_RADIUS);
         circle.setFill(DEFAULT_FILL);
         circle.setStroke(DEFAULT_STROKE);
         circle.setStyle("-fx-opacity: 0.5");
@@ -58,33 +59,31 @@ public class VertexView extends StackPane {
 
 
 
-        AtomicReference<Double> onPressedX = new AtomicReference<>();
-        AtomicReference<Double> onPressedY = new AtomicReference<>();
+
 
         setOnMousePressed(press -> {
-                    if (press.isAltDown()) {
-                        controller.removeVertex(getLabel());
-                    }
-
+            if (press.getButton().equals(MouseButton.PRIMARY) && press.isAltDown()) {
+                controller.removeVertex(getLabel());
+            }
             toFront();
-            onPressedX.set(press.getScreenX());
-            onPressedY.set(press.getScreenY());
+            clickXProperty.set(press.getScreenX());
+            clickYProperty.set(press.getScreenY());
         });
 
         setOnMouseDragged((drag) -> {
 
             if (drag.getButton().equals(MouseButton.PRIMARY) && !drag.isAltDown()) {
                 drag.consume();
-                double deltaX = getTranslateX() + (drag.getScreenX() - onPressedX.get()) / getParent().getScaleX();
-                double deltaY = getTranslateY() + (drag.getScreenY() - onPressedY.get()) / getParent().getScaleY();
+                double deltaX = getTranslateX() + (drag.getScreenX() - clickXProperty.get()) / getParent().getScaleX();
+                double deltaY = getTranslateY() + (drag.getScreenY() - clickYProperty.get()) / getParent().getScaleY();
                 setTranslateX(deltaX);
                 setTranslateY(deltaY);
                 setLayoutX(getLayoutX() + getTranslateX());
                 setLayoutY(getLayoutY() + getTranslateY());
                 setTranslateX(0);
                 setTranslateY(0);
-                onPressedX.set(drag.getScreenX());
-                onPressedY.set(drag.getScreenY());
+                clickXProperty.set(drag.getScreenX());
+                clickYProperty.set(drag.getScreenY());
             }
         });
     }
@@ -157,7 +156,7 @@ public class VertexView extends StackPane {
         return vertex;
     }
     public Integer getLabel(){
-        return vertex.label;
+        return vertex.id;
     }
 
 

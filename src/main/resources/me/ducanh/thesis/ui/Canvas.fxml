@@ -13,10 +13,7 @@
             pannable="true"
             fitToHeight="true"
             fitToWidth="true">
-    <StackPane   fx:id = "centerBox"
-            id="visualBackground"
-            >
-
+    <StackPane   fx:id = "centerBox" id="visualBackground">
         <Group fx:id = "group">
             <AnchorPane id="anchorPane"
                         fx:id="anchorPane"

@@ -87,24 +87,31 @@ public class Algorithms {
     }
 
 
-    private static Block getLastCommonBlock(Vertex state1, Vertex state2, Block root) {
-        Block Block = root;
+    private static Block getLastCommonBlock(Vertex state1, Vertex state2, Block root) throws NoCommonBlockException, StateDisappearedDuringPartitioningException {
+        Block commonBlock = root;
+
+        if ( !commonBlock.vertices.contains(state1) || !commonBlock.vertices.contains(state2) ) {
+            throw new NoCommonBlockException(state1, state2, root);
+        }
 
         while ( true ) {
-            if ( Block.splitter != null ) {
-                return Block;
-            }
-            if ( Block.left.vertices.containsAll(List.of(state1, state2)) ) {
-                Block = Block.left;
-            } else if ( Block.right.vertices.containsAll(List.of(state1, state2)) ) {
-                Block = Block.right;
+
+            if ( commonBlock.left.vertices.contains(state1) && commonBlock.right.vertices.contains(state2) ) {
+                return commonBlock; //neither left nor right contains all -> next split will separate
+            } else if ( commonBlock.left.vertices.contains(state2) && commonBlock.right.vertices.contains(state1) ) {
+                return commonBlock;
+
+            } else if ( commonBlock.left.vertices.contains(state1) && commonBlock.left.vertices.contains(state2) ) {
+                commonBlock = commonBlock.left;
+            } else if ( commonBlock.right.vertices.contains(state1) && commonBlock.right.vertices.contains(state2) ) {
+                commonBlock = commonBlock.right;
             } else {
-                return Block; //neither left nor right contains all -> next split will separate
+                throw new StateDisappearedDuringPartitioningException(state1, state2, root);
             }
         }
     }
 
-    public static TreeNode getDistinguishingFormula(Vertex state1, Vertex state2, Graph<Vertex, Edge> graph) throws NoDistinguishingFormulaException {
+    public static TreeNode getDistinguishingFormula(Vertex state1, Vertex state2, Graph<Vertex, Edge> graph) throws NoDistinguishingFormulaException, StateDisappearedDuringPartitioningException, NoCommonBlockException {
 
         Block partitioningTree = partitionByBisimilarity(graph).getKey();
 
@@ -113,7 +120,7 @@ public class Algorithms {
         return result;
     }
 
-    private static TreeNode clevelandAlgo(Vertex state1, Vertex state2, Block rootBlock, Graph<Vertex, Edge> graph) throws NoDistinguishingFormulaException {
+    private static TreeNode clevelandAlgo(Vertex state1, Vertex state2, Block rootBlock, Graph<Vertex, Edge> graph) throws NoDistinguishingFormulaException, StateDisappearedDuringPartitioningException, NoCommonBlockException {
 
         Block lastBlock = getLastCommonBlock(state1, state2, rootBlock);
         if ( lastBlock.splitter == null ) {
@@ -132,11 +139,11 @@ public class Algorithms {
         Vertex rightState;
         boolean reversed;
 
-        if ( lastBlock.left.vertices.contains(state1) & lastBlock.right.vertices.contains(state2) ) {
+        if ( lastBlock.left.vertices.contains(state1) && lastBlock.right.vertices.contains(state2) ) {
             leftState = state1;
             rightState = state2;
             reversed = false;
-        } else if ( lastBlock.left.vertices.contains(state2) & lastBlock.right.vertices.contains(state1) ) {
+        } else if ( lastBlock.left.vertices.contains(state2) && lastBlock.right.vertices.contains(state1) ) {
             leftState = state2;
             rightState = state1;
             reversed = true;

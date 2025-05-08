@@ -1,9 +1,6 @@
 package me.ducanh.thesis.ui;
 
 import javafx.beans.binding.DoubleBinding;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;

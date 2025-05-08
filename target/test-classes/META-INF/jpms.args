@@ -1,0 +1,4 @@
+--patch-module
+me.ducanh.thesis=_
+--add-reads
+me.ducanh.thesis=ALL-UNNAMED

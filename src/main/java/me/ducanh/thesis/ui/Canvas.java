@@ -24,20 +24,17 @@ public class Canvas{
     @FXML
     ScrollPane scrollPane;
     @FXML
-    AnchorPane anchorPane;
-    @FXML
     StackPane centerBox;
+    @FXML
+    AnchorPane anchorPane;
     @FXML
     Group group;
     @FXML
     Label bisimToggleLabel;
 
-    private Controller controller;
-
 //TODO scroll pane when item dragged past boundaries
 
     public void inject(CanvasVM canvasVM, Controller controller) {
-        this.controller = controller;
         anchorPane.setMinHeight(600);
         anchorPane.setMinWidth(900);
 
@@ -90,30 +87,30 @@ public class Canvas{
 
 
         anchorPane.setOnMousePressed(pressed -> {
-            checkCtrlClick(pressed);
+            if (pressed.getButton().equals(MouseButton.PRIMARY) && (pressed.isControlDown())) {
+                controller.addVertex(pressed.getX()-VertexView.DEFAULT_RADIUS,pressed.getY()-VertexView.DEFAULT_RADIUS);
+                pressed.consume();
+            }
         });
 
-        canvasVM.addColorModeListener((observable, changeToFalse, changeToTrue) -> {
-            colorToggleIndicator(changeToTrue);
-            if(changeToFalse){
-                Platform.runLater(() -> {
+        canvasVM.addColorModeListener((observable, toggleOff, toggleOn) -> {
+            colorToggleIndicator(toggleOn);
+            if(toggleOff){
 //                    Thread taskThread = new Thread(() -> {
+                Platform.runLater(() -> {
                     for (VertexView vertex : drawnVertices) {
                         vertex.setFill(vertex.getDefaultFill());
                     }
-//                    });
+                    });
 //                    taskThread.setDaemon(true);
 //                    taskThread.start();
-                });
+//                });
             }
 
         });
 
 
 
-        centerBox.setOnScrollStarted(scrollStart -> {
-
-        });
         centerBox.setOnScroll(scroll -> {
 
             double zoom;
@@ -121,7 +118,6 @@ public class Canvas{
             if (scroll.getDeltaY() == 0) zoom = 1;
             else if (scroll.getDeltaY() > 0) zoom = 1.05;
             else zoom = 0.95;
-            System.out.println("delta " + scroll.getDeltaY());
 
 
             //calculate pixel offsets from [0,1] range
@@ -146,12 +142,6 @@ public class Canvas{
 //        spawnPosX= Integer.DEFAULT_RADIUS;
 //        spawnPosY= Integer.DEFAULT_RADIUS;
 //    }
-    private void checkCtrlClick(MouseEvent pressed) {
-        if (pressed.getButton().equals(MouseButton.PRIMARY) && (pressed.isControlDown())) {
-            controller.addVertex(pressed.getX()-VertexView.DEFAULT_RADIUS,pressed.getY()-VertexView.DEFAULT_RADIUS);
-            pressed.consume();
-        }
-    }
     private void colorToggleIndicator(Boolean toggle) {
 
         if (toggle) {

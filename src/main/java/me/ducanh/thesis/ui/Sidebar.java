@@ -4,6 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextInputDialog;
 import me.ducanh.thesis.Controller;
 import me.ducanh.thesis.Vertex;
+import me.ducanh.thesis.algorithms.NoCommonBlockException;
+import me.ducanh.thesis.algorithms.StateDisappearedDuringPartitioningException;
 import me.ducanh.thesis.formula.parser.FormulaParser;
 import me.ducanh.thesis.formula.parser.NoMatchingTokenException;
 import me.ducanh.thesis.formula.parser.SyntaxErrorException;
@@ -35,21 +37,17 @@ public class Sidebar {
         String number = "";
 
         do {
-            TextInputDialog sourceDia = new TextInputDialog();
-            sourceDia.setHeaderText("Number of vertices to spawn:");
-            numberOK = sourceDia.showAndWait();
-            number = sourceDia.getEditor().getText();
+            TextInputDialog inputDialog = new TextInputDialog();
+            inputDialog.setHeaderText("Number of vertices to spawn:");
+            numberOK = inputDialog.showAndWait();
+            number = inputDialog.getEditor().getText();
         } while (numberOK.isPresent() && (StringUtils.notInteger(number) || number.isBlank() || number.isEmpty()));
 
         if (numberOK.isPresent()) {
             int finalNumber = parseInt(number);
-            Thread taskThread = new Thread(() -> {
                 for (int i = 0; i < finalNumber; i++) {
                     controller.addVertex();
                 }
-            });
-            taskThread.setDaemon(true);
-            taskThread.start();
         }
 //        model.addEdge(1, "a", 2);
 //        model.addEdge(2, "b", 3);
@@ -136,7 +134,7 @@ public class Sidebar {
             for (int j = 0; j < edgesOutDegree; j++) {
                 String randomLabel = String.valueOf(alphabet.charAt(random.nextInt(alphabet.length())));
                 Vertex randomVertex = vertices.get(random.nextInt(vertices.size() - 1));
-                controller.addEdge(vertex.label, randomLabel, randomVertex.label);
+                controller.addEdge(vertex.id, randomLabel, randomVertex.id);
             }
         }
     }
@@ -195,6 +193,10 @@ public class Sidebar {
                         );
                     } catch (NoDistinguishingFormulaException e) {
                         model.requestPrint(e.getMessage());
+                    } catch (StateDisappearedDuringPartitioningException e) {
+                        throw new RuntimeException(e);
+                    } catch (NoCommonBlockException e) {
+                        throw new RuntimeException(e);
                     }
                 });
                 taskThread.setDaemon(true);
